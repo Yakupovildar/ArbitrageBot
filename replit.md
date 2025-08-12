@@ -30,15 +30,15 @@ Preferred communication style: Simple, everyday language.
 - **Error notifications**: Admin receives alerts for API failures and critical errors
 - **Scalable for 100+ users**: Efficient architecture that doesn't duplicate monitoring cycles
 
-✅ **Latest optimizations (Aug 12, 8:41 PM):**
-- **Fixed /start_monitoring issue**: Command now works properly without showing welcome message
-- **Removed /positions command**: Bot only sends notifications/signals, no trading execution tracking
-- **Updated trading hours**: Corrected MOEX schedule - stocks 8am, futures 9am, monitoring starts 9am
-- **Eliminated Forex functionality**: Completely removed /forex command as requested
-- **Cleaner signals**: Removed all broker/exchange links from signals for minimal, focused messages
+✅ **Latest optimizations (Aug 12, 8:53 PM):**
+- **Personalized user settings**: New /settings command with customizable monitoring intervals and spread thresholds
+- **Smart source rotation**: Fast monitoring (< 5 min) automatically rotates data sources to prevent API blocks
+- **Configurable intervals**: Users can choose 30s, 1min, 3min, 5min, 15min with button interface
+- **Adjustable spread thresholds**: Users can set personal minimums: 0.5%, 0.7%, 0.9%, 1%, 1.5%, 2%, 3%
+- **Hidden admin commands**: /check_sources only visible to admin users, clean interface for regular users
+- **Individual filtering**: Each user receives signals based on their personal spread threshold settings
 - **Enhanced schedule display**: Shows separate hours for stocks, futures, and arbitrage monitoring
-- **Admin source checking**: /check_sources command for admins to verify 6 data sources
-- **Source restart**: Admins can restart problematic data sources with inline buttons
+- **Cleaner signals**: Removed all broker/exchange links from signals for minimal, focused messages
 
 ✅ **Core features implemented:**
 - Automatic monitoring every 5-7 minutes (randomized) - ONLY when users opt-in

@@ -18,6 +18,7 @@ from moex_api import MOEXAPIClient
 from arbitrage_calculator import ArbitrageCalculator
 from monitoring_controller import MonitoringController
 from data_sources import DataSourceManager
+from user_settings import UserSettingsManager
 
 # Класс для хранения истории спредов  
 class SpreadHistory:
@@ -73,6 +74,7 @@ class SimpleTelegramBot:
         self.spread_history = SpreadHistory(self.config.MAX_SPREAD_HISTORY)
         self.monitoring_controller = MonitoringController()
         self.data_sources = DataSourceManager()
+        self.user_settings = UserSettingsManager()
         
     async def __aenter__(self):
         """Асинхронный контекст менеджер"""
@@ -153,6 +155,26 @@ class SimpleTelegramBot:
             logger.error(f"Ошибка при ответе на callback: {e}")
             return False
     
+    async def edit_message_with_keyboard(self, chat_id: int, message_id: int, text: str, keyboard: dict) -> bool:
+        """Редактирование сообщения с inline-клавиатурой"""
+        if not self.session:
+            return False
+            
+        url = f"{self.base_url}/editMessageText"
+        data = {
+            "chat_id": chat_id,
+            "message_id": message_id,
+            "text": text,
+            "reply_markup": keyboard
+        }
+        
+        try:
+            async with self.session.post(url, json=data) as response:
+                return response.status == 200
+        except Exception as e:
+            logger.error(f"Ошибка при редактировании сообщения: {e}")
+            return False
+    
     async def get_updates(self) -> List[TelegramUpdate]:
         """Получение обновлений"""
         if not self.session:
@@ -210,8 +232,8 @@ class SimpleTelegramBot:
 /history - история последних 10 найденных спредов
 /schedule - расписание торгов биржи
 /demo - демонстрация сигналов
+/settings - персональные настройки мониторинга
 /support - связь с технической поддержкой
-/check_sources - проверка источников данных (админ)
 /subscribe - подписаться на уведомления
 /unsubscribe - отписаться от уведомлений
 
@@ -229,8 +251,8 @@ class SimpleTelegramBot:
 /history - История последних 10 найденных спредов
 /schedule - Расписание торгов и статус биржи
 /demo - Демонстрация функций бота
+/settings - Персональные настройки мониторинга
 /support - Связь с технической поддержкой
-/check_sources - Проверка источников данных (админ)
 /subscribe - Подписаться на уведомления
 /unsubscribe - Отписаться от уведомлений
 
@@ -363,10 +385,15 @@ class SimpleTelegramBot:
 🕒 Время ответа: обычно в течение нескольких часов"""
             await self.send_message(chat_id, support_message)
             
+        elif command.startswith("/settings"):
+            settings_summary = self.user_settings.get_settings_summary(user_id)
+            keyboard = self.user_settings.get_settings_keyboard(user_id)
+            await self.send_message_with_keyboard(chat_id, settings_summary, keyboard)
+            
         elif command.startswith("/check_sources"):
             # Проверяем, является ли пользователь администратором
             if user_id != self.monitoring_controller.get_admin_user_id():
-                await self.send_message(chat_id, "❌ Эта команда доступна только администратору")
+                await self.send_message(chat_id, "🤖 Неизвестная команда. Используйте /help для справки.")
                 return
                 
             await self.send_message(chat_id, "🔍 Проверяю источники данных...")
@@ -444,6 +471,51 @@ class SimpleTelegramBot:
             await self.answer_callback_query(callback_query_id, f"Отмена для {source_name}")
             await self.send_message(chat_id, f"❌ Перезапуск {source_name} отменен")
             
+        # Обработка настроек пользователя
+        elif callback_data == "settings_back":
+            settings_summary = self.user_settings.get_settings_summary(user_id)
+            keyboard = self.user_settings.get_settings_keyboard(user_id)
+            await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
+            await self.answer_callback_query(callback_query_id, "Настройки")
+            
+        elif callback_data == "settings_interval":
+            keyboard = self.user_settings.get_interval_keyboard()
+            message = "⏱️ Выберите интервал мониторинга:\n\n⚠️ Внимание: интервалы менее 5 минут используют ротацию источников данных для избежания блокировок"
+            await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], message, keyboard)
+            await self.answer_callback_query(callback_query_id, "Интервал")
+            
+        elif callback_data == "settings_spread":
+            keyboard = self.user_settings.get_spread_keyboard()
+            message = "📊 Выберите минимальный порог спреда для уведомлений:"
+            await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], message, keyboard)
+            await self.answer_callback_query(callback_query_id, "Спред")
+            
+        elif callback_data.startswith("interval_"):
+            interval = int(callback_data.replace("interval_", ""))
+            if self.user_settings.update_monitoring_interval(user_id, interval):
+                settings = self.user_settings.get_user_settings(user_id)
+                await self.answer_callback_query(callback_query_id, f"Интервал: {settings.get_interval_display()}")
+                
+                # Возвращаемся к главному меню настроек
+                settings_summary = self.user_settings.get_settings_summary(user_id)
+                keyboard = self.user_settings.get_settings_keyboard(user_id)
+                await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
+            else:
+                await self.answer_callback_query(callback_query_id, "Ошибка обновления")
+                
+        elif callback_data.startswith("spread_"):
+            spread = float(callback_data.replace("spread_", ""))
+            if self.user_settings.update_spread_threshold(user_id, spread):
+                settings = self.user_settings.get_user_settings(user_id)
+                await self.answer_callback_query(callback_query_id, f"Спред: {settings.get_spread_display()}")
+                
+                # Возвращаемся к главному меню настроек
+                settings_summary = self.user_settings.get_settings_summary(user_id)
+                keyboard = self.user_settings.get_settings_keyboard(user_id)
+                await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
+            else:
+                await self.answer_callback_query(callback_query_id, "Ошибка обновления")
+            
     async def handle_support_message(self, chat_id: int, user_id: int, message: str):
         """Обработка сообщений поддержки"""
         # Отправляем сообщение администратору, если он установлен
@@ -496,12 +568,15 @@ class SimpleTelegramBot:
             message += f"📉 Спред снизился до: *{signal.spread_percent:.2f}%*\n\n"
             message += f"⏰ Время: {signal.timestamp}"
         
-        # Отправляем всем подписчикам
+        # Отправляем подписчикам с учетом их персональных настроек
         failed_subscribers = []
         for subscriber_id in self.subscribers.copy():
-            success = await self.send_message(subscriber_id, message)
-            if not success:
-                failed_subscribers.append(subscriber_id)
+            user_settings = self.user_settings.get_user_settings(subscriber_id)
+            # Проверяем порог спреда пользователя
+            if signal.spread_percent >= user_settings.spread_threshold:
+                success = await self.send_message(subscriber_id, message)
+                if not success:
+                    failed_subscribers.append(subscriber_id)
         
         # Удаляем неактивных подписчиков
         for failed_id in failed_subscribers:
