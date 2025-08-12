@@ -140,7 +140,7 @@ class UserMonitoringScheduler:
         """Получение пользователей для интервала"""
         return self.user_groups.get(interval_seconds, set()).copy()
         
-    def get_next_source_for_interval(self, interval_seconds: int, total_sources: int) -> int:
+    def get_next_source_for_interval(self, interval_seconds: int, total_sources: int) -> tuple[int, bool]:
         """Получение следующего источника для ротации"""
         if interval_seconds not in self.source_counters:
             self.source_counters[interval_seconds] = 0
@@ -148,7 +148,10 @@ class UserMonitoringScheduler:
         source_index = self.source_counters[interval_seconds] % total_sources
         self.source_counters[interval_seconds] += 1
         
-        return source_index
+        # Проверяем, прошли ли полный цикл источников
+        completed_cycle = self.source_counters[interval_seconds] % total_sources == 0 and self.source_counters[interval_seconds] > 0
+        
+        return source_index, completed_cycle
         
     def get_monitoring_stats(self) -> Dict:
         """Статистика мониторинга"""

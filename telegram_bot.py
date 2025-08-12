@@ -178,6 +178,26 @@ class SimpleTelegramBot:
             logger.error(f"Ошибка при редактировании сообщения: {e}")
             return False
     
+    async def edit_message_text(self, chat_id: int, message_id: int, text: str, keyboard: dict) -> bool:
+        """Редактирование текста сообщения с inline-клавиатурой"""
+        if not self.session:
+            return False
+            
+        url = f"{self.base_url}/editMessageText"
+        data = {
+            "chat_id": chat_id,
+            "message_id": message_id,
+            "text": text,
+            "reply_markup": keyboard
+        }
+        
+        try:
+            async with self.session.post(url, json=data) as response:
+                return response.status == 200
+        except Exception as e:
+            logger.error(f"Ошибка при редактировании текста сообщения: {e}")
+            return False
+    
     async def get_updates(self) -> List[TelegramUpdate]:
         """Получение обновлений"""
         if not self.session:
@@ -216,32 +236,44 @@ class SimpleTelegramBot:
         """Обработка команд"""
         
         if command == "/start":
-            welcome_text = """🤖 Добро пожаловать в бота арбитража MOEX!
+            welcome_text = """🤖 *Добро пожаловать в бота арбитража MOEX!*
 
-Этот бот мониторит спреды между акциями и фьючерсами на Московской бирже.
+Я помогаю отслеживать арбитражные возможности между акциями и фьючерсами на Московской бирже.
 
-📊 Основные функции:
-• Мониторинг спредов каждые 5-7 минут (рандомизированный)
-• Сигналы при спреде > 1% только в торговые часы
-• Цветовое выделение по уровням спреда
-• Сигналы на закрытие позиций
-• История найденных спредов
+🎯 *Основные функции:*
+• Умный мониторинг с персональными настройками
+• Уведомления о прибыльных сигналах  
+• Гибкие интервалы и пороги спредов
+• История и статистика
 
-📝 Доступные команды:
-/help - справка по командам
-/status - статус мониторинга и рынка
-/start_monitoring - начать мониторинг спредов
-/stop_monitoring - остановить мониторинг
-/history - история последних 10 найденных спредов
-/schedule - расписание торгов биржи
-/demo - демонстрация сигналов
-/settings - персональные настройки мониторинга
-/support - связь с технической поддержкой
-/subscribe - подписаться на уведомления
-/unsubscribe - отписаться от уведомлений
-
-⚠️ Важно: Сигналы носят информационный характер."""
-            await self.send_message(chat_id, welcome_text)
+✨ *Используйте кнопки ниже для управления:*"""
+            
+            # Главное меню с кнопками
+            main_menu_keyboard = {
+                "inline_keyboard": [
+                    [
+                        {"text": "🟢 Запустить мониторинг", "callback_data": "cmd_start_monitoring"},
+                        {"text": "🔴 Остановить мониторинг", "callback_data": "cmd_stop_monitoring"}
+                    ],
+                    [
+                        {"text": "⚙️ Настройки", "callback_data": "cmd_settings"},
+                        {"text": "📊 Статус", "callback_data": "cmd_status"}
+                    ],
+                    [
+                        {"text": "📈 История", "callback_data": "cmd_history"},
+                        {"text": "🕒 Расписание", "callback_data": "cmd_schedule"}
+                    ],
+                    [
+                        {"text": "🎯 Демо", "callback_data": "cmd_demo"},
+                        {"text": "🆘 Поддержка", "callback_data": "cmd_support"}
+                    ],
+                    [
+                        {"text": "📋 Главное меню", "callback_data": "show_main_menu"}
+                    ]
+                ]
+            }
+            
+            await self.send_message_with_keyboard(chat_id, welcome_text, main_menu_keyboard)
             
         elif command.startswith("/help"):
             help_text = """📚 *Справка по командам:*
@@ -399,6 +431,34 @@ class SimpleTelegramBot:
             keyboard = self.user_settings.get_settings_keyboard(user_id)
             await self.send_message_with_keyboard(chat_id, settings_summary, keyboard)
             
+        elif command.startswith("/menu"):
+            welcome_text = """🤖 *MOEX Arbitrage Bot - Главное меню*
+
+🎯 *Быстрое управление ботом:*"""
+            
+            main_menu_keyboard = {
+                "inline_keyboard": [
+                    [
+                        {"text": "🟢 Запустить мониторинг", "callback_data": "cmd_start_monitoring"},
+                        {"text": "🔴 Остановить мониторинг", "callback_data": "cmd_stop_monitoring"}
+                    ],
+                    [
+                        {"text": "⚙️ Настройки", "callback_data": "cmd_settings"},
+                        {"text": "📊 Статус", "callback_data": "cmd_status"}
+                    ],
+                    [
+                        {"text": "📈 История", "callback_data": "cmd_history"},
+                        {"text": "🕒 Расписание", "callback_data": "cmd_schedule"}
+                    ],
+                    [
+                        {"text": "🎯 Демо", "callback_data": "cmd_demo"},
+                        {"text": "🆘 Поддержка", "callback_data": "cmd_support"}
+                    ]
+                ]
+            }
+            
+            await self.send_message_with_keyboard(chat_id, welcome_text, main_menu_keyboard)
+            
         elif command.startswith("/check_sources"):
             # Проверяем, является ли пользователь администратором
             if user_id != self.monitoring_controller.get_admin_user_id():
@@ -484,19 +544,19 @@ class SimpleTelegramBot:
         elif callback_data == "settings_back":
             settings_summary = self.user_settings.get_settings_summary(user_id)
             keyboard = self.user_settings.get_settings_keyboard(user_id)
-            await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
             await self.answer_callback_query(callback_query_id, "Настройки")
             
         elif callback_data == "settings_interval":
             keyboard = self.user_settings.get_interval_keyboard()
             message = "⏱️ Выберите интервал мониторинга:\n\n⚠️ Внимание: интервалы менее 5 минут используют ротацию источников данных для избежания блокировок"
-            await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], message, keyboard)
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], message, keyboard)
             await self.answer_callback_query(callback_query_id, "Интервал")
             
         elif callback_data == "settings_spread":
             keyboard = self.user_settings.get_spread_keyboard()
             message = "📊 Выберите минимальный порог спреда для уведомлений:"
-            await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], message, keyboard)
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], message, keyboard)
             await self.answer_callback_query(callback_query_id, "Спред")
             
         elif callback_data.startswith("interval_"):
@@ -512,7 +572,7 @@ class SimpleTelegramBot:
                 # Возвращаемся к главному меню настроек
                 settings_summary = self.user_settings.get_settings_summary(user_id)
                 keyboard = self.user_settings.get_settings_keyboard(user_id)
-                await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
+                await self.edit_message_text(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
             else:
                 await self.answer_callback_query(callback_query_id, "Ошибка обновления")
                 
@@ -525,9 +585,73 @@ class SimpleTelegramBot:
                 # Возвращаемся к главному меню настроек
                 settings_summary = self.user_settings.get_settings_summary(user_id)
                 keyboard = self.user_settings.get_settings_keyboard(user_id)
-                await self.edit_message_with_keyboard(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
+                await self.edit_message_text(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
             else:
                 await self.answer_callback_query(callback_query_id, "Ошибка обновления")
+                
+        # Обработка команд через кнопки
+        elif callback_data == "show_main_menu":
+            welcome_text = """🤖 *MOEX Arbitrage Bot - Главное меню*
+
+🎯 *Быстрое управление ботом:*"""
+            
+            main_menu_keyboard = {
+                "inline_keyboard": [
+                    [
+                        {"text": "🟢 Запустить мониторинг", "callback_data": "cmd_start_monitoring"},
+                        {"text": "🔴 Остановить мониторинг", "callback_data": "cmd_stop_monitoring"}
+                    ],
+                    [
+                        {"text": "⚙️ Настройки", "callback_data": "cmd_settings"},
+                        {"text": "📊 Статус", "callback_data": "cmd_status"}
+                    ],
+                    [
+                        {"text": "📈 История", "callback_data": "cmd_history"},
+                        {"text": "🕒 Расписание", "callback_data": "cmd_schedule"}
+                    ],
+                    [
+                        {"text": "🎯 Демо", "callback_data": "cmd_demo"},
+                        {"text": "🆘 Поддержка", "callback_data": "cmd_support"}
+                    ]
+                ]
+            }
+            
+            await self.send_message_with_keyboard(chat_id, welcome_text, main_menu_keyboard)
+            await self.answer_callback_query(callback_query_id, "Главное меню")
+            
+        elif callback_data == "cmd_settings":
+            settings_summary = self.user_settings.get_settings_summary(user_id)
+            keyboard = self.user_settings.get_settings_keyboard(user_id)
+            await self.send_message_with_keyboard(chat_id, settings_summary, keyboard)
+            await self.answer_callback_query(callback_query_id, "Настройки")
+            
+        elif callback_data == "cmd_start_monitoring":
+            await self.handle_command(chat_id, "/start_monitoring", user_id)
+            await self.answer_callback_query(callback_query_id, "Запуск мониторинга")
+            
+        elif callback_data == "cmd_stop_monitoring":
+            await self.handle_command(chat_id, "/stop_monitoring", user_id)
+            await self.answer_callback_query(callback_query_id, "Остановка мониторинга")
+            
+        elif callback_data == "cmd_status":
+            await self.handle_command(chat_id, "/status", user_id)
+            await self.answer_callback_query(callback_query_id, "Статус")
+            
+        elif callback_data == "cmd_history":
+            await self.handle_command(chat_id, "/history", user_id)
+            await self.answer_callback_query(callback_query_id, "История")
+            
+        elif callback_data == "cmd_schedule":
+            await self.handle_command(chat_id, "/schedule", user_id)
+            await self.answer_callback_query(callback_query_id, "Расписание")
+            
+        elif callback_data == "cmd_demo":
+            await self.handle_command(chat_id, "/demo", user_id)
+            await self.answer_callback_query(callback_query_id, "Демо")
+            
+        elif callback_data == "cmd_support":
+            await self.handle_command(chat_id, "/support", user_id)
+            await self.answer_callback_query(callback_query_id, "Поддержка")
             
     async def handle_support_message(self, chat_id: int, user_id: int, message: str):
         """Обработка сообщений поддержки"""
@@ -610,8 +734,16 @@ class SimpleTelegramBot:
             if interval_seconds < 300:  # Менее 5 минут
                 total_sources = len([s for s in self.data_sources.sources.values() if s["status"] == "working"])
                 if total_sources > 0:
-                    source_index = self.monitoring_scheduler.get_next_source_for_interval(interval_seconds, total_sources)
+                    source_index, completed_cycle = self.monitoring_scheduler.get_next_source_for_interval(interval_seconds, total_sources)
                     logger.info(f"Используем источник #{source_index} для интервала {interval_seconds}с")
+                    
+                    # Если прошли полный цикл источников - делаем паузу
+                    if completed_cycle:
+                        import random
+                        pause_seconds = random.randint(300, 420)  # 5-7 минут
+                        logger.info(f"Завершен цикл источников для {interval_seconds}с. Пауза {pause_seconds}с")
+                        await asyncio.sleep(pause_seconds)
+                        return  # Выходим из этого цикла мониторинга
             
             # Получаем котировки через MOEX API
             async with MOEXAPIClient() as moex_client:
