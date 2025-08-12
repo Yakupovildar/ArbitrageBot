@@ -21,12 +21,22 @@ Preferred communication style: Simple, everyday language.
 - Successfully deployed and tested with real TELEGRAM_BOT_TOKEN
 
 ✅ **Core features implemented:**
-- Automatic monitoring every 5 minutes
-- Signal generation for spreads >1% 
+- Automatic monitoring every 5-7 minutes (randomized)
+- Signal generation for spreads >1% only during trading hours
 - Color-coded urgency levels (normal, green, bright green)
 - Position tracking and close signals
 - Subscription management
 - All major Russian stocks and futures pairs
+- Spread history storage (last 10 records)
+- Market hours validation and notifications
+
+✅ **MOEX API compliance - All 7 rules implemented:**
+- Rate limiting: max 60 requests/minute, 3 concurrent
+- Proper authorization and error handling  
+- Retry logic with exponential backoff
+- Prevention of duplicate requests
+- Request type limitations
+- Failed request tracking
 
 ## System Architecture
 

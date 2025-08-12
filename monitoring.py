@@ -10,6 +10,51 @@ from arbitrage_calculator import ArbitrageCalculator, ArbitrageSignal
 
 logger = logging.getLogger(__name__)
 
+class SpreadHistory:
+    """Класс для хранения истории спредов"""
+    
+    def __init__(self, max_records: int = 10):
+        self.max_records = max_records
+        self.records = []  # Список записей [{timestamp, stock_ticker, futures_ticker, spread, signal_type}]
+    
+    def add_record(self, stock_ticker: str, futures_ticker: str, spread: float, signal_type: str):
+        """Добавление записи в историю"""
+        record = {
+            'timestamp': datetime.now(),
+            'stock_ticker': stock_ticker,
+            'futures_ticker': futures_ticker,
+            'spread': spread,
+            'signal_type': signal_type
+        }
+        
+        self.records.append(record)
+        
+        # Ограничиваем количество записей
+        if len(self.records) > self.max_records:
+            self.records = self.records[-self.max_records:]
+    
+    def get_recent_records(self, limit: int = None) -> List[Dict]:
+        """Получение последних записей"""
+        if limit is None:
+            return self.records.copy()
+        return self.records[-limit:] if self.records else []
+    
+    def format_history(self) -> str:
+        """Форматирование истории для вывода"""
+        if not self.records:
+            return "📊 История пуста"
+        
+        message = "📊 История найденных спредов:\n\n"
+        
+        for i, record in enumerate(reversed(self.records)):
+            timestamp = record['timestamp'].strftime('%d.%m %H:%M')
+            message += f"{i+1}. {record['stock_ticker']}/{record['futures_ticker']}\n"
+            message += f"   📈 Спред: {record['spread']:.2f}%\n"
+            message += f"   🎯 Тип: {record['signal_type']}\n"
+            message += f"   ⏰ {timestamp}\n\n"
+        
+        return message
+
 class ArbitrageMonitor:
     """Монитор арбитражных возможностей"""
     
@@ -19,6 +64,7 @@ class ArbitrageMonitor:
         self.application = None
         self.subscribers = set()
         self.is_running = False
+        self.spread_history = SpreadHistory(self.config.MAX_SPREAD_HISTORY)
         
     def set_application(self, application):
         """Установка экземпляра Application"""
@@ -35,8 +81,18 @@ class ArbitrageMonitor:
         
         while self.is_running:
             try:
+                # Проверяем, открыта ли биржа
+                if not self.config.is_market_open():
+                    logger.info("Биржа закрыта. Ожидание открытия...")
+                    await asyncio.sleep(300)  # Проверяем каждые 5 минут
+                    continue
+                
                 await self._monitoring_cycle()
-                await asyncio.sleep(self.config.MONITORING_INTERVAL)
+                
+                # Рандомизированный интервал между 5-7 минутами
+                interval = self.config.get_random_monitoring_interval()
+                logger.info(f"Следующая проверка через {interval // 60} мин {interval % 60} сек")
+                await asyncio.sleep(interval)
                 
             except asyncio.CancelledError:
                 logger.info("Мониторинг остановлен")
@@ -96,6 +152,14 @@ class ArbitrageMonitor:
                 
                 if signal:
                     signals.append(signal)
+                    
+                    # Добавляем в историю спредов
+                    self.spread_history.add_record(
+                        stock_ticker=signal.stock_ticker,
+                        futures_ticker=signal.futures_ticker,
+                        spread=signal.spread_percent,
+                        signal_type=signal.action
+                    )
                     
                     # Регистрируем или закрываем позицию
                     if signal.action == "OPEN":
@@ -222,7 +286,33 @@ class ArbitrageMonitor:
         """Получение статистики мониторинга"""
         return {
             "is_running": self.is_running,
+            "market_open": self.config.is_market_open(),
             "open_positions": len(self.calculator.open_positions),
             "monitored_instruments": len(self.config.MONITORED_INSTRUMENTS),
-            "subscribers_count": len(self.subscribers)
+            "subscribers_count": len(self.subscribers),
+            "spread_history_count": len(self.spread_history.records)
         }
+    
+    def get_spread_history(self) -> str:
+        """Получение форматированной истории спредов"""
+        return self.spread_history.format_history()
+    
+    async def check_market_status_and_notify(self, subscriber_id: int):
+        """Проверка статуса рынка и отправка уведомления"""
+        if not self.application:
+            return
+        
+        try:
+            status_message = self.config.get_market_status_message()
+            schedule_info = self.config.get_trading_schedule_info()
+            
+            full_message = f"{status_message}\n\n{schedule_info}"
+            
+            await self.application.bot.send_message(
+                chat_id=subscriber_id,
+                text=full_message,
+                parse_mode=ParseMode.MARKDOWN
+            )
+            
+        except Exception as e:
+            logger.error(f"Ошибка отправки статуса рынка пользователю {subscriber_id}: {e}")

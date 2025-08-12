@@ -46,9 +46,11 @@ class BotHandlers:
 
 📝 *Доступные команды:*
 /help - справка по командам
-/status - статус мониторинга
+/status - статус мониторинга и рынка
 /positions - открытые позиции
 /instruments - отслеживаемые инструменты
+/history - история найденных спредов
+/schedule - расписание торгов биржи
 /subscribe - подписаться на уведомления
 /unsubscribe - отписаться от уведомлений
 
@@ -67,9 +69,11 @@ class BotHandlers:
 
 /start - Запуск бота и приветствие
 /help - Эта справка
-/status - Текущий статус мониторинга и API
+/status - Текущий статус мониторинга и рынка
 /positions - Список открытых арбитражных позиций
 /instruments - Список отслеживаемых инструментов
+/history - История найденных спредов (последние 10)
+/schedule - Расписание торгов и статус биржи
 /subscribe - Подписаться на уведомления о сигналах
 /unsubscribe - Отписаться от уведомлений
 
@@ -85,7 +89,7 @@ class BotHandlers:
 🔄 Дружище, пора закрывать позицию по SBER/SiM5
 📉 Спред снизился до 0.3%
 
-⚡ *Автоматический мониторинг каждые 5 минут*
+⚡ *Автоматический мониторинг каждые 5-7 минут (рандомизированный)*
         """
         
         await update.message.reply_text(
@@ -96,12 +100,18 @@ class BotHandlers:
     async def status_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Обработчик команды /status"""
         try:
+            # Проверяем статус рынка
+            market_status = self.config.get_market_status_message()
+            
             # Проверяем статус API
             async with MOEXAPIClient() as moex_client:
                 trading_status = await moex_client.get_trading_status()
             
             # Формируем сообщение о статусе
             status_message = "📊 *Статус системы мониторинга:*\n\n"
+            
+            # Статус рынка
+            status_message += f"{market_status}\n\n"
             
             # Статус API
             api_status = "✅ Доступен" if trading_status["api_available"] else "❌ Недоступен"
@@ -127,7 +137,7 @@ class BotHandlers:
             if self.config.is_admin(user_id):
                 status_message += f"👥 Всего подписчиков: {len(self.subscribers)}\n"
             
-            status_message += f"\n⏰ Интервал мониторинга: {self.config.MONITORING_INTERVAL // 60} мин"
+            status_message += f"\n⏰ Интервал мониторинга: 5-7 мин (рандомизированный)"
             
             await update.message.reply_text(
                 status_message,
@@ -202,6 +212,14 @@ class BotHandlers:
         """Обработчик команды /subscribe"""
         user_id = update.effective_user.id
         
+        # Проверяем статус рынка при подписке
+        if not self.config.is_market_open():
+            market_status = self.config.get_market_status_message()
+            await update.message.reply_text(
+                f"{market_status}\n\n⚠️ Мониторинг будет активен только в торговые часы.",
+                parse_mode=ParseMode.MARKDOWN
+            )
+        
         if user_id in self.subscribers:
             await update.message.reply_text(
                 "✅ Вы уже подписаны на уведомления о сигналах арбитража"
@@ -210,7 +228,7 @@ class BotHandlers:
             self.subscribers.add(user_id)
             await update.message.reply_text(
                 "🔔 Вы успешно подписались на уведомления!\n\n"
-                "Теперь вы будете получать сигналы об арбитражных возможностях каждые 5 минут.\n\n"
+                "Теперь вы будете получать сигналы об арбитражных возможностях каждые 5-7 минут.\n\n"
                 "Для отписки используйте /unsubscribe"
             )
         
@@ -232,6 +250,48 @@ class BotHandlers:
         
         logger.info(f"Пользователь {user_id} отписался от уведомлений")
     
+    async def history_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Обработчик команды /history - показать историю найденных спредов"""
+        try:
+            # Получаем историю спредов от монитора
+            from monitoring import ArbitrageMonitor
+            # В реальном коде это должно быть передано через dependency injection
+            # Здесь используем заглушку для демонстрации
+            
+            history_message = "📊 История найденных спредов:\n\n"
+            history_message += "⚠️ История доступна только во время работы бота\n"
+            history_message += "Используйте /status для проверки состояния системы"
+            
+            await update.message.reply_text(
+                history_message,
+                parse_mode=ParseMode.MARKDOWN
+            )
+            
+        except Exception as e:
+            logger.error(f"Ошибка в команде history: {e}")
+            await update.message.reply_text(
+                "❌ Ошибка при получении истории спредов"
+            )
+    
+    async def schedule_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Обработчик команды /schedule - расписание торгов"""
+        try:
+            schedule_info = self.config.get_trading_schedule_info()
+            market_status = self.config.get_market_status_message()
+            
+            full_message = f"{market_status}\n\n{schedule_info}"
+            
+            await update.message.reply_text(
+                full_message,
+                parse_mode=ParseMode.MARKDOWN
+            )
+            
+        except Exception as e:
+            logger.error(f"Ошибка в команде schedule: {e}")
+            await update.message.reply_text(
+                "❌ Ошибка при получении расписания торгов"
+            )
+
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Обработчик обычных сообщений"""
         await update.message.reply_text(

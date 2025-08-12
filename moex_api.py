@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import logging
+import time
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import json
@@ -9,12 +10,14 @@ from config import Config
 logger = logging.getLogger(__name__)
 
 class MOEXAPIClient:
-    """Клиент для работы с MOEX ISS API"""
+    """Клиент для работы с MOEX ISS API с соблюдением всех правил"""
     
     def __init__(self):
         self.config = Config()
         self.session = None
         self.last_request_time = 0
+        self.request_times = []  # История времен запросов для контроля частоты
+        self.failed_requests = {}  # Счетчик неудачных запросов по URL
         
     async def __aenter__(self):
         """Асинхронный контекст менеджер - вход"""
@@ -29,38 +32,95 @@ class MOEXAPIClient:
             await self.session.close()
     
     async def _rate_limit(self):
-        """Контроль частоты запросов"""
-        current_time = asyncio.get_event_loop().time()
-        time_since_last = current_time - self.last_request_time
+        """Правило 1: Контроль частоты запросов - не более 60 в минуту"""
+        current_time = time.time()
         
+        # Очищаем старые записи (старше 1 минуты)
+        self.request_times = [t for t in self.request_times if current_time - t < 60]
+        
+        # Проверяем лимит запросов в минуту
+        if len(self.request_times) >= self.config.MAX_REQUESTS_PER_MINUTE:
+            sleep_time = 60 - (current_time - self.request_times[0])
+            if sleep_time > 0:
+                logger.info(f"Превышен лимит запросов в минуту. Ожидание {sleep_time:.1f} сек")
+                await asyncio.sleep(sleep_time)
+                current_time = time.time()
+        
+        # Минимальная задержка между запросами
+        time_since_last = current_time - self.last_request_time
         if time_since_last < self.config.RATE_LIMIT_DELAY:
             await asyncio.sleep(self.config.RATE_LIMIT_DELAY - time_since_last)
+            current_time = time.time()
         
-        self.last_request_time = asyncio.get_event_loop().time()
+        # Записываем время запроса
+        self.request_times.append(current_time)
+        self.last_request_time = current_time
     
     async def _make_request(self, url: str, params: Optional[Dict] = None) -> Optional[Dict]:
-        """Выполнение HTTP запроса к MOEX API"""
+        """Правила 3,4,5: Выполнение HTTP запроса с retry логикой и обработкой ошибок"""
         if not self.session:
             raise RuntimeError("Сессия не инициализирована")
         
-        await self._rate_limit()
+        # Правило 5: Избегаем дублирующих запросов
+        request_key = f"{url}:{str(params)}"
         
-        try:
-            logger.debug(f"Запрос к MOEX API: {url}")
-            async with self.session.get(url, params=params) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    return data
-                else:
-                    logger.error(f"Ошибка MOEX API: HTTP {response.status}")
-                    return None
+        for attempt in range(self.config.RETRY_ATTEMPTS):
+            try:
+                await self._rate_limit()
+                
+                logger.debug(f"Запрос к MOEX API (попытка {attempt + 1}): {url}")
+                async with self.session.get(url, params=params) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        # Сбрасываем счетчик неудачных попыток при успехе
+                        self.failed_requests.pop(request_key, None)
+                        return data
                     
-        except asyncio.TimeoutError:
-            logger.error("Таймаут при запросе к MOEX API")
-            return None
-        except Exception as e:
-            logger.error(f"Ошибка при запросе к MOEX API: {e}")
-            return None
+                    elif response.status in [401, 403]:
+                        # Правило 2: Ошибки авторизации - не повторяем
+                        logger.error(f"Ошибка авторизации MOEX API: HTTP {response.status}")
+                        return None
+                    
+                    elif response.status == 429:
+                        # Слишком много запросов - увеличиваем задержку
+                        retry_delay = self.config.RETRY_DELAY * (self.config.BACKOFF_MULTIPLIER ** attempt)
+                        logger.warning(f"MOEX API rate limit: HTTP 429. Ожидание {retry_delay:.1f} сек")
+                        await asyncio.sleep(retry_delay)
+                        continue
+                    
+                    elif response.status >= 500:
+                        # Серверная ошибка - повторяем с задержкой
+                        retry_delay = self.config.RETRY_DELAY * (self.config.BACKOFF_MULTIPLIER ** attempt)
+                        logger.warning(f"Серверная ошибка MOEX API: HTTP {response.status}. Повтор через {retry_delay:.1f} сек")
+                        await asyncio.sleep(retry_delay)
+                        continue
+                    
+                    else:
+                        # Правило 6: Избегаем повторных неправильных запросов
+                        logger.error(f"Ошибка MOEX API: HTTP {response.status}")
+                        self.failed_requests[request_key] = self.failed_requests.get(request_key, 0) + 1
+                        
+                        # После 3 неудачных попыток одного запроса - прекращаем
+                        if self.failed_requests[request_key] >= 3:
+                            logger.error(f"Слишком много неудачных попыток для {url}")
+                            return None
+                        
+                        return None
+                        
+            except asyncio.TimeoutError:
+                retry_delay = self.config.RETRY_DELAY * (self.config.BACKOFF_MULTIPLIER ** attempt)
+                logger.warning(f"Таймаут MOEX API (попытка {attempt + 1}). Повтор через {retry_delay:.1f} сек")
+                if attempt < self.config.RETRY_ATTEMPTS - 1:
+                    await asyncio.sleep(retry_delay)
+                    
+            except Exception as e:
+                retry_delay = self.config.RETRY_DELAY * (self.config.BACKOFF_MULTIPLIER ** attempt)
+                logger.error(f"Ошибка запроса к MOEX API (попытка {attempt + 1}): {e}")
+                if attempt < self.config.RETRY_ATTEMPTS - 1:
+                    await asyncio.sleep(retry_delay)
+        
+        logger.error(f"Не удалось выполнить запрос после {self.config.RETRY_ATTEMPTS} попыток: {url}")
+        return None
     
     async def get_stock_price(self, ticker: str) -> Optional[float]:
         """Получение цены акции"""
@@ -153,8 +213,8 @@ class MOEXAPIClient:
             futures_task = self.get_futures_price(futures_ticker)
             tasks.append((stock_ticker, stock_task, futures_task))
         
-        # Выполняем запросы с контролем concurrency
-        semaphore = asyncio.Semaphore(5)  # Ограничиваем количество одновременных запросов
+        # Правило 7: Ограничиваем количество одновременных запросов
+        semaphore = asyncio.Semaphore(self.config.MAX_CONCURRENT_REQUESTS)
         
         async def fetch_pair(stock_ticker, stock_task, futures_task):
             async with semaphore:

@@ -9,12 +9,44 @@ import asyncio
 import aiohttp
 import json
 import logging
+import random
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Set
 from dataclasses import dataclass
 from config import Config
 from moex_api import MOEXAPIClient
 from arbitrage_calculator import ArbitrageCalculator
+
+# Класс для хранения истории спредов  
+class SpreadHistory:
+    def __init__(self, max_records: int = 10):
+        self.max_records = max_records
+        self.records = []
+    
+    def add_record(self, stock_ticker: str, futures_ticker: str, spread: float, signal_type: str):
+        record = {
+            'timestamp': datetime.now(),
+            'stock_ticker': stock_ticker,
+            'futures_ticker': futures_ticker,
+            'spread': spread,
+            'signal_type': signal_type
+        }
+        self.records.append(record)
+        if len(self.records) > self.max_records:
+            self.records = self.records[-self.max_records:]
+    
+    def format_history(self) -> str:
+        if not self.records:
+            return "📊 История пуста"
+        
+        message = "📊 История найденных спредов:\n\n"
+        for i, record in enumerate(reversed(self.records)):
+            timestamp = record['timestamp'].strftime('%d.%m %H:%M')
+            message += f"{i+1}. {record['stock_ticker']}/{record['futures_ticker']}\n"
+            message += f"   📈 Спред: {record['spread']:.2f}%\n"
+            message += f"   🎯 {record['signal_type']}\n"
+            message += f"   ⏰ {timestamp}\n\n"
+        return message
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +67,7 @@ class SimpleTelegramBot:
         self.subscribers: Set[int] = set()
         self.config = Config()
         self.calculator = ArbitrageCalculator()
+        self.spread_history = SpreadHistory(self.config.MAX_SPREAD_HISTORY)
         
     async def __aenter__(self):
         """Асинхронный контекст менеджер"""
@@ -111,15 +144,18 @@ class SimpleTelegramBot:
 Этот бот мониторит спреды между акциями и фьючерсами на Московской бирже.
 
 📊 *Основные функции:*
-• Мониторинг спредов каждые 5 минут
-• Сигналы при спреде > 1%
+• Мониторинг спредов каждые 5-7 минут (рандомизированный)
+• Сигналы при спреде > 1% только в торговые часы
 • Цветовое выделение по уровням спреда
 • Сигналы на закрытие позиций
+• История найденных спредов
 
 📝 *Доступные команды:*
 /help - справка по командам
-/status - статус мониторинга  
+/status - статус мониторинга и рынка
 /positions - открытые позиции
+/history - история найденных спредов
+/schedule - расписание торгов биржи
 /subscribe - подписаться на уведомления
 /unsubscribe - отписаться от уведомлений
 
@@ -131,8 +167,10 @@ class SimpleTelegramBot:
 
 /start - Запуск бота и приветствие
 /help - Эта справка
-/status - Текущий статус мониторинга
+/status - Текущий статус мониторинга и рынка
 /positions - Список открытых позиций
+/history - История найденных спредов (последние 10)
+/schedule - Расписание торгов и статус биржи
 /subscribe - Подписаться на уведомления
 /unsubscribe - Отписаться от уведомлений
 
@@ -141,17 +179,20 @@ class SimpleTelegramBot:
 💰 Акции: КУПИТЬ 100 лотов
 📊 Фьючерс: ПРОДАТЬ 1 лот
 
-⚡ *Автоматический мониторинг каждые 5 минут*"""
+⚡ *Автоматический мониторинг каждые 5-7 минут (рандомизированный)*"""
             await self.send_message(chat_id, help_text)
             
         elif command.startswith("/status"):
+            market_status = self.config.get_market_status_message()
             status_text = f"""📊 *Статус системы мониторинга:*
+
+{market_status}
 
 🔌 MOEX API: ✅ Доступен
 📈 Мониторинг: ✅ Активен
 🔔 Ваша подписка: {"✅ Активна" if user_id in self.subscribers else "❌ Отключена"}
 📋 Открытых позиций: {len(self.calculator.open_positions)}
-⏰ Интервал: {self.config.MONITORING_INTERVAL // 60} мин"""
+⏰ Интервал: 5-7 мин (рандомизированный)"""
             await self.send_message(chat_id, status_text)
             
         elif command.startswith("/positions"):
@@ -167,7 +208,22 @@ class SimpleTelegramBot:
                     message += f"📊 Входной спред: {pos['entry_spread']:.2f}%\n\n"
                 await self.send_message(chat_id, message)
                 
+        elif command.startswith("/history"):
+            history_text = self.spread_history.format_history()
+            await self.send_message(chat_id, history_text)
+            
+        elif command.startswith("/schedule"):
+            schedule_info = self.config.get_trading_schedule_info()
+            market_status = self.config.get_market_status_message()
+            full_message = f"{market_status}\n\n{schedule_info}"
+            await self.send_message(chat_id, full_message)
+            
         elif command.startswith("/subscribe"):
+            # Проверяем статус рынка при подписке
+            if not self.config.is_market_open():
+                market_status = self.config.get_market_status_message()
+                await self.send_message(chat_id, f"{market_status}\n\n⚠️ Мониторинг будет активен только в торговые часы.")
+            
             if user_id in self.subscribers:
                 await self.send_message(chat_id, "✅ Вы уже подписаны на уведомления")
             else:
@@ -246,6 +302,15 @@ class SimpleTelegramBot:
                 
                 if signal:
                     signals.append(signal)
+                    
+                    # Добавляем в историю спредов
+                    self.spread_history.add_record(
+                        stock_ticker=signal.stock_ticker,
+                        futures_ticker=signal.futures_ticker,
+                        spread=signal.spread_percent,
+                        signal_type=signal.action
+                    )
+                    
                     if signal.action == "OPEN":
                         self.calculator.register_position(signal)
                     elif signal.action == "CLOSE":
@@ -267,8 +332,18 @@ class SimpleTelegramBot:
         # Планируем мониторинг
         async def monitoring_task():
             while True:
+                # Проверяем, открыта ли биржа
+                if not self.config.is_market_open():
+                    logger.info("Биржа закрыта. Ожидание открытия...")
+                    await asyncio.sleep(300)  # Проверяем каждые 5 минут
+                    continue
+                
                 await self.monitoring_cycle()
-                await asyncio.sleep(self.config.MONITORING_INTERVAL)
+                
+                # Рандомизированный интервал между 5-7 минутами
+                interval = self.config.get_random_monitoring_interval()
+                logger.info(f"Следующая проверка через {interval // 60} мин {interval % 60} сек")
+                await asyncio.sleep(interval)
         
         # Запускаем мониторинг в фоне
         monitor_task = asyncio.create_task(monitoring_task())
