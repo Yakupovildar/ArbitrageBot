@@ -207,8 +207,7 @@ class SimpleTelegramBot:
 /status - статус мониторинга и рынка
 /start_monitoring - начать мониторинг спредов
 /stop_monitoring - остановить мониторинг
-/positions - открытые позиции
-/history - история найденных спредов
+/history - история последних 10 найденных спредов
 /schedule - расписание торгов биржи
 /demo - демонстрация сигналов
 /forex - торговля валютными парами
@@ -228,8 +227,7 @@ class SimpleTelegramBot:
 /status - Текущий статус мониторинга и рынка
 /start_monitoring - Начать мониторинг спредов
 /stop_monitoring - Остановить мониторинг
-/positions - Список открытых позиций
-/history - История найденных спредов (последние 10)
+/history - История последних 10 найденных спредов
 /schedule - Расписание торгов и статус биржи
 /demo - Демонстрация функций бота
 /forex - Торговля валютными парами
@@ -264,19 +262,6 @@ class SimpleTelegramBot:
 💡 Используйте /start_monitoring для запуска"""
             await self.send_message(chat_id, status_text)
             
-        elif command.startswith("/positions"):
-            positions = self.calculator.get_open_positions_summary()
-            if not positions:
-                await self.send_message(chat_id, "📋 *Открытые позиции:*\n\nНет открытых арбитражных позиций")
-            else:
-                message = "📋 *Открытые арбитражные позиции:*\n\n"
-                for i, pos in enumerate(positions, 1):
-                    message += f"*{i}. {pos['stock_ticker']}/{pos['futures_ticker']}*\n"
-                    message += f"📈 Акции: {pos['stock_position']} {pos['stock_lots']} лотов\n"
-                    message += f"📊 Фьючерс: {pos['futures_position']} {pos['futures_lots']} лотов\n"
-                    message += f"📊 Входной спред: {pos['entry_spread']:.2f}%\n\n"
-                await self.send_message(chat_id, message)
-                
         elif command.startswith("/history"):
             history_text = self.spread_history.format_history()
             await self.send_message(chat_id, history_text)
@@ -331,44 +316,44 @@ class SimpleTelegramBot:
             await self.send_message(chat_id, "🔴 Мониторинг остановлен")
             
         elif command.startswith("/demo"):
-            demo_message = """🎯 *ДЕМОНСТРАЦИЯ СИГНАЛОВ*
+            demo_message = """🎯 ДЕМОНСТРАЦИЯ СИГНАЛОВ
 
-🟢🟢 *АРБИТРАЖ СИГНАЛ*
+🟢🟢 АРБИТРАЖ СИГНАЛ
 
-🎯 *SBER/SiM5*
-📊 Спред: *3.25%*
+🎯 SBER/SiM5
+📊 Спред: 3.25%
 
-💼 *Позиции:*
-📈 Акции SBER: *КУПИТЬ* 100 лотов
-📊 Фьючерс SiM5: *ПРОДАТЬ* 1 лот
+💼 Позиции:
+📈 Акции SBER: КУПИТЬ 100 лотов
+📊 Фьючерс SiM5: ПРОДАТЬ 1 лот
 
-💰 *Цены:*
+💰 Цены:
 📈 SBER: 285.50 ₽
 📊 SiM5: 294.78 ₽
 
-🔗 *Быстрые ссылки:*
-📈 [Акции SBER](https://www.moex.com/ru/issue.aspx?board=TQBR&code=SBER)
-📊 [Фьючерс SiM5](https://www.moex.com/ru/derivatives/currency-rate.aspx)
-📱 [TradingView SBER](https://www.tradingview.com/chart/?symbol=MOEX:SBER)
+🔗 Быстрые ссылки:
+• MOEX SBER: https://www.moex.com/ru/issue.aspx?board=TQBR&code=SBER
+• Фьючерсы MOEX: https://www.moex.com/ru/derivatives/currency-rate.aspx
+• TradingView: https://www.tradingview.com/chart/?symbol=MOEX:SBER
 
 ⏰ Время: 14:32:15
 
 ---
 
-🔄 *СИГНАЛ НА ЗАКРЫТИЕ*
+🔄 СИГНАЛ НА ЗАКРЫТИЕ
 
-👋 Дружище, пора закрывать позицию по *GAZP/GZM5*!
+👋 Дружище, пора закрывать позицию по GAZP/GZM5!
 
-📉 Спред снизился до: *0.3%*
+📉 Спред снизился до: 0.3%
 
-🔗 *Ссылки:*
-📈 [Акции GAZP](https://www.moex.com/ru/issue.aspx?board=TQBR&code=GAZP)
-📱 [TradingView GAZP](https://www.tradingview.com/chart/?symbol=MOEX:GAZP)
+🔗 Ссылки:
+• MOEX GAZP: https://www.moex.com/ru/issue.aspx?board=TQBR&code=GAZP
+• TradingView: https://www.tradingview.com/chart/?symbol=MOEX:GAZP
 
 ⏰ Время: 16:45:22
 
-*Это демонстрационные сигналы для показа функциональности*
-✨ *В реальных сигналах ссылки ведут на торговые инструменты для мгновенного доступа!*"""
+Это демонстрационные сигналы для показа функциональности.
+В реальных сигналах ссылки ведут на торговые инструменты для мгновенного доступа!"""
             await self.send_message(chat_id, demo_message)
             
         elif command.startswith("/forex"):
@@ -530,10 +515,11 @@ class SimpleTelegramBot:
             # Добавляем ссылки на инструменты
             stock_url = f"https://www.moex.com/ru/issue.aspx?board=TQBR&code={signal.stock_ticker}"
             futures_url = f"https://www.moex.com/ru/derivatives/currency-rate.aspx"
-            message += f"🔗 *Быстрые ссылки:*\n"
-            message += f"📈 [Акции {signal.stock_ticker}]({stock_url})\n"
-            message += f"📊 [Фьючерс {signal.futures_ticker}]({futures_url})\n"
-            message += f"📱 [TradingView]({self.get_tradingview_link(signal.stock_ticker)})\n\n"
+            tv_url = self.get_tradingview_link(signal.stock_ticker)
+            message += f"🔗 Быстрые ссылки:\n"
+            message += f"• MOEX {signal.stock_ticker}: {stock_url}\n"
+            message += f"• Фьючерсы MOEX: {futures_url}\n"
+            message += f"• TradingView: {tv_url}\n\n"
             
             message += f"⏰ Время: {signal.timestamp}"
             
@@ -695,7 +681,7 @@ class SimpleTelegramBot:
                             await self.handle_command(chat_id, text, user_id)
                         else:
                             # Обработка обычных сообщений
-                            await self.handle_command(chat_id, text, user_id)
+                            await self.send_message(chat_id, "🤖 Я понимаю только команды. Используйте /help для получения списка доступных команд.")
                             
                     elif update.callback_query:
                         await self.handle_callback_query(update.callback_query)
