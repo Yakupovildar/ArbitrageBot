@@ -26,16 +26,19 @@ Preferred communication style: Simple, everyday language.
 - **Market-aware prompts**: Interactive prompts when market is closed with yes/no options
 - **Individual user control**: Each user has their own monitoring state, shared global monitoring only when needed
 - **Demo functionality**: /demo command shows example signals without real data
-- **Forex placeholder**: /forex command with "in development" message
 - **Support system**: /support command and message forwarding to admin
 - **Error notifications**: Admin receives alerts for API failures and critical errors
 - **Scalable for 100+ users**: Efficient architecture that doesn't duplicate monitoring cycles
 
-✅ **Latest optimizations (Aug 12, 8:12 PM):**
-- **Eliminated spam logs**: Removed frequent "No active users" messages from console
-- **Admin source checking**: New /check_sources command for admins to verify 6 data sources
-- **Direct instrument links**: All signals now include clickable links to MOEX and TradingView
-- **Enhanced demo**: Demo signals showcase the new link functionality
+✅ **Latest optimizations (Aug 12, 8:39 PM):**
+- **Fixed /start_monitoring issue**: Command now works properly without showing welcome message
+- **Removed /positions command**: Bot only sends notifications/signals, no trading execution tracking
+- **Updated trading hours**: Corrected MOEX schedule - stocks 8am, futures 9am, monitoring starts 9am
+- **Eliminated Forex functionality**: Completely removed /forex command as requested
+- **Improved link formatting**: Simplified signal links without Markdown to prevent API errors
+- **Enhanced schedule display**: Shows separate hours for stocks, futures, and arbitrage monitoring
+- **Admin source checking**: /check_sources command for admins to verify 6 data sources
+- **Direct instrument links**: All signals include clickable MOEX and TradingView links
 - **Source restart**: Admins can restart problematic data sources with inline buttons
 
 ✅ **Core features implemented:**
