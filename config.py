@@ -1,7 +1,7 @@
 import os
 import random
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import List, Dict, Optional
 from datetime import datetime, time
 
 @dataclass
@@ -31,6 +31,17 @@ class Config:
     
     # Настройки истории спредов
     MAX_SPREAD_HISTORY: int = 10  # Максимум записей в истории спредов
+    
+    # Настройки администратора и поддержки
+    ADMIN_USERNAME: str = "@Ildaryakupovv"
+    SUPPORT_MESSAGE: str = "Для связи с технической поддержкой напишите @Ildaryakupovv"
+    
+    # Резервные источники данных при блокировке MOEX API
+    BACKUP_DATA_SOURCES: List[str] = field(default_factory=lambda: [
+        "tradingview",
+        "investing_com", 
+        "yahoo_finance"
+    ])
     
     # Рабочие часы биржи (московское время)
     TRADING_START_TIME: time = time(10, 0)    # 10:00 МСК
@@ -96,7 +107,7 @@ class Config:
         """Получение случайного интервала мониторинга между 5-7 минутами"""
         return random.randint(self.MONITORING_INTERVAL_MIN, self.MONITORING_INTERVAL_MAX)
     
-    def is_market_open(self, dt: datetime = None) -> bool:
+    def is_market_open(self, dt: Optional[datetime] = None) -> bool:
         """Проверка, открыта ли биржа в указанное время"""
         if dt is None:
             dt = datetime.now()

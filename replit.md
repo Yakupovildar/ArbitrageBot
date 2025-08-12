@@ -20,8 +20,19 @@ Preferred communication style: Simple, everyday language.
 - Created fully functional bot with all requested features
 - Successfully deployed and tested with real TELEGRAM_BOT_TOKEN
 
+✅ **Major improvements based on user feedback:**
+- **Controlled monitoring**: Users must explicitly start monitoring with /start_monitoring
+- **No automatic API calls**: Bot only monitors when users request it, preventing unnecessary API usage
+- **Market-aware prompts**: Interactive prompts when market is closed with yes/no options
+- **Individual user control**: Each user has their own monitoring state, shared global monitoring only when needed
+- **Demo functionality**: /demo command shows example signals without real data
+- **Forex placeholder**: /forex command with "in development" message
+- **Support system**: /support command and message forwarding to admin
+- **Error notifications**: Admin receives alerts for API failures and critical errors
+- **Scalable for 100+ users**: Efficient architecture that doesn't duplicate monitoring cycles
+
 ✅ **Core features implemented:**
-- Automatic monitoring every 5-7 minutes (randomized)
+- Automatic monitoring every 5-7 minutes (randomized) - ONLY when users opt-in
 - Signal generation for spreads >1% only during trading hours
 - Color-coded urgency levels (normal, green, bright green)
 - Position tracking and close signals
@@ -29,6 +40,8 @@ Preferred communication style: Simple, everyday language.
 - All major Russian stocks and futures pairs
 - Spread history storage (last 10 records)
 - Market hours validation and notifications
+- Individual user monitoring control
+- Admin notification system
 
 ✅ **MOEX API compliance - All 7 rules implemented:**
 - Rate limiting: max 60 requests/minute, 3 concurrent
@@ -37,6 +50,7 @@ Preferred communication style: Simple, everyday language.
 - Prevention of duplicate requests
 - Request type limitations
 - Failed request tracking
+- Smart monitoring activation (only when users want it)
 
 ## System Architecture
 
