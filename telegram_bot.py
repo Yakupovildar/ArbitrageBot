@@ -84,7 +84,7 @@ class SimpleTelegramBot:
         if self.session:
             await self.session.close()
     
-    async def send_message(self, chat_id: int, text: str, parse_mode: str = "Markdown") -> bool:
+    async def send_message(self, chat_id: int, text: str, parse_mode: Optional[str] = None) -> bool:
         """Отправка сообщения"""
         if not self.session:
             return False
@@ -92,16 +92,20 @@ class SimpleTelegramBot:
         url = f"{self.base_url}/sendMessage"
         data = {
             "chat_id": chat_id,
-            "text": text,
-            "parse_mode": parse_mode
+            "text": text
         }
+        
+        if parse_mode:
+            data["parse_mode"] = parse_mode
         
         try:
             async with self.session.post(url, json=data) as response:
                 if response.status == 200:
                     return True
                 else:
-                    logger.error(f"Ошибка отправки сообщения: {response.status}")
+                    response_text = await response.text()
+                    logger.error(f"Ошибка отправки сообщения: {response.status} - {response_text}")
+                    logger.error(f"Отправляемое сообщение: {text[:200]}...")
                     return False
         except Exception as e:
             logger.error(f"Ошибка при отправке сообщения: {e}")
@@ -187,18 +191,18 @@ class SimpleTelegramBot:
         """Обработка команд"""
         
         if command.startswith("/start"):
-            welcome_text = """🤖 *Добро пожаловать в бота арбитража MOEX!*
+            welcome_text = """🤖 Добро пожаловать в бота арбитража MOEX!
 
 Этот бот мониторит спреды между акциями и фьючерсами на Московской бирже.
 
-📊 *Основные функции:*
+📊 Основные функции:
 • Мониторинг спредов каждые 5-7 минут (рандомизированный)
 • Сигналы при спреде > 1% только в торговые часы
 • Цветовое выделение по уровням спреда
 • Сигналы на закрытие позиций
 • История найденных спредов
 
-📝 *Доступные команды:*
+📝 Доступные команды:
 /help - справка по командам
 /status - статус мониторинга и рынка
 /start_monitoring - начать мониторинг спредов
@@ -213,7 +217,7 @@ class SimpleTelegramBot:
 /subscribe - подписаться на уведомления
 /unsubscribe - отписаться от уведомлений
 
-⚠️ *Важно:* Сигналы носят информационный характер."""
+⚠️ Важно: Сигналы носят информационный характер."""
             await self.send_message(chat_id, welcome_text)
             
         elif command.startswith("/help"):
