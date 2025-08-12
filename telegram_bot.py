@@ -607,6 +607,26 @@ class SimpleTelegramBot:
         """Основной цикл работы бота"""
         logger.info("Запуск Telegram бота...")
         
+        # Проверяем источники данных при запуске
+        logger.info("Проверка источников данных...")
+        sources_status = await self.data_sources.check_all_sources()
+        
+        for source_key, status in sources_status.items():
+            source_name = self.data_sources.sources[source_key]["name"]
+            if status == "working":
+                logger.info(f"✅ {source_name}: работает успешно")
+            elif status == "blocked":
+                logger.warning(f"🚫 {source_name}: заблокирован")
+            elif status == "error":
+                logger.error(f"❌ {source_name}: ошибка подключения")
+            elif status == "unreachable":
+                logger.warning(f"📡 {source_name}: недоступен")
+            else:
+                logger.info(f"❓ {source_name}: не проверен")
+        
+        working_sources = [key for key, status in sources_status.items() if status == "working"]
+        logger.info(f"Активных источников: {len(working_sources)}/{len(sources_status)}")
+        
         # Планируем мониторинг
         async def monitoring_task():
             while True:
