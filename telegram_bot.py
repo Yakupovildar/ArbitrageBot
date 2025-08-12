@@ -329,11 +329,6 @@ class SimpleTelegramBot:
 📈 SBER: 285.50 ₽
 📊 SiM5: 294.78 ₽
 
-🔗 Быстрые ссылки:
-• MOEX SBER: https://www.moex.com/ru/issue.aspx?board=TQBR&code=SBER
-• Фьючерсы MOEX: https://www.moex.com/ru/derivatives/currency-rate.aspx
-• TradingView: https://www.tradingview.com/chart/?symbol=MOEX:SBER
-
 ⏰ Время: 14:32:15
 
 ---
@@ -344,14 +339,9 @@ class SimpleTelegramBot:
 
 📉 Спред снизился до: 0.3%
 
-🔗 Ссылки:
-• MOEX GAZP: https://www.moex.com/ru/issue.aspx?board=TQBR&code=GAZP
-• TradingView: https://www.tradingview.com/chart/?symbol=MOEX:GAZP
-
 ⏰ Время: 16:45:22
 
-Это демонстрационные сигналы для показа функциональности.
-В реальных сигналах ссылки ведут на торговые инструменты для мгновенного доступа!"""
+Это демонстрационные сигналы для показа функциональности бота."""
             await self.send_message(chat_id, demo_message)
             
 
@@ -496,14 +486,7 @@ class SimpleTelegramBot:
             message += f"📈 {signal.stock_ticker}: {signal.stock_price:.2f} ₽\n"
             message += f"📊 {signal.futures_ticker}: {signal.futures_price:.2f} ₽\n\n"
             
-            # Добавляем ссылки на инструменты
-            stock_url = f"https://www.moex.com/ru/issue.aspx?board=TQBR&code={signal.stock_ticker}"
-            futures_url = f"https://www.moex.com/ru/derivatives/currency-rate.aspx"
-            tv_url = self.get_tradingview_link(signal.stock_ticker)
-            message += f"🔗 Быстрые ссылки:\n"
-            message += f"• MOEX {signal.stock_ticker}: {stock_url}\n"
-            message += f"• Фьючерсы MOEX: {futures_url}\n"
-            message += f"• TradingView: {tv_url}\n\n"
+
             
             message += f"⏰ Время: {signal.timestamp}"
             

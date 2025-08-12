@@ -30,15 +30,14 @@ Preferred communication style: Simple, everyday language.
 - **Error notifications**: Admin receives alerts for API failures and critical errors
 - **Scalable for 100+ users**: Efficient architecture that doesn't duplicate monitoring cycles
 
-✅ **Latest optimizations (Aug 12, 8:39 PM):**
+✅ **Latest optimizations (Aug 12, 8:41 PM):**
 - **Fixed /start_monitoring issue**: Command now works properly without showing welcome message
 - **Removed /positions command**: Bot only sends notifications/signals, no trading execution tracking
 - **Updated trading hours**: Corrected MOEX schedule - stocks 8am, futures 9am, monitoring starts 9am
 - **Eliminated Forex functionality**: Completely removed /forex command as requested
-- **Improved link formatting**: Simplified signal links without Markdown to prevent API errors
+- **Cleaner signals**: Removed all broker/exchange links from signals for minimal, focused messages
 - **Enhanced schedule display**: Shows separate hours for stocks, futures, and arbitrage monitoring
 - **Admin source checking**: /check_sources command for admins to verify 6 data sources
-- **Direct instrument links**: All signals include clickable MOEX and TradingView links
 - **Source restart**: Admins can restart problematic data sources with inline buttons
 
 ✅ **Core features implemented:**
