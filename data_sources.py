@@ -61,6 +61,38 @@ class DataSourceManager:
                 "last_check": None,
                 "priority": 6,
                 "active": False
+            },
+            "tinkoff": {
+                "name": "Tinkoff Invest API",
+                "url": "https://invest-public-api.tinkoff.ru",
+                "status": "unknown",
+                "last_check": None,
+                "priority": 7,
+                "active": False
+            },
+            "sberbank": {
+                "name": "Sberbank Invest API",
+                "url": "https://api.sberbank-invest.ru",
+                "status": "unknown",
+                "last_check": None,
+                "priority": 8,
+                "active": False
+            },
+            "bcs": {
+                "name": "БКС Брокер API",
+                "url": "https://api.bcs.ru",
+                "status": "unknown",
+                "last_check": None,
+                "priority": 9,
+                "active": False
+            },
+            "vtb": {
+                "name": "ВТБ Инвестиции API",
+                "url": "https://api.vtb.ru",
+                "status": "unknown",
+                "last_check": None,
+                "priority": 10,
+                "active": False
             }
         }
         

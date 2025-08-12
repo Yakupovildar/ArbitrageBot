@@ -19,6 +19,7 @@ from arbitrage_calculator import ArbitrageCalculator
 from monitoring_controller import MonitoringController
 from data_sources import DataSourceManager
 from user_settings import UserSettingsManager
+from signal_queue import SignalQueue, UserMonitoringScheduler
 
 # Класс для хранения истории спредов  
 class SpreadHistory:
@@ -75,6 +76,8 @@ class SimpleTelegramBot:
         self.monitoring_controller = MonitoringController()
         self.data_sources = DataSourceManager()
         self.user_settings = UserSettingsManager()
+        self.signal_queue = SignalQueue(max_signals_per_batch=5, signal_interval=3.0)
+        self.monitoring_scheduler = UserMonitoringScheduler()
         
     async def __aenter__(self):
         """Асинхронный контекст менеджер"""
@@ -325,7 +328,12 @@ class SimpleTelegramBot:
             
             # Биржа открыта - запускаем мониторинг
             self.monitoring_controller.start_monitoring_for_user(user_id)
-            await self.send_message(chat_id, "🟢 Мониторинг запущен! Вы будете получать уведомления о спредах > 1%")
+            
+            # Добавляем пользователя в планировщик мониторинга
+            user_settings = self.user_settings.get_user_settings(user_id)
+            self.monitoring_scheduler.add_user_to_group(user_id, user_settings.monitoring_interval)
+            
+            await self.send_message(chat_id, f"🟢 Мониторинг запущен! Интервал: {user_settings.get_interval_display()}, порог: {user_settings.get_spread_display()}")
             
         elif command.startswith("/stop_monitoring"):
             if not self.monitoring_controller.is_user_monitoring(user_id):
@@ -333,6 +341,7 @@ class SimpleTelegramBot:
                 return
                 
             self.monitoring_controller.stop_monitoring_for_user(user_id)
+            self.monitoring_scheduler.remove_user(user_id)
             await self.send_message(chat_id, "🔴 Мониторинг остановлен")
             
         elif command.startswith("/demo"):
@@ -496,6 +505,10 @@ class SimpleTelegramBot:
                 settings = self.user_settings.get_user_settings(user_id)
                 await self.answer_callback_query(callback_query_id, f"Интервал: {settings.get_interval_display()}")
                 
+                # Обновляем планировщик, если пользователь активен
+                if self.monitoring_controller.is_user_monitoring(user_id):
+                    self.monitoring_scheduler.add_user_to_group(user_id, settings.monitoring_interval)
+                
                 # Возвращаемся к главному меню настроек
                 settings_summary = self.user_settings.get_settings_summary(user_id)
                 keyboard = self.user_settings.get_settings_keyboard(user_id)
@@ -543,7 +556,7 @@ class SimpleTelegramBot:
 ⏰ Время: {datetime.now().strftime('%H:%M:%S %d.%m.%Y')}"""
             await self.send_message(admin_id, error_notification)
     
-    async def send_arbitrage_signal(self, signal):
+    async def send_arbitrage_signal(self, signal, target_users=None):
         """Отправка арбитражного сигнала подписчикам"""
         if signal.action == "OPEN":
             emoji = "🟢🟢" if signal.urgency_level == 3 else "🟢" if signal.urgency_level == 2 else "📈"
@@ -568,25 +581,39 @@ class SimpleTelegramBot:
             message += f"📉 Спред снизился до: *{signal.spread_percent:.2f}%*\n\n"
             message += f"⏰ Время: {signal.timestamp}"
         
-        # Отправляем подписчикам с учетом их персональных настроек
+        # Если target_users не указан, используем всех подписчиков с фильтрацией
+        if target_users is None:
+            target_users = []
+            for subscriber_id in self.subscribers.copy():
+                user_settings = self.user_settings.get_user_settings(subscriber_id)
+                # Проверяем порог спреда пользователя
+                if signal.spread_percent >= user_settings.spread_threshold:
+                    target_users.append(subscriber_id)
+        
+        # Отправляем указанным пользователям
         failed_subscribers = []
-        for subscriber_id in self.subscribers.copy():
-            user_settings = self.user_settings.get_user_settings(subscriber_id)
-            # Проверяем порог спреда пользователя
-            if signal.spread_percent >= user_settings.spread_threshold:
-                success = await self.send_message(subscriber_id, message)
-                if not success:
-                    failed_subscribers.append(subscriber_id)
+        for subscriber_id in target_users:
+            success = await self.send_message(subscriber_id, message)
+            if not success:
+                failed_subscribers.append(subscriber_id)
         
         # Удаляем неактивных подписчиков
         for failed_id in failed_subscribers:
             self.subscribers.discard(failed_id)
     
-    async def monitoring_cycle(self):
-        """Цикл мониторинга арбитражных возможностей"""
-        logger.info("Начало цикла мониторинга...")
+    async def monitoring_cycle_for_interval(self, interval_seconds: int, target_users: List[int]):
+        """Цикл мониторинга для конкретного интервала"""
+        logger.info(f"Мониторинг для интервала {interval_seconds}с, пользователи: {len(target_users)}")
         
         try:
+            # Выбираем источник данных для ротации (для быстрых интервалов)
+            if interval_seconds < 300:  # Менее 5 минут
+                total_sources = len([s for s in self.data_sources.sources.values() if s["status"] == "working"])
+                if total_sources > 0:
+                    source_index = self.monitoring_scheduler.get_next_source_for_interval(interval_seconds, total_sources)
+                    logger.info(f"Используем источник #{source_index} для интервала {interval_seconds}с")
+            
+            # Получаем котировки через MOEX API
             async with MOEXAPIClient() as moex_client:
                 quotes = await moex_client.get_multiple_quotes(self.config.MONITORED_INSTRUMENTS)
             
@@ -594,7 +621,7 @@ class SimpleTelegramBot:
                 logger.warning("Не удалось получить котировки")
                 return
             
-            current_time = datetime.now(timezone.utc).strftime("%H:%M:%S")
+            current_time = datetime.now().strftime("%H:%M:%S")
             signals = []
             
             for stock_ticker, (stock_price, futures_price) in quotes.items():
@@ -626,14 +653,58 @@ class SimpleTelegramBot:
                     elif signal.action == "CLOSE":
                         self.calculator.close_position(signal)
             
-            # Отправляем сигналы
-            for signal in signals:
-                await self.send_arbitrage_signal(signal)
+            # Добавляем сигналы в очередь с ограничениями
+            if signals:
+                # Фильтруем пользователей по их персональным настройкам спреда
+                filtered_signals = []
+                for signal in signals:
+                    filtered_users = []
+                    for user_id in target_users:
+                        user_settings = self.user_settings.get_user_settings(user_id)
+                        if signal.spread_percent >= user_settings.spread_threshold:
+                            filtered_users.append(user_id)
+                    
+                    if filtered_users:
+                        filtered_signals.append((signal, filtered_users))
+                
+                # Добавляем отфильтрованные сигналы в очередь
+                if filtered_signals:
+                    for signal, users in filtered_signals[:5]:  # Максимум 5 сигналов
+                        await self.send_arbitrage_signal(signal, users)
+                        if len(filtered_signals) > 1:
+                            await asyncio.sleep(3)  # 3 секунды между сигналами
             
-            logger.info(f"Цикл мониторинга завершен. Найдено сигналов: {len(signals)}")
+            logger.info(f"Мониторинг {interval_seconds}с завершен. Найдено сигналов: {len(signals)}")
             
         except Exception as e:
-            logger.error(f"Ошибка в цикле мониторинга: {e}")
+            logger.error(f"Ошибка в мониторинге {interval_seconds}с: {e}")
+            
+    async def smart_monitoring_cycle(self):
+        """Умный цикл мониторинга для разных групп пользователей"""
+        if not self.monitoring_controller.should_run_global_monitoring():
+            return
+            
+        # Получаем интервалы, которые нужно мониторить
+        intervals_to_monitor = self.monitoring_scheduler.get_groups_to_monitor()
+        
+        if not intervals_to_monitor:
+            return
+            
+        logger.info(f"Запуск мониторинга для интервалов: {intervals_to_monitor}")
+        
+        # Запускаем мониторинг для каждого интервала параллельно
+        tasks = []
+        for interval in intervals_to_monitor:
+            target_users = self.monitoring_scheduler.get_users_for_interval(interval)
+            if target_users:
+                task = asyncio.create_task(
+                    self.monitoring_cycle_for_interval(interval, list(target_users))
+                )
+                tasks.append(task)
+        
+        # Ждем завершения всех задач
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
     
     async def run(self):
         """Основной цикл работы бота"""
@@ -681,23 +752,26 @@ class SimpleTelegramBot:
                 pending_users = self.monitoring_controller.get_pending_market_open_users()
                 for user_id in pending_users:
                     self.monitoring_controller.start_monitoring_for_user(user_id)
+                    
+                    # Добавляем в планировщик
+                    user_settings = self.user_settings.get_user_settings(user_id)
+                    self.monitoring_scheduler.add_user_to_group(user_id, user_settings.monitoring_interval)
+                    
                     self.monitoring_controller.remove_pending_market_open_user(user_id)
-                    await self.send_message(user_id, "🟢 Биржа открылась! Мониторинг запущен")
+                    await self.send_message(user_id, f"🟢 Биржа открылась! Мониторинг запущен с интервалом {user_settings.get_interval_display()}")
                 
                 # Очищаем уведомления о закрытой бирже
                 self.monitoring_controller.clear_market_closed_notifications()
                 
                 try:
-                    await self.monitoring_cycle()
+                    await self.smart_monitoring_cycle()
                 except Exception as e:
-                    error_msg = f"Ошибка в цикле мониторинга: {e}"
+                    error_msg = f"Ошибка в умном мониторинге: {e}"
                     logger.error(error_msg)
                     await self.notify_admin_error(error_msg)
                     
-                # Рандомизированный интервал между 5-7 минутами
-                interval = self.config.get_random_monitoring_interval()
-                logger.info(f"Следующая проверка через {interval // 60} мин {interval % 60} сек")
-                await asyncio.sleep(interval)
+                # Умная система мониторинга проверяет каждую секунду
+                await asyncio.sleep(1)
         
         # Запускаем мониторинг в фоне
         monitor_task = asyncio.create_task(monitoring_task())

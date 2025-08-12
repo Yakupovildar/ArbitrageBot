@@ -30,15 +30,15 @@ Preferred communication style: Simple, everyday language.
 - **Error notifications**: Admin receives alerts for API failures and critical errors
 - **Scalable for 100+ users**: Efficient architecture that doesn't duplicate monitoring cycles
 
-✅ **Latest optimizations (Aug 12, 8:53 PM):**
-- **Personalized user settings**: New /settings command with customizable monitoring intervals and spread thresholds
-- **Smart source rotation**: Fast monitoring (< 5 min) automatically rotates data sources to prevent API blocks
-- **Configurable intervals**: Users can choose 30s, 1min, 3min, 5min, 15min with button interface
-- **Adjustable spread thresholds**: Users can set personal minimums: 0.5%, 0.7%, 0.9%, 1%, 1.5%, 2%, 3%
-- **Hidden admin commands**: /check_sources only visible to admin users, clean interface for regular users
-- **Individual filtering**: Each user receives signals based on their personal spread threshold settings
-- **Enhanced schedule display**: Shows separate hours for stocks, futures, and arbitrage monitoring
-- **Cleaner signals**: Removed all broker/exchange links from signals for minimal, focused messages
+✅ **Latest optimizations (Aug 12, 9:03 PM):**
+- **Scaled to 10 data sources**: Added Tinkoff, Sberbank, BCS, VTB APIs for better redundancy
+- **Smart signal limiting**: Maximum 5 signals per batch with 3-second intervals to prevent spam
+- **Advanced monitoring scheduler**: Different user groups run on their own schedules (30s, 1min, 3min, 5min, 15min)
+- **Source rotation system**: Fast intervals (<5min) automatically rotate through available sources to prevent API blocks
+- **Personalized filtering**: Each user gets signals only above their personal spread threshold
+- **Scalable architecture**: System now handles 100+ users with different settings without overload
+- **Parallel processing**: Multiple monitoring tasks run simultaneously for different user groups
+- **Queue management**: Signal queue prevents system overload and ensures smooth delivery
 
 ✅ **Core features implemented:**
 - Automatic monitoring every 5-7 minutes (randomized) - ONLY when users opt-in
