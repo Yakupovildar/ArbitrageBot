@@ -17,6 +17,7 @@ from config import Config
 from moex_api import MOEXAPIClient
 from arbitrage_calculator import ArbitrageCalculator
 from monitoring_controller import MonitoringController
+from data_sources import DataSourceManager
 
 # Класс для хранения истории спредов  
 class SpreadHistory:
@@ -71,6 +72,7 @@ class SimpleTelegramBot:
         self.calculator = ArbitrageCalculator()
         self.spread_history = SpreadHistory(self.config.MAX_SPREAD_HISTORY)
         self.monitoring_controller = MonitoringController()
+        self.data_sources = DataSourceManager()
         
     async def __aenter__(self):
         """Асинхронный контекст менеджер"""
@@ -207,6 +209,7 @@ class SimpleTelegramBot:
 /demo - демонстрация сигналов
 /forex - торговля валютными парами
 /support - связь с технической поддержкой
+/check_sources - проверка источников данных (админ)
 /subscribe - подписаться на уведомления
 /unsubscribe - отписаться от уведомлений
 
@@ -227,6 +230,7 @@ class SimpleTelegramBot:
 /demo - Демонстрация функций бота
 /forex - Торговля валютными парами
 /support - Связь с технической поддержкой
+/check_sources - Проверка источников данных (админ)
 /subscribe - Подписаться на уведомления
 /unsubscribe - Отписаться от уведомлений
 
@@ -338,6 +342,11 @@ class SimpleTelegramBot:
 📈 SBER: 285.50 ₽
 📊 SiM5: 294.78 ₽
 
+🔗 *Быстрые ссылки:*
+📈 [Акции SBER](https://www.moex.com/ru/issue.aspx?board=TQBR&code=SBER)
+📊 [Фьючерс SiM5](https://www.moex.com/ru/derivatives/currency-rate.aspx)
+📱 [TradingView SBER](https://www.tradingview.com/chart/?symbol=MOEX:SBER)
+
 ⏰ Время: 14:32:15
 
 ---
@@ -348,9 +357,14 @@ class SimpleTelegramBot:
 
 📉 Спред снизился до: *0.3%*
 
+🔗 *Ссылки:*
+📈 [Акции GAZP](https://www.moex.com/ru/issue.aspx?board=TQBR&code=GAZP)
+📱 [TradingView GAZP](https://www.tradingview.com/chart/?symbol=MOEX:GAZP)
+
 ⏰ Время: 16:45:22
 
-*Это демонстрационные сигналы для показа функциональности*"""
+*Это демонстрационные сигналы для показа функциональности*
+✨ *В реальных сигналах ссылки ведут на торговые инструменты для мгновенного доступа!*"""
             await self.send_message(chat_id, demo_message)
             
         elif command.startswith("/forex"):
@@ -385,6 +399,28 @@ class SimpleTelegramBot:
 
 🕒 Время ответа: обычно в течение нескольких часов"""
             await self.send_message(chat_id, support_message)
+            
+        elif command.startswith("/check_sources"):
+            # Проверяем, является ли пользователь администратором
+            if user_id != self.monitoring_controller.get_admin_user_id():
+                await self.send_message(chat_id, "❌ Эта команда доступна только администратору")
+                return
+                
+            await self.send_message(chat_id, "🔍 Проверяю источники данных...")
+            
+            # Проверяем все источники
+            await self.data_sources.check_all_sources()
+            
+            # Отправляем сводку
+            summary = self.data_sources.get_status_summary()
+            await self.send_message(chat_id, summary)
+            
+            # Предлагаем перезапуск для проблемных источников
+            for source_key, source in self.data_sources.sources.items():
+                if source["status"] in ["blocked", "error", "unreachable"]:
+                    keyboard = self.data_sources.get_restart_keyboard(source_key)
+                    restart_message = f"🔄 Перезапустить {source['name']}?"
+                    await self.send_message_with_keyboard(chat_id, restart_message, keyboard)
             
         elif command.startswith("/subscribe"):
             if user_id in self.subscribers:
@@ -421,6 +457,29 @@ class SimpleTelegramBot:
         elif callback_data == "cancel_monitoring":
             await self.answer_callback_query(callback_query_id, "Мониторинг отменен")
             await self.send_message(chat_id, "❌ Мониторинг отменен. Используйте /start_monitoring когда будете готовы")
+            
+        elif callback_data.startswith("restart_"):
+            source_key = callback_data.replace("restart_", "")
+            success = self.data_sources.restart_source(source_key)
+            if success:
+                source_name = self.data_sources.sources[source_key]["name"]
+                await self.answer_callback_query(callback_query_id, f"Перезапуск {source_name}")
+                await self.send_message(chat_id, f"🔄 {source_name} перезапущен. Выполняю повторную проверку...")
+                
+                # Проверяем источник повторно
+                status = await self.data_sources.check_source_status(source_key)
+                if status == "working":
+                    await self.send_message(chat_id, f"✅ {source_name} теперь работает!")
+                else:
+                    await self.send_message(chat_id, f"❌ {source_name} всё ещё недоступен")
+            else:
+                await self.answer_callback_query(callback_query_id, "Ошибка перезапуска")
+                
+        elif callback_data.startswith("cancel_restart_"):
+            source_key = callback_data.replace("cancel_restart_", "")
+            source_name = self.data_sources.sources[source_key]["name"]
+            await self.answer_callback_query(callback_query_id, f"Отмена для {source_name}")
+            await self.send_message(chat_id, f"❌ Перезапуск {source_name} отменен")
             
     async def handle_support_message(self, chat_id: int, user_id: int, message: str):
         """Обработка сообщений поддержки"""
@@ -463,6 +522,15 @@ class SimpleTelegramBot:
             message += f"💰 *Цены:*\n"
             message += f"📈 {signal.stock_ticker}: {signal.stock_price:.2f} ₽\n"
             message += f"📊 {signal.futures_ticker}: {signal.futures_price:.2f} ₽\n\n"
+            
+            # Добавляем ссылки на инструменты
+            stock_url = f"https://www.moex.com/ru/issue.aspx?board=TQBR&code={signal.stock_ticker}"
+            futures_url = f"https://www.moex.com/ru/derivatives/currency-rate.aspx"
+            message += f"🔗 *Быстрые ссылки:*\n"
+            message += f"📈 [Акции {signal.stock_ticker}]({stock_url})\n"
+            message += f"📊 [Фьючерс {signal.futures_ticker}]({futures_url})\n"
+            message += f"📱 [TradingView]({self.get_tradingview_link(signal.stock_ticker)})\n\n"
+            
             message += f"⏰ Время: {signal.timestamp}"
             
         else:  # CLOSE
@@ -544,8 +612,7 @@ class SimpleTelegramBot:
             while True:
                 # Проверяем, нужно ли запускать мониторинг
                 if not self.monitoring_controller.should_run_global_monitoring():
-                    logger.info("Нет активных пользователей. Ожидание...")
-                    await asyncio.sleep(60)  # Проверяем каждую минуту
+                    await asyncio.sleep(60)  # Проверяем каждую минуту без логирования
                     continue
                 
                 # Проверяем, открыта ли биржа
@@ -574,7 +641,7 @@ class SimpleTelegramBot:
                     error_msg = f"Ошибка в цикле мониторинга: {e}"
                     logger.error(error_msg)
                     await self.notify_admin_error(error_msg)
-                
+                    
                 # Рандомизированный интервал между 5-7 минутами
                 interval = self.config.get_random_monitoring_interval()
                 logger.info(f"Следующая проверка через {interval // 60} мин {interval % 60} сек")
@@ -622,6 +689,29 @@ class SimpleTelegramBot:
                 await monitor_task
             except asyncio.CancelledError:
                 pass
+            
+    def get_tradingview_link(self, ticker: str) -> str:
+        """Получение ссылки на TradingView для инструмента"""
+        # Маппинг российских тикеров для TradingView
+        tv_mapping = {
+            "SBER": "MOEX:SBER",
+            "GAZP": "MOEX:GAZP", 
+            "LKOH": "MOEX:LKOH",
+            "VTBR": "MOEX:VTBR",
+            "YNDX": "NASDAQ:YNDX",
+            "TCSG": "MOEX:TCSG",
+            "ROSN": "MOEX:ROSN",
+            "GMKN": "MOEX:GMKN",
+            "PLZL": "MOEX:PLZL",
+            "MGNT": "MOEX:MGNT",
+            "SNGS": "MOEX:SNGS",
+            "ALRS": "MOEX:ALRS",
+            "TATN": "MOEX:TATN",
+            "MTSS": "MOEX:MTSS"
+        }
+        
+        tv_symbol = tv_mapping.get(ticker, f"MOEX:{ticker}")
+        return f"https://www.tradingview.com/chart/?symbol={tv_symbol}"
 
 async def main():
     """Точка входа"""

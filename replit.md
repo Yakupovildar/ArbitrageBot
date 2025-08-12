@@ -31,6 +31,13 @@ Preferred communication style: Simple, everyday language.
 - **Error notifications**: Admin receives alerts for API failures and critical errors
 - **Scalable for 100+ users**: Efficient architecture that doesn't duplicate monitoring cycles
 
+✅ **Latest optimizations (Aug 12, 8:12 PM):**
+- **Eliminated spam logs**: Removed frequent "No active users" messages from console
+- **Admin source checking**: New /check_sources command for admins to verify 6 data sources
+- **Direct instrument links**: All signals now include clickable links to MOEX and TradingView
+- **Enhanced demo**: Demo signals showcase the new link functionality
+- **Source restart**: Admins can restart problematic data sources with inline buttons
+
 ✅ **Core features implemented:**
 - Automatic monitoring every 5-7 minutes (randomized) - ONLY when users opt-in
 - Signal generation for spreads >1% only during trading hours
