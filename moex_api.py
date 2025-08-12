@@ -1,0 +1,222 @@
+import asyncio
+import aiohttp
+import logging
+from typing import Dict, List, Optional, Tuple
+from datetime import datetime
+import json
+from config import Config
+
+logger = logging.getLogger(__name__)
+
+class MOEXAPIClient:
+    """Клиент для работы с MOEX ISS API"""
+    
+    def __init__(self):
+        self.config = Config()
+        self.session = None
+        self.last_request_time = 0
+        
+    async def __aenter__(self):
+        """Асинхронный контекст менеджер - вход"""
+        self.session = aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=self.config.REQUEST_TIMEOUT)
+        )
+        return self
+        
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Асинхронный контекст менеджер - выход"""
+        if self.session:
+            await self.session.close()
+    
+    async def _rate_limit(self):
+        """Контроль частоты запросов"""
+        current_time = asyncio.get_event_loop().time()
+        time_since_last = current_time - self.last_request_time
+        
+        if time_since_last < self.config.RATE_LIMIT_DELAY:
+            await asyncio.sleep(self.config.RATE_LIMIT_DELAY - time_since_last)
+        
+        self.last_request_time = asyncio.get_event_loop().time()
+    
+    async def _make_request(self, url: str, params: Optional[Dict] = None) -> Optional[Dict]:
+        """Выполнение HTTP запроса к MOEX API"""
+        if not self.session:
+            raise RuntimeError("Сессия не инициализирована")
+        
+        await self._rate_limit()
+        
+        try:
+            logger.debug(f"Запрос к MOEX API: {url}")
+            async with self.session.get(url, params=params) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data
+                else:
+                    logger.error(f"Ошибка MOEX API: HTTP {response.status}")
+                    return None
+                    
+        except asyncio.TimeoutError:
+            logger.error("Таймаут при запросе к MOEX API")
+            return None
+        except Exception as e:
+            logger.error(f"Ошибка при запросе к MOEX API: {e}")
+            return None
+    
+    async def get_stock_price(self, ticker: str) -> Optional[float]:
+        """Получение цены акции"""
+        url = f"{self.config.MOEX_API_BASE_URL}/engines/stock/markets/shares/boards/TQBR/securities/{ticker}.json"
+        
+        data = await self._make_request(url)
+        if not data:
+            return None
+        
+        try:
+            # Извлекаем данные из ответа MOEX ISS
+            securities = data.get('securities', {})
+            if 'data' in securities and securities['data']:
+                # Ищем цену последней сделки (LAST)
+                columns = securities.get('columns', [])
+                if 'LAST' in columns:
+                    last_index = columns.index('LAST')
+                    for row in securities['data']:
+                        if len(row) > last_index and row[last_index] is not None:
+                            return float(row[last_index])
+                            
+            return None
+            
+        except (KeyError, ValueError, IndexError) as e:
+            logger.error(f"Ошибка парсинга цены акции {ticker}: {e}")
+            return None
+    
+    async def get_futures_price(self, ticker: str) -> Optional[float]:
+        """Получение цены фьючерса"""
+        url = f"{self.config.MOEX_API_BASE_URL}/engines/futures/markets/forts/boards/RFUD/securities/{ticker}.json"
+        
+        data = await self._make_request(url)
+        if not data:
+            return None
+        
+        try:
+            securities = data.get('securities', {})
+            if 'data' in securities and securities['data']:
+                columns = securities.get('columns', [])
+                if 'LAST' in columns:
+                    last_index = columns.index('LAST')
+                    for row in securities['data']:
+                        if len(row) > last_index and row[last_index] is not None:
+                            return float(row[last_index])
+                            
+            return None
+            
+        except (KeyError, ValueError, IndexError) as e:
+            logger.error(f"Ошибка парсинга цены фьючерса {ticker}: {e}")
+            return None
+    
+    async def get_instrument_info(self, ticker: str, instrument_type: str) -> Optional[Dict]:
+        """Получение информации об инструменте"""
+        if instrument_type == "stock":
+            url = f"{self.config.MOEX_API_BASE_URL}/engines/stock/markets/shares/boards/TQBR/securities/{ticker}.json"
+        else:  # futures
+            url = f"{self.config.MOEX_API_BASE_URL}/engines/futures/markets/forts/boards/RFUD/securities/{ticker}.json"
+        
+        data = await self._make_request(url)
+        if not data:
+            return None
+        
+        try:
+            securities = data.get('securities', {})
+            if 'data' in securities and securities['data']:
+                columns = securities.get('columns', [])
+                row_data = securities['data'][0] if securities['data'] else []
+                
+                info = {}
+                for i, column in enumerate(columns):
+                    if i < len(row_data):
+                        info[column] = row_data[i]
+                
+                return info
+                
+        except (KeyError, IndexError) as e:
+            logger.error(f"Ошибка получения информации об инструменте {ticker}: {e}")
+            return None
+        
+        return None
+    
+    async def get_multiple_quotes(self, instruments: Dict[str, str]) -> Dict[str, Tuple[Optional[float], Optional[float]]]:
+        """Получение котировок для множества инструментов"""
+        results = {}
+        
+        # Группируем запросы для оптимизации
+        tasks = []
+        for stock_ticker, futures_ticker in instruments.items():
+            stock_task = self.get_stock_price(stock_ticker)
+            futures_task = self.get_futures_price(futures_ticker)
+            tasks.append((stock_ticker, stock_task, futures_task))
+        
+        # Выполняем запросы с контролем concurrency
+        semaphore = asyncio.Semaphore(5)  # Ограничиваем количество одновременных запросов
+        
+        async def fetch_pair(stock_ticker, stock_task, futures_task):
+            async with semaphore:
+                stock_price, futures_price = await asyncio.gather(
+                    stock_task, futures_task, return_exceptions=True
+                )
+                
+                # Обработка исключений
+                if isinstance(stock_price, Exception):
+                    logger.error(f"Ошибка получения цены акции {stock_ticker}: {stock_price}")
+                    stock_price = None
+                    
+                if isinstance(futures_price, Exception):
+                    futures_ticker = instruments[stock_ticker]
+                    logger.error(f"Ошибка получения цены фьючерса {futures_ticker}: {futures_price}")
+                    futures_price = None
+                
+                return stock_ticker, (stock_price, futures_price)
+        
+        # Выполняем все задачи
+        pair_tasks = [fetch_pair(stock_ticker, stock_task, futures_task) 
+                     for stock_ticker, stock_task, futures_task in tasks]
+        
+        pair_results = await asyncio.gather(*pair_tasks, return_exceptions=True)
+        
+        # Собираем результаты
+        for result in pair_results:
+            if isinstance(result, Exception):
+                logger.error(f"Ошибка при получении котировок: {result}")
+                continue
+            
+            if result is not None:
+                stock_ticker, prices = result
+                results[stock_ticker] = prices
+        
+        return results
+    
+    async def get_trading_status(self) -> Dict[str, bool]:
+        """Получение статуса торгов на различных рынках"""
+        try:
+            # Проверяем статус торгов на фондовом рынке
+            stock_url = f"{self.config.MOEX_API_BASE_URL}/engines/stock/markets/shares/boards/TQBR/securities.json"
+            futures_url = f"{self.config.MOEX_API_BASE_URL}/engines/futures/markets/forts/boards/RFUD/securities.json"
+            
+            stock_data, futures_data = await asyncio.gather(
+                self._make_request(stock_url),
+                self._make_request(futures_url),
+                return_exceptions=True
+            )
+            
+            status = {
+                "stock_market": stock_data is not None and not isinstance(stock_data, Exception),
+                "futures_market": futures_data is not None and not isinstance(futures_data, Exception),
+                "api_available": True
+            }
+            
+            return status
+            
+        except Exception as e:
+            logger.error(f"Ошибка проверки статуса торгов: {e}")
+            return {
+                "stock_market": False,
+                "futures_market": False,
+                "api_available": False
+            }
