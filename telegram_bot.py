@@ -836,7 +836,7 @@ class SimpleTelegramBot:
                 
                 # Если у пользователя был активен мониторинг - восстанавливаем
                 if db_settings.is_monitoring:
-                    self.monitoring_controller.start_user_monitoring(db_settings.user_id)
+                    self.monitoring_controller.start_monitoring_for_user(db_settings.user_id)
                     self.monitoring_scheduler.add_user_to_group(
                         db_settings.user_id, 
                         db_settings.monitoring_interval
