@@ -53,18 +53,11 @@ class ArbitrageCalculator:
             if stock_price <= 0 or futures_price <= 0:
                 return None
             
-            # Получаем размеры лотов
-            stock_lot_size = self.config.get_lot_multipliers().get(stock_ticker, 1)
-            futures_lot_value = self.config.get_futures_lot_value(futures_ticker)
+            # ИСПРАВЛЕННЫЙ РАСЧЕТ: Сравниваем цены за одну акцию, а не за лоты
+            # Спред = (цена_фьючерса - цена_акции) / цена_акции * 100%
+            spread_percent = ((futures_price - stock_price) / stock_price) * 100
             
-            # Рассчитываем стоимость одного лота для каждого инструмента
-            stock_lot_cost = stock_price * stock_lot_size  # Цена за лот акций
-            futures_lot_cost = futures_price * futures_lot_value  # Цена за лот фьючерса
-            
-            # Спред рассчитывается между лотами, а не между отдельными ценами
-            spread_percent = ((futures_lot_cost - stock_lot_cost) / stock_lot_cost) * 100
-            
-            logger.debug(f"Спред {stock_ticker}/{futures_ticker}: акция {stock_price}*{stock_lot_size}={stock_lot_cost:.2f}, фьючерс {futures_price}*{futures_lot_value}={futures_lot_cost:.2f}, спред {spread_percent:.4f}%")
+            logger.debug(f"Спред {stock_ticker}/{futures_ticker}: акция {stock_price:.2f}₽, фьючерс {futures_price:.2f}₽, спред {spread_percent:.4f}%")
             
             return spread_percent
             
@@ -141,8 +134,14 @@ class ArbitrageCalculator:
         position = self.open_positions[position_key]
         abs_spread = abs(current_spread)
         
-        # Проверяем условия для закрытия
-        if (self.config.CLOSE_SPREAD_MIN <= abs_spread <= self.config.CLOSE_SPREAD_MAX):
+        # ИСПРАВЛЕННАЯ ЛОГИКА: Закрываем позицию только когда спред значительно уменьшился
+        # Проверяем что спред сократился как минимум на 50% от входного уровня
+        entry_spread_abs = abs(position.entry_spread)
+        spread_reduction = entry_spread_abs - abs_spread
+        spread_reduction_percent = (spread_reduction / entry_spread_abs) * 100 if entry_spread_abs > 0 else 0
+        
+        # Закрываем только если спред сократился минимум на 50% И стал меньше 0.5%
+        if (spread_reduction_percent >= 50.0 and abs_spread <= 0.5):
             
             # Создаем сигнал на закрытие
             signal = ArbitrageSignal(

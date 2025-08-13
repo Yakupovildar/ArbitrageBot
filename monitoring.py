@@ -309,7 +309,9 @@ class ArbitrageMonitor:
     
     def _format_lots(self, count: int) -> str:
         """Правильное склонение слова 'лот' в русском языке"""
-        if count % 10 == 1 and count % 100 != 11:
+        if count == 1:
+            return f"{count} лот"
+        elif count % 10 == 1 and count % 100 != 11:
             return f"{count} лот"
         elif count % 10 in [2, 3, 4] and count % 100 not in [12, 13, 14]:
             return f"{count} лота"

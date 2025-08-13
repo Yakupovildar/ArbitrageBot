@@ -430,6 +430,25 @@ class SimpleTelegramBot:
             # Запускаем асинхронную задачу тестового мониторинга
             asyncio.create_task(self._test_monitoring_task(user_id))
         
+        elif command.startswith("/check_settings"):
+            # Команда для проверки сохранения настроек
+            settings = await self.user_settings.load_user_settings(user_id)
+            if settings:
+                check_message = f"""🔍 **ПРОВЕРКА НАСТРОЕК:**
+
+📊 Пользователь ID: {user_id}
+⏱️ Интервал мониторинга: {settings.monitoring_interval}с
+📈 Порог спреда: {settings.spread_threshold}%
+🔢 Макс. сигналов: {settings.max_signals}
+🟢 Мониторинг активен: {'Да' if settings.is_monitoring else 'Нет'}
+🎯 Выбранные инструменты: {len(settings.get_selected_instruments_list())} из 30
+
+✅ Настройки сохраняются в PostgreSQL"""
+            else:
+                check_message = "❌ Настройки не найдены в базе данных"
+                
+            await self.send_message(chat_id, check_message)
+        
         elif command.startswith("/demo"):
             demo_message = """🎯 ДЕМОНСТРАЦИЯ СИГНАЛОВ
 
