@@ -218,13 +218,16 @@ class MOEXAPIClient:
         
         async def fetch_pair(stock_ticker, stock_task, futures_task):
             async with semaphore:
-                # Добавляем задержку перед каждой парой
+                # Добавляем максимальную задержку перед каждой парой
                 await asyncio.sleep(self.config.MIN_REQUEST_INTERVAL)
                 
                 # Получаем цены последовательно с максимальными задержками
                 stock_price = await stock_task
-                await asyncio.sleep(1.0)  # Увеличенная задержка между запросами
+                await asyncio.sleep(2.0)  # Увеличенная задержка между запросами
                 futures_price = await futures_task
+                
+                # Дополнительная задержка после обработки пары
+                await asyncio.sleep(1.0)
                 
                 # Обработка исключений
                 if isinstance(stock_price, Exception):
