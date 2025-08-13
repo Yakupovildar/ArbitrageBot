@@ -983,12 +983,15 @@ class SimpleTelegramBot:
         try:
             settings = self.user_settings.get_user_settings(user_id)
             from database import UserSettings as DBUserSettings
+            import json
+            
             db_settings = DBUserSettings(
                 user_id=user_id,
                 monitoring_interval=settings.monitoring_interval,
                 spread_threshold=settings.spread_threshold,
                 max_signals=settings.max_signals,
-                is_monitoring=self.monitoring_controller.is_user_monitoring(user_id)
+                is_monitoring=self.monitoring_controller.is_user_monitoring(user_id),
+                selected_instruments=json.dumps(settings.selected_instruments)
             )
             await db.save_user_settings(db_settings)
             
@@ -1031,8 +1034,12 @@ class SimpleTelegramBot:
             message += f"🎯 *{signal.stock_ticker}/{signal.futures_ticker}*\n"
             message += f"📊 Спред: *{signal.spread_percent:.2f}%*\n\n"
             message += f"💼 *Позиции:*\n"
-            message += f"📈 Акции {signal.stock_ticker}: *{signal.stock_position}* {signal.stock_lots} лот\n"
-            message += f"📊 Фьючерс {signal.futures_ticker}: *{signal.futures_position}* {signal.futures_lots} лот\n\n"
+            # Эмодзи для позиций
+            stock_emoji = "🟢⬆️" if signal.stock_position == "BUY" else "🔴⬇️"
+            futures_emoji = "🟢⬆️" if signal.futures_position == "BUY" else "🔴⬇️"
+            
+            message += f"📈 Акции {signal.stock_ticker}: *{signal.stock_position}* {stock_emoji}\n"
+            message += f"📊 Фьючерс {signal.futures_ticker}: *{signal.futures_position}* {futures_emoji}\n\n"
             message += f"💰 *Цены:*\n"
             message += f"📈 {signal.stock_ticker}: {signal.stock_price:.2f} ₽\n"
             message += f"📊 {signal.futures_ticker}: {signal.futures_price:.2f} ₽\n\n"
