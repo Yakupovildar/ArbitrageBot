@@ -1433,17 +1433,14 @@ class SimpleTelegramBot:
                         if signal:
                             # Используем правильно рассчитанный спред из сигнала
                             spread = signal.spread_percent
-                            lot_size = self.config.get_lot_multipliers().get(stock_ticker, 1)
-                            adjusted_stock_price = signal.stock_price * lot_size
-                            # Цена фьючерса уже корректно обработана в MOEX API
-                            adjusted_futures_price = signal.futures_price
+                            # Для отображения используем цены из сигнала (они уже правильно обработаны)
+                            display_stock_price = signal.stock_price
+                            display_futures_price = signal.futures_price
                         else:
-                            # Цены уже корректно обработаны в MOEX API, не нужно дополнительных коррекций
-                            lot_size = self.config.get_lot_multipliers().get(stock_ticker, 1)
-                            adjusted_stock_price = stock_price * lot_size
-                            adjusted_futures_price = futures_price  # Уже в правильном формате из API
-                            
-                            spread = ((adjusted_futures_price - adjusted_stock_price) / adjusted_stock_price) * 100
+                            # Прямой расчет спреда между ценами без лотности (для арбитража цены за единицу)
+                            spread = ((futures_price - stock_price) / stock_price) * 100
+                            display_stock_price = stock_price
+                            display_futures_price = futures_price
                         
                         logger.debug(f"Спред для {stock_ticker}/{futures_ticker}: {spread:.4f}%")
                         
@@ -1461,11 +1458,8 @@ class SimpleTelegramBot:
                         
                         test_message += f"{emoji} **{stock_ticker}/{futures_ticker}**\n"
                         test_message += f"   Спред: **{spread:.4f}%**\n"
-                        test_message += f"   Акция: {stock_price:.2f} ₽ (×{lot_size} = {adjusted_stock_price:.2f} ₽)\n"
-                        test_message += f"   Фьючерс: {adjusted_futures_price:.2f} ₽"
-                        if futures_ticker.endswith('Z5') and not futures_ticker.endswith('F'):
-                            test_message += f" ({futures_price:.2f} пункт)"
-                        test_message += "\n\n"
+                        test_message += f"   Акция: {display_stock_price:.2f} ₽\n"
+                        test_message += f"   Фьючерс: {display_futures_price:.2f} ₽\n\n"
                         
                     except Exception as calc_error:
                         logger.error(f"Ошибка расчета спреда для {stock_ticker}: {calc_error}")
