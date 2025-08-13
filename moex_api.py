@@ -260,9 +260,9 @@ class MOEXAPIClient:
         if ticker in ['SBERF']:
             return price
         
-        # GAZPF - проверяем оригинальную цену без конверсии
+        # GAZPF торгуется с множителем 10 (нужно умножить на 10)
         elif ticker in ['GAZPF']:
-            return price  # Временно возвращаем как есть для диагностики
+            return price * 10.0
         
         # Фьючерсы которые торгуются в копейках - нужно поделить на 100
         elif ticker in ['VBZ5']:
@@ -272,8 +272,14 @@ class MOEXAPIClient:
         elif ticker in ['FSZ5']:
             return price / 10.0
         
-        # Фьючерсы на металлы и другие товары - торгуются в пунктах (1 пункт = 0.01₽)
-        elif ticker in ['GKZ5', 'LKZ5', 'RNZ5', 'TTZ5', 'ALZ5', 'NMZ5', 'MGZ5', 'CHZ5']:
+        # Фьючерсы на металлы - торгуются с большим множителем
+        elif ticker in ['GKZ5']:  # ГМК Норникель: множитель 100
+            return price * 100.0
+        elif ticker in ['LKZ5']:  # Лукойл: множитель 10  
+            return price * 10.0
+        
+        # Остальные фьючерсы - торгуются в пунктах (1 пункт = 0.01₽)
+        elif ticker in ['RNZ5', 'TTZ5', 'ALZ5', 'NMZ5', 'MGZ5', 'CHZ5']:
             return price * 0.01
         
         # По умолчанию считаем что это пункты
