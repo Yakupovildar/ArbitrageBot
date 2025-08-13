@@ -414,6 +414,22 @@ class SimpleTelegramBot:
             self.monitoring_scheduler.remove_user(user_id)
             await self.send_message(chat_id, "🔴 Мониторинг остановлен")
             
+        elif command.startswith("/test"):
+            # Запускаем тестовый мониторинг спредов
+            if hasattr(self, 'test_monitoring_active') and self.test_monitoring_active.get(user_id, False):
+                await self.send_message(chat_id, "🔴 Тестовый мониторинг остановлен")
+                self.test_monitoring_active[user_id] = False
+                return
+            
+            if not hasattr(self, 'test_monitoring_active'):
+                self.test_monitoring_active = {}
+            
+            self.test_monitoring_active[user_id] = True
+            await self.send_message(chat_id, "🧪 Запущен тестовый мониторинг спредов голубых фишек каждые 5-7 минут\n💬 Для остановки: /test")
+            
+            # Запускаем асинхронную задачу тестового мониторинга
+            asyncio.create_task(self._test_monitoring_task(user_id))
+        
         elif command.startswith("/demo"):
             demo_message = """🎯 ДЕМОНСТРАЦИЯ СИГНАЛОВ
 
@@ -1084,6 +1100,68 @@ class SimpleTelegramBot:
         # Ждем завершения всех задач
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
+    
+    async def _test_monitoring_task(self, user_id: int):
+        """Асинхронная задача тестового мониторинга спредов"""
+        logger.info(f"Запущен тестовый мониторинг для пользователя {user_id}")
+        
+        while self.test_monitoring_active.get(user_id, False):
+            try:
+                # Получаем текущие котировки через MOEX API
+                async with MOEXAPIClient() as moex_client:
+                    quotes = await moex_client.get_multiple_quotes(self.config.MONITORED_INSTRUMENTS)
+                
+                if not quotes:
+                    await self.send_message(user_id, "⚠️ Тест: Не удалось получить котировки от MOEX API")
+                    await asyncio.sleep(60)  # Пауза при ошибке
+                    continue
+                
+                # Формируем сообщение с текущими спредами
+                test_message = "🧪 **ТЕСТОВЫЙ МОНИТОРИНГ СПРЕДОВ**\n\n"
+                test_message += f"⏰ Время: {datetime.now().strftime('%H:%M:%S %d.%m.%Y')}\n"
+                test_message += f"📊 Проверено пар: {len(quotes)}\n\n"
+                
+                spread_found = False
+                for stock_ticker, (stock_price, futures_price) in list(quotes.items())[:5]:  # Первые 5 пар
+                    if stock_price is None or futures_price is None:
+                        continue
+                    
+                    futures_ticker = self.config.MONITORED_INSTRUMENTS[stock_ticker]
+                    
+                    # Рассчитываем спред
+                    spread = ((futures_price - stock_price) / stock_price) * 100
+                    spread_found = True
+                    
+                    # Определяем эмодзи для спреда
+                    if abs(spread) >= 2.0:
+                        emoji = "🟢🟢"
+                    elif abs(spread) >= 1.0:
+                        emoji = "🟢"
+                    else:
+                        emoji = "📊"
+                    
+                    test_message += f"{emoji} **{stock_ticker}/{futures_ticker}**\n"
+                    test_message += f"   Спред: **{spread:.4f}%**\n"
+                    test_message += f"   Акция: {stock_price:.2f} ₽, Фьючерс: {futures_price:.2f} ₽\n\n"
+                
+                if not spread_found:
+                    test_message += "⚠️ Нет доступных данных по спредам\n"
+                
+                test_message += "💬 Для остановки: /test"
+                
+                await self.send_message(user_id, test_message)
+                
+                # Рандомная задержка 5-7 минут
+                delay = random.randint(300, 420)
+                await asyncio.sleep(delay)
+                
+            except Exception as e:
+                error_msg = f"⚠️ Ошибка в тестовом мониторинге: {str(e)}"
+                await self.send_message(user_id, error_msg)
+                logger.error(f"Ошибка в тестовом мониторинге для пользователя {user_id}: {e}")
+                await asyncio.sleep(300)  # 5 минут при ошибке
+        
+        logger.info(f"Тестовый мониторинг остановлен для пользователя {user_id}")
     
     async def run(self):
         """Основной цикл работы бота"""

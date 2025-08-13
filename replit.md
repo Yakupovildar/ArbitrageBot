@@ -26,6 +26,13 @@ Preferred communication style: Simple, everyday language.
 - **Settings persistence**: User configurations properly save to database
 - **Navigation improved**: Back button returns to main menu correctly
 
+✅ **TEST MONITORING COMMAND (NEW)**
+- **Command /test**: Toggle test monitoring of spreads every 5-7 minutes
+- **Real-time feedback**: Shows current spreads for first 5 trading pairs
+- **System verification**: Confirms MOEX API connectivity and data flow
+- **User-controlled**: Start/stop with same command for easy testing
+- **Visual indicators**: Color-coded spreads with current prices displayed
+
 ✅ **STABILIZED API CONFIGURATION (COMPLETE)**
 - **Proven stable limits**: 20 requests/minute, 1 concurrent request for zero blocks
 - **Sequential processing**: No parallel requests - each API call waits for previous
