@@ -18,6 +18,19 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (August 13, 2025)
 
+✅ **MASSIVE SCALE UPGRADE: 150+ TRADING PAIRS (COMPLETE)**
+- **10x increase**: Expanded from 15 to 150+ trading pairs (all major MOEX instruments)
+- **Smart batch processing**: Monitors 10 random pairs per cycle to avoid API limits
+- **Settings persistence fixed**: User configurations now properly save to database
+- **Navigation improved**: Back button returns to main menu correctly
+- **Command added**: /pairs shows all monitored trading pairs with statistics
+
+✅ **API OPTIMIZATION FOR LARGE SCALE (COMPLETE)**
+- **Reduced API limits**: Lowered to 50 requests/minute and 2 concurrent for safety
+- **Batch system**: Random 10-pair batches per monitoring cycle
+- **Enhanced delays**: 2-3 second delays between API calls
+- **Smart rotation**: Each cycle monitors different pairs ensuring full coverage
+
 ✅ **DATABASE INTEGRATION & PERSISTENT SETTINGS (COMPLETE)**
 - **PostgreSQL database**: Added full database integration with asyncpg
 - **Persistent user settings**: All user configurations survive bot restarts

@@ -14,11 +14,15 @@ class Config:
     RATE_LIMIT_DELAY: float = 1.0  # Задержка между запросами к MOEX API
     
     # Правила MOEX API для избежания блокировок
-    MAX_REQUESTS_PER_MINUTE: int = 60  # Максимум запросов в минуту
-    MAX_CONCURRENT_REQUESTS: int = 3   # Максимум одновременных запросов
+    MAX_REQUESTS_PER_MINUTE: int = 50  # Максимум запросов в минуту (снижено для безопасности)
+    MAX_CONCURRENT_REQUESTS: int = 2   # Максимум одновременных запросов (снижено)
     RETRY_ATTEMPTS: int = 3            # Количество попыток при ошибке
-    RETRY_DELAY: float = 2.0           # Базовая задержка перед повтором (секунды)
+    RETRY_DELAY: float = 3.0           # Базовая задержка перед повтором (секунды) 
     BACKOFF_MULTIPLIER: float = 2.0    # Множитель для экспоненциальной задержки
+    
+    # Настройки для работы с большим количеством пар
+    MAX_PAIRS_PER_BATCH: int = 10      # Максимум пар за один цикл мониторинга
+    BATCH_DELAY: float = 2.0           # Задержка между батчами пар (секунды)
     
     # Настройки мониторинга
     MONITORING_INTERVAL_MIN: int = 300  # 5 минут в секундах

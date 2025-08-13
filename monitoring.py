@@ -102,15 +102,30 @@ class ArbitrageMonitor:
                 await asyncio.sleep(60)  # Пауза при ошибке
     
     async def _monitoring_cycle(self):
-        """Один цикл мониторинга"""
+        """Один цикл мониторинга с батчами"""
         logger.info("Начало цикла мониторинга...")
         
         try:
-            # Получаем котировки
+            # Разбиваем все инструменты на батчи для избежания превышения лимитов API
+            all_instruments = self.config.MONITORED_INSTRUMENTS
+            max_pairs_per_batch = self.config.MAX_PAIRS_PER_BATCH
+            instruments_list = list(all_instruments.items())
+            total_batches = (len(instruments_list) + max_pairs_per_batch - 1) // max_pairs_per_batch
+            
+            # Выбираем случайный батч для каждого цикла мониторинга
+            import random
+            batch_index = random.randint(0, total_batches - 1)
+            start_idx = batch_index * max_pairs_per_batch
+            end_idx = min(start_idx + max_pairs_per_batch, len(instruments_list))
+            
+            # Создаем словарь инструментов для текущего батча
+            batch_instruments = dict(instruments_list[start_idx:end_idx])
+            
+            logger.info(f"📦 Мониторинг батча {batch_index + 1}/{total_batches}: {len(batch_instruments)} пар из {len(all_instruments)} общих")
+            
+            # Получаем котировки только для текущего батча
             async with MOEXAPIClient() as moex_client:
-                quotes = await moex_client.get_multiple_quotes(
-                    self.config.MONITORED_INSTRUMENTS
-                )
+                quotes = await moex_client.get_multiple_quotes(batch_instruments)
             
             if not quotes:
                 logger.warning("Не удалось получить котировки")
