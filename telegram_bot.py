@@ -1083,14 +1083,22 @@ class SimpleTelegramBot:
                         logger.warning(f"Ошибка загрузки инструментов для пользователя {db_settings.user_id}: {e}")
                         user_settings.selected_instruments = []
                 
-                # Если у пользователя был активен мониторинг - восстанавливаем
+                # НЕ восстанавливаем мониторинг автоматически - пользователь должен запустить сам
                 if db_settings.is_monitoring:
-                    self.monitoring_controller.start_monitoring_for_user(db_settings.user_id)
-                    self.monitoring_scheduler.add_user_to_group(
-                        db_settings.user_id, 
-                        db_settings.monitoring_interval
+                    # Только записываем в БД что мониторинг был остановлен при перезапуске
+                    from database import UserSettings as DBUserSettings
+                    import json
+                    
+                    db_user_settings = DBUserSettings(
+                        user_id=db_settings.user_id,
+                        monitoring_interval=user_settings.monitoring_interval,
+                        spread_threshold=user_settings.spread_threshold,
+                        max_signals=user_settings.max_signals,
+                        is_monitoring=False,  # Отключаем мониторинг
+                        selected_instruments=json.dumps(user_settings.selected_instruments)
                     )
-                    logger.info(f"✅ Восстановлен мониторинг для пользователя {db_settings.user_id}")
+                    await db.save_user_settings(db_user_settings)
+                    logger.info(f"🔄 Мониторинг пользователя {db_settings.user_id} сброшен - требуется ручной запуск")
             
             if monitoring_users:
                 logger.info("🎯 Настройки пользователей восстановлены из базы данных")
