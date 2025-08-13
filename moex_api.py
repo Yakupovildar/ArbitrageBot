@@ -291,9 +291,9 @@ class MOEXAPIClient:
         elif ticker in ['FSZ5']:
             return price / 10.0
         
-        # Фьючерсы на металлы - нужен больший коэффициент
-        elif ticker in ['GKZ5']:  # ГМК Норникель: умножить на 100 (13.7 → 1370)
-            return price * 100.0
+        # Фьючерсы на металлы - оставляем как есть (API уже возвращает правильную цену)
+        elif ticker in ['GKZ5']:  # ГМК Норникель: оставляем без изменений (1366 → 1366)
+            return price
         elif ticker in ['LKZ5']:  # Лукойл: делить на 10
             return price / 10.0
         
