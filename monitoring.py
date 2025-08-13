@@ -101,27 +101,54 @@ class ArbitrageMonitor:
                 logger.error(f"Ошибка в цикле мониторинга: {e}")
                 await asyncio.sleep(60)  # Пауза при ошибке
     
+    def __init__(self):
+        self.config = Config()
+        self.calculator = ArbitrageCalculator()
+        self.application = None
+        self.subscribers = set()
+        self.is_running = False
+        self.spread_history = SpreadHistory(self.config.MAX_SPREAD_HISTORY)
+        # Добавляем трекер для умной ротации
+        self.current_batch_index = 0
+        self.instruments_processed_in_cycle = set()
+
     async def _monitoring_cycle(self):
-        """Один цикл мониторинга с батчами"""
-        logger.info("Начало цикла мониторинга...")
+        """Интеллектуальный цикл мониторинга с равномерным покрытием"""
+        logger.info("Начало интеллектуального цикла мониторинга...")
         
         try:
-            # Разбиваем все инструменты на батчи для избежания превышения лимитов API
             all_instruments = self.config.MONITORED_INSTRUMENTS
             max_pairs_per_batch = self.config.MAX_PAIRS_PER_BATCH
             instruments_list = list(all_instruments.items())
             total_batches = (len(instruments_list) + max_pairs_per_batch - 1) // max_pairs_per_batch
             
-            # Выбираем случайный батч для каждого цикла мониторинга
-            import random
-            batch_index = random.randint(0, total_batches - 1)
+            # Умная ротация: последовательно проходим все батчи без повторов
+            if self.config.SMART_ROTATION_ENABLED:
+                batch_index = self.current_batch_index
+                self.current_batch_index = (self.current_batch_index + 1) % total_batches
+                
+                # Если прошли полный цикл, сбрасываем счетчик обработанных инструментов
+                if self.current_batch_index == 0:
+                    self.instruments_processed_in_cycle.clear()
+                    logger.info(f"🔄 Завершен полный цикл сканирования всех {len(all_instruments)} пар")
+            else:
+                # Случайный выбор (старая логика)
+                import random
+                batch_index = random.randint(0, total_batches - 1)
+            
             start_idx = batch_index * max_pairs_per_batch
             end_idx = min(start_idx + max_pairs_per_batch, len(instruments_list))
             
             # Создаем словарь инструментов для текущего батча
             batch_instruments = dict(instruments_list[start_idx:end_idx])
             
-            logger.info(f"📦 Мониторинг батча {batch_index + 1}/{total_batches}: {len(batch_instruments)} пар из {len(all_instruments)} общих")
+            # Отслеживаем обработанные инструменты
+            for stock in batch_instruments.keys():
+                self.instruments_processed_in_cycle.add(stock)
+            
+            progress_percent = (len(self.instruments_processed_in_cycle) / len(all_instruments)) * 100
+            
+            logger.info(f"📦 Умный батч {batch_index + 1}/{total_batches}: {len(batch_instruments)} пар | Покрытие: {progress_percent:.1f}%")
             
             # Получаем котировки только для текущего батча
             async with MOEXAPIClient() as moex_client:
@@ -138,7 +165,7 @@ class ArbitrageMonitor:
             if signals:
                 await self._send_signals(signals)
             
-            logger.info(f"Цикл мониторинга завершен. Найдено сигналов: {len(signals)}")
+            logger.info(f"Цикл завершен. Сигналов: {len(signals)} | Обработано пар: {len(self.instruments_processed_in_cycle)}/{len(all_instruments)}")
             
         except Exception as e:
             logger.error(f"Ошибка в цикле мониторинга: {e}")

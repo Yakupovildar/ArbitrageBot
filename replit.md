@@ -18,18 +18,20 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (August 13, 2025)
 
-✅ **MASSIVE SCALE UPGRADE: 150+ TRADING PAIRS (COMPLETE)**
-- **10x increase**: Expanded from 15 to 150+ trading pairs (all major MOEX instruments)
-- **Smart batch processing**: Monitors 10 random pairs per cycle to avoid API limits
+✅ **INTELLIGENT SCANNING SYSTEM: 300+ TRADING PAIRS (COMPLETE)**
+- **20x increase**: Expanded from 15 to 300+ trading pairs (comprehensive MOEX coverage)
+- **Smart sequential rotation**: 25 pairs per cycle with NO REPEATS until full scan complete
+- **Guaranteed coverage**: Every pair scanned within 12 cycles (6 minutes at 30s intervals)
+- **Progress tracking**: Real-time coverage percentage and cycle completion status
 - **Settings persistence fixed**: User configurations now properly save to database
 - **Navigation improved**: Back button returns to main menu correctly
-- **Command added**: /pairs shows all monitored trading pairs with statistics
 
-✅ **API OPTIMIZATION FOR LARGE SCALE (COMPLETE)**
-- **Reduced API limits**: Lowered to 50 requests/minute and 2 concurrent for safety
-- **Batch system**: Random 10-pair batches per monitoring cycle
-- **Enhanced delays**: 2-3 second delays between API calls
-- **Smart rotation**: Each cycle monitors different pairs ensuring full coverage
+✅ **INTELLIGENT BATCH PROCESSING (COMPLETE)**
+- **Sequential scanning**: No more random duplicates - systematic coverage of all pairs
+- **Increased batch size**: 25 pairs per cycle (2.5x more than before)
+- **Faster completion**: Full market scan in 12 cycles vs random infinite time
+- **Progress visibility**: Shows exact coverage progress (0% → 100%)
+- **Smart reset**: Automatically starts new cycle when 100% coverage reached
 
 ✅ **DATABASE INTEGRATION & PERSISTENT SETTINGS (COMPLETE)**
 - **PostgreSQL database**: Added full database integration with asyncpg

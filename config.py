@@ -21,8 +21,10 @@ class Config:
     BACKOFF_MULTIPLIER: float = 2.0    # Множитель для экспоненциальной задержки
     
     # Настройки для работы с большим количеством пар
-    MAX_PAIRS_PER_BATCH: int = 10      # Максимум пар за один цикл мониторинга
-    BATCH_DELAY: float = 2.0           # Задержка между батчами пар (секунды)
+    MAX_PAIRS_PER_BATCH: int = 25      # Максимум пар за один цикл мониторинга (увеличено)
+    BATCH_DELAY: float = 1.0           # Задержка между батчами пар (секунды)
+    SMART_ROTATION_ENABLED: bool = True # Умная ротация без повторов
+    FULL_SCAN_CYCLES: int = 6          # Количество циклов для полного сканирования
     
     # Настройки мониторинга
     MONITORING_INTERVAL_MIN: int = 300  # 5 минут в секундах
@@ -293,6 +295,142 @@ class Config:
                 "ZAYM": "ZAY5",  # Займер
                 "ZILL": "ZIL5",  # ЗИЛ
                 "ZVEZ": "ZVE5",  # Звезда
+                
+                # Расширенный список дополнительных инструментов MOEX
+                "ABIO": "ABI5",  # Артген
+                "ACKO": "ACK5",  # Аско  
+                "AKME": "AKM5",  # Академия
+                "ALBK": "ALB5",  # Альба
+                "ALNU": "ALN5",  # Алнумин
+                "AMEZ": "AME5",  # Ашинский МЗ
+                "ANIP": "ANI5",  # Анип
+                "APTK1": "AP15", # Аптеки
+                "ARMD": "ARM5",  # Армада
+                "ATLAS": "ATL5", # Атлас
+                "AVAZ": "AVZ5",  # Авиаз
+                "BELU": "BEL5",  # Белуга
+                "BIDR": "BID5",  # Бидр
+                "BKSG": "BKS5",  # Бксг
+                "BLNG1": "BL15", # Белон1
+                "BPKH": "BPK5",  # Башпромкомплект
+                "BRZL1": "BR15", # Бразилия1
+                "BSPS": "BSP5",  # Бспс
+                "BTGL": "BTG5",  # Битгл
+                "BVTB": "BVT5",  # Бвтб
+                "CBDN": "CBD5",  # Цбдн
+                "CHEM": "CHM5",  # Хем
+                "CHZP": "CHZ5",  # Чзп
+                "CLSB": "CLS5",  # Цлсб
+                "CNTL": "CNT5",  # Центл
+                "COBA": "COB5",  # Коба
+                "CRTL": "CRT5",  # Кртл
+                "CTMK": "CTM5",  # Цтмк
+                "DASB": "DAS5",  # Дасб
+                "DBIO": "DBI5",  # Дбио
+                "DCTC": "DCT5",  # Дцтц
+                "DSNG": "DSN5",  # Дснг
+                "DVKL": "DVK5",  # Двкл
+                "EAST": "EAS5",  # Восток
+                "ELTZ": "ELT5",  # Элтз
+                "EPLN": "EPL5",  # Эплн
+                "ERCO": "ERC5",  # Эрко
+                "ESGR": "ESG5",  # Эсгр
+                "ESMO": "ESM5",  # Эсмо
+                "FANK": "FAN5",  # Фанк
+                "FCUT": "FCU5",  # Фкут
+                "FESCO": "FES5", # Феско
+                "FGSZ": "FGS5",  # Фгсз
+                "FLOT1": "FL15", # Флот1
+                "GAZS1": "GS15", # Газс1
+                "GBSB": "GBS5",  # Гбсб
+                "GEMA": "GEM5",  # Гема
+                "GRNT": "GRN5",  # Грнт
+                "GTMN": "GTM5",  # Гтмн
+                "GTPR": "GTP5",  # Гтпр
+                "GTRN": "GTR5",  # Гтрн
+                "HALS": "HAL5",  # Халс
+                "HHRU1": "HH15", # Ххру1
+                "HSBC": "HSB5",  # Хсбк
+                "IGSB": "IGS5",  # Игсб
+                "IRPB": "IRP5",  # Ирпб
+                "ISUN": "ISU5",  # Исун
+                "JITO": "JIT5",  # Джито
+                "KBSB": "KBS5",  # Кбсб
+                "KLVZ": "KLV5",  # Клвз
+                "KMEZ": "KME5",  # Кмез
+                "KOFT": "KOF5",  # Кофт
+                "KSGR": "KSG5",  # Ксгр
+                "KTMK": "KTM5",  # Ктмк
+                "KZMS": "KZM5",  # Кзмс
+                "LANT": "LAN5",  # Лант
+                "LENT": "LEN5",  # Лент
+                "LGTH": "LGT5",  # Лгтх
+                "LION": "LIO5",  # Лион
+                "LNZL": "LNZ5",  # Лнзл
+                "LRIT": "LRI5",  # Лрит
+                "LVHZ": "LVH5",  # Львз
+                "MAGEP": "MGP5", # Магеп
+                "MEBB": "MEB5",  # Мебб
+                "MFGS": "MFG5",  # Мфгс
+                "MGTSP1": "MG15",# Мгтсп1
+                "MGTS": "MGT5",  # Мгтс
+                "MHKP": "MHK5",  # Мхкп
+                "MGKL": "MGL5",  # Мгкл
+                "MGTSP2": "MG25",# Мгтсп2
+                "MINI": "MIN5",  # Мини
+                "MMBM": "MMB5",  # Ммбм
+                "MMCO": "MMC5",  # Ммко
+                "MODL": "MOD5",  # Модл
+                "MORK": "MOR5",  # Морк
+                "MRKH": "MRH5",  # Мркх
+                "MSTT": "MST5",  # Мстт
+                "NFGS": "NFG5",  # Нфгс
+                "NLTK": "NLT5",  # Нлтк
+                "NMTP1": "NM15", # Нмтп1
+                "NNSB1": "NN15", # Ннсб1
+                "NPOB": "NPO5",  # Нпоб
+                "OGKE": "OGK5",  # Огке
+                "OZPH": "OZP5",  # Озфх
+                "PRFB": "PRF5",  # Прфб
+                "PSBN": "PSB5",  # Псбн
+                "PSPB": "PSP5",  # Пспб
+                "RKMD": "RKM5",  # Ркмд
+                "RNFB": "RNF5",  # Рнфб
+                "RSMB": "RSM5",  # Рсмб
+                "RSTB": "RST5",  # Рстб
+                "SAGO": "SAG5",  # Саго
+                "SARE1": "SA15", # Саре1
+                "SELB": "SEL5",  # Селб
+                "SGZH1": "SG15", # Сгжх1
+                "SKON": "SKO5",  # Скон
+                "SMLT1": "SM15", # Смлт1
+                "SOFL1": "SO15", # Софл1
+                "STSB1": "ST15", # Стсб1
+                "SVAV1": "SV15", # Свав1
+                "TASB1": "TA15", # Тасб1
+                "TGKA1": "TG15", # Тгка1
+                "TGKD1": "TD15", # Тгкд1
+                "TGKN1": "TN15", # Тгкн1
+                "TORS1": "TO15", # Торс1
+                "TRMK1": "TR15", # Трмк1
+                "TUZA1": "TU15", # Туза1
+                "UGLD1": "UG15", # Угл1
+                "UKUZ1": "UK15", # Укуз1
+                "UNAC1": "UN15", # Унак1
+                "UPRO1": "UP15", # Упро1
+                "USBN1": "US15", # Усбн1
+                "UTAR1": "UT15", # Утар1
+                "VEON1": "VE15", # Веон1
+                "VGBF1": "VG15", # Вгбф1
+                "VKCO1": "VK15", # Вкко1
+                "VSMO1": "VS15", # Всмо1
+                "WTCM1": "WT15", # Втцм1
+                "YAKG1": "YA15", # Якг1
+                "YKEN1": "YK15", # Якен1
+                "YRSB1": "YR15", # Ырсб1
+                "ZAYM1": "ZA15", # Займ1
+                "ZILL1": "ZI15", # Зилл1
+                "ZVEZ1": "ZV15"  # Звез1
             }
     
     @classmethod
