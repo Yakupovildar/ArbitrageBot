@@ -183,7 +183,7 @@ class MOEXAPIClient:
         params = {
             'iss.meta': 'off',
             'iss.only': 'securities', 
-            'securities.columns': 'SECID,LAST,PREVPRICE'
+            'securities.columns': 'SECID,LAST,PREVPRICE,LOTSIZE'
         }
         
         data = await self._make_request(url, params)
@@ -199,21 +199,46 @@ class MOEXAPIClient:
                     if not row or row[0] != ticker:
                         continue
                     
+                    # Получаем размер лота для фьючерса (если есть)
+                    lot_size = 1
+                    if 'LOTSIZE' in columns:
+                        lot_index = columns.index('LOTSIZE')
+                        if len(row) > lot_index and row[lot_index] is not None:
+                            lot_size = int(row[lot_index])
+                    
                     # Сначала пробуем LAST (цена последней сделки)
                     if 'LAST' in columns:
                         last_index = columns.index('LAST')
                         if len(row) > last_index and row[last_index] is not None:
-                            price = float(row[last_index])
-                            logger.debug(f"Цена фьючерса {ticker} (LAST): {price}")
-                            return price
+                            price_in_points = float(row[last_index])
+                            
+                            # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Фьючерсы торгуются в пунктах
+                            # 1 пункт = 0.01₽ для большинства инструментов MOEX
+                            # Конвертируем пункты в рубли
+                            price_in_rubles = price_in_points * 0.01
+                            
+                            # Умножаем на размер контракта (если есть лотность)
+                            price_total = price_in_rubles * lot_size
+                            
+                            logger.debug(f"Цена фьючерса {ticker} (LAST): {price_in_points} пунктов = {price_in_rubles}₽ × {lot_size} = {price_total}₽")
+                            return price_total
                     
                     # Если LAST нет, используем PREVPRICE (цена предыдущего дня)
                     if 'PREVPRICE' in columns:
                         prev_index = columns.index('PREVPRICE')
                         if len(row) > prev_index and row[prev_index] is not None:
-                            price = float(row[prev_index])
-                            logger.debug(f"Цена фьючерса {ticker} (PREVPRICE): {price}")
-                            return price
+                            price_in_points = float(row[prev_index])
+                            
+                            # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Фьючерсы торгуются в пунктах
+                            # 1 пункт = 0.01₽ для большинства инструментов MOEX
+                            # Конвертируем пункты в рубли
+                            price_in_rubles = price_in_points * 0.01
+                            
+                            # Умножаем на размер контракта (если есть лотность)
+                            price_total = price_in_rubles * lot_size
+                            
+                            logger.debug(f"Цена фьючерса {ticker} (PREVPRICE): {price_in_points} пунктов = {price_in_rubles}₽ × {lot_size} = {price_total}₽")
+                            return price_total
                             
             return None
             
@@ -291,10 +316,9 @@ class MOEXAPIClient:
                 return stock_ticker, (stock_price, futures_price)
         
         # Выполняем все задачи
-        pair_tasks = [fetch_pair(stock_ticker, stock_task, futures_task) 
-                     for stock_ticker, stock_task, futures_task in tasks]
-        
-        pair_results = await asyncio.gather(*pair_tasks, return_exceptions=True)
+        pair_results = await asyncio.gather(*[fetch_pair(stock_ticker, stock_task, futures_task) 
+                                            for stock_ticker, stock_task, futures_task in tasks], 
+                                          return_exceptions=True)
         
         # Собираем результаты
         for result in pair_results:
