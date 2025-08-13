@@ -1368,9 +1368,39 @@ class SimpleTelegramBot:
                         logger.debug(f"Нет фьючерса для {stock_ticker}")
                         continue
                     
-                    # Рассчитываем спред простой формулой
+                    # Используем правильный расчет спреда через ArbitrageCalculator
                     try:
-                        spread = ((futures_price - stock_price) / stock_price) * 100
+                        user_settings = self.user_settings.get_user_settings(user_id)
+                        signal = self.calculator.analyze_arbitrage_opportunity(
+                            stock_ticker=stock_ticker,
+                            futures_ticker=futures_ticker,
+                            stock_price=stock_price,
+                            futures_price=futures_price,
+                            timestamp=datetime.now().strftime('%H:%M:%S'),
+                            min_spread_threshold=0.1  # Низкий порог для показа всех данных в тесте
+                        )
+                        
+                        if signal:
+                            # Используем правильно рассчитанный спред из сигнала
+                            spread = signal.spread_percent
+                            lot_size = self.config.LOT_SIZES.get(stock_ticker, 1)
+                            adjusted_stock_price = signal.stock_price * lot_size
+                            # Используем цену фьючерса уже в рублях из сигнала
+                            adjusted_futures_price = signal.futures_price
+                            if futures_ticker.endswith('Z5') and not futures_ticker.endswith('F'):
+                                adjusted_futures_price = signal.futures_price * 0.01
+                        else:
+                            # Расчет вручную с правильными коррекциями
+                            lot_size = self.config.LOT_SIZES.get(stock_ticker, 1)
+                            adjusted_stock_price = stock_price * lot_size
+                            
+                            # Конвертируем фьючерс из пунктов в рубли (если нужно)
+                            adjusted_futures_price = futures_price
+                            if futures_ticker.endswith('Z5') and not futures_ticker.endswith('F'):
+                                adjusted_futures_price = futures_price * 0.01
+                            
+                            spread = ((adjusted_futures_price - adjusted_stock_price) / adjusted_stock_price) * 100
+                        
                         logger.debug(f"Спред для {stock_ticker}/{futures_ticker}: {spread:.4f}%")
                         
                         spread_found = True
@@ -1378,16 +1408,20 @@ class SimpleTelegramBot:
                         processed_pairs.append(stock_ticker)
                         
                         # Определяем эмодзи для спреда
-                        if abs(spread) >= 2.0:
+                        if abs(spread) >= 3.0:
                             emoji = "🟢🟢"
-                        elif abs(spread) >= 1.0:
+                        elif abs(spread) >= 1.5:
                             emoji = "🟢"
                         else:
                             emoji = "📊"
                         
                         test_message += f"{emoji} **{stock_ticker}/{futures_ticker}**\n"
                         test_message += f"   Спред: **{spread:.4f}%**\n"
-                        test_message += f"   Акция: {stock_price:.2f} ₽, Фьючерс: {futures_price:.2f} ₽\n\n"
+                        test_message += f"   Акция: {stock_price:.2f} ₽ (×{lot_size} = {adjusted_stock_price:.2f} ₽)\n"
+                        test_message += f"   Фьючерс: {adjusted_futures_price:.2f} ₽"
+                        if futures_ticker.endswith('Z5') and not futures_ticker.endswith('F'):
+                            test_message += f" ({futures_price:.2f} пункт)"
+                        test_message += "\n\n"
                         
                     except Exception as calc_error:
                         logger.error(f"Ошибка расчета спреда для {stock_ticker}: {calc_error}")
