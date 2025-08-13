@@ -1105,11 +1105,19 @@ class SimpleTelegramBot:
         """Асинхронная задача тестового мониторинга спредов"""
         logger.info(f"Запущен тестовый мониторинг для пользователя {user_id}")
         
+        # Сразу выполняем первую проверку без ожидания
+        iteration = 0
+        
         while self.test_monitoring_active.get(user_id, False):
             try:
+                iteration += 1
+                logger.info(f"Тестовый мониторинг - итерация {iteration} для пользователя {user_id}")
+                
                 # Получаем текущие котировки через MOEX API
                 async with MOEXAPIClient() as moex_client:
                     quotes = await moex_client.get_multiple_quotes(self.config.MONITORED_INSTRUMENTS)
+                
+                logger.info(f"Получено котировок: {len(quotes) if quotes else 0}")
                 
                 if not quotes:
                     await self.send_message(user_id, "⚠️ Тест: Не удалось получить котировки от MOEX API")
@@ -1119,58 +1127,83 @@ class SimpleTelegramBot:
                 # Формируем сообщение с текущими спредами
                 test_message = "🧪 **ТЕСТОВЫЙ МОНИТОРИНГ СПРЕДОВ**\n\n"
                 test_message += f"⏰ Время: {datetime.now().strftime('%H:%M:%S %d.%m.%Y')}\n"
-                test_message += f"📊 Проверено пар: {len(quotes)}\n\n"
+                test_message += f"📊 API ответ: {len(quotes)} инструментов\n"
+                test_message += f"🔄 Итерация: {iteration}\n\n"
                 
                 spread_found = False
                 pair_count = 0
-                for stock_ticker, (stock_price, futures_price) in quotes.items():
-                    if pair_count >= 5:  # Показываем только первые 5 пар
+                processed_pairs = []
+                
+                # Обрабатываем первые 5 пар с данными
+                for stock_ticker, quote_data in quotes.items():
+                    if pair_count >= 5:
                         break
+                    
+                    # Проверяем структуру данных
+                    if not isinstance(quote_data, (list, tuple)) or len(quote_data) != 2:
+                        logger.warning(f"Неправильная структура данных для {stock_ticker}: {quote_data}")
+                        continue
                         
-                    if stock_price is None or futures_price is None:
+                    stock_price, futures_price = quote_data
+                    
+                    if stock_price is None or futures_price is None or stock_price <= 0 or futures_price <= 0:
                         logger.debug(f"Нет данных для {stock_ticker}: спот={stock_price}, фьючерс={futures_price}")
                         continue
                     
                     futures_ticker = self.config.MONITORED_INSTRUMENTS.get(stock_ticker)
                     if not futures_ticker:
+                        logger.debug(f"Нет фьючерса для {stock_ticker}")
                         continue
                     
-                    # Рассчитываем спред используя калькулятор
-                    spread = self.calculator.calculate_spread(stock_price, futures_price, stock_ticker, futures_ticker)
-                    if spread is None:
+                    # Рассчитываем спред простой формулой
+                    try:
+                        spread = ((futures_price - stock_price) / stock_price) * 100
+                        logger.debug(f"Спред для {stock_ticker}/{futures_ticker}: {spread:.4f}%")
+                        
+                        spread_found = True
+                        pair_count += 1
+                        processed_pairs.append(stock_ticker)
+                        
+                        # Определяем эмодзи для спреда
+                        if abs(spread) >= 2.0:
+                            emoji = "🟢🟢"
+                        elif abs(spread) >= 1.0:
+                            emoji = "🟢"
+                        else:
+                            emoji = "📊"
+                        
+                        test_message += f"{emoji} **{stock_ticker}/{futures_ticker}**\n"
+                        test_message += f"   Спред: **{spread:.4f}%**\n"
+                        test_message += f"   Акция: {stock_price:.2f} ₽, Фьючерс: {futures_price:.2f} ₽\n\n"
+                        
+                    except Exception as calc_error:
+                        logger.error(f"Ошибка расчета спреда для {stock_ticker}: {calc_error}")
                         continue
-                    
-                    spread_found = True
-                    pair_count += 1
-                    
-                    # Определяем эмодзи для спреда
-                    if abs(spread) >= 2.0:
-                        emoji = "🟢🟢"
-                    elif abs(spread) >= 1.0:
-                        emoji = "🟢"
-                    else:
-                        emoji = "📊"
-                    
-                    test_message += f"{emoji} **{stock_ticker}/{futures_ticker}**\n"
-                    test_message += f"   Спред: **{spread:.4f}%**\n"
-                    test_message += f"   Акция: {stock_price:.2f} ₽, Фьючерс: {futures_price:.2f} ₽\n\n"
                 
                 if not spread_found:
-                    test_message += "⚠️ Нет доступных данных по спредам\n"
+                    test_message += f"⚠️ Нет доступных данных по спредам\n"
+                    test_message += f"🔍 Обработано пар: {processed_pairs}\n"
+                    # Показываем сырые данные для отладки
+                    sample_data = dict(list(quotes.items())[:3])
+                    test_message += f"📋 Образец данных: {sample_data}\n"
                 
                 test_message += "💬 Для остановки: /test"
                 
                 await self.send_message(user_id, test_message)
                 
-                # Рандомная задержка 5-7 минут
-                delay = random.randint(300, 420)
-                await asyncio.sleep(delay)
+                # Если это первая итерация, ждем меньше
+                if iteration == 1:
+                    await asyncio.sleep(30)  # 30 секунд до второй итерации
+                else:
+                    # Рандомная задержка 5-7 минут для последующих итераций
+                    delay = random.randint(300, 420)
+                    await asyncio.sleep(delay)
                 
             except Exception as e:
                 error_msg = f"⚠️ Ошибка в тестовом мониторинге: {str(e)}"
                 await self.send_message(user_id, error_msg)
                 logger.error(f"Ошибка в тестовом мониторинге для пользователя {user_id}: {e}")
-                await asyncio.sleep(300)  # 5 минут при ошибке
+                await asyncio.sleep(60)  # 1 минута при ошибке
         
         logger.info(f"Тестовый мониторинг остановлен для пользователя {user_id}")
     
