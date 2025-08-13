@@ -2,7 +2,7 @@ import os
 import random
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
-from datetime import datetime, time
+from datetime import datetime, time, timezone, timedelta
 
 @dataclass
 class Config:
@@ -111,7 +111,9 @@ class Config:
     def is_market_open(self, dt: Optional[datetime] = None) -> bool:
         """Проверка, открыта ли биржа в указанное время"""
         if dt is None:
-            dt = datetime.now()
+            # Используем московское время (UTC+3)
+            moscow_tz = timezone(timedelta(hours=3))
+            dt = datetime.now(moscow_tz)
         
         # Проверяем день недели (0=Понедельник, 6=Воскресенье)
         if dt.weekday() not in self.TRADING_DAYS:
@@ -123,7 +125,9 @@ class Config:
     
     def get_market_status_message(self) -> str:
         """Получение сообщения о статусе рынка"""
-        now = datetime.now()
+        # Используем московское время (UTC+3)
+        moscow_tz = timezone(timedelta(hours=3))
+        now = datetime.now(moscow_tz)
         
         if self.is_market_open(now):
             return "🟢 Биржа открыта"
