@@ -1435,19 +1435,13 @@ class SimpleTelegramBot:
                             spread = signal.spread_percent
                             lot_size = self.config.get_lot_multipliers().get(stock_ticker, 1)
                             adjusted_stock_price = signal.stock_price * lot_size
-                            # Используем цену фьючерса уже в рублях из сигнала
+                            # Цена фьючерса уже корректно обработана в MOEX API
                             adjusted_futures_price = signal.futures_price
-                            if futures_ticker.endswith('Z5') and not futures_ticker.endswith('F'):
-                                adjusted_futures_price = signal.futures_price * 0.01
                         else:
-                            # Расчет вручную с правильными коррекциями
+                            # Цены уже корректно обработаны в MOEX API, не нужно дополнительных коррекций
                             lot_size = self.config.get_lot_multipliers().get(stock_ticker, 1)
                             adjusted_stock_price = stock_price * lot_size
-                            
-                            # Конвертируем фьючерс из пунктов в рубли (если нужно)
-                            adjusted_futures_price = futures_price
-                            if futures_ticker.endswith('Z5') and not futures_ticker.endswith('F'):
-                                adjusted_futures_price = futures_price * 0.01
+                            adjusted_futures_price = futures_price  # Уже в правильном формате из API
                             
                             spread = ((adjusted_futures_price - adjusted_stock_price) / adjusted_stock_price) * 100
                         
