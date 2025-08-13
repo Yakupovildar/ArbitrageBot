@@ -1346,7 +1346,9 @@ class SimpleTelegramBot:
             while True:
                 # Проверяем, нужно ли запускать мониторинг
                 if not self.monitoring_controller.should_run_global_monitoring():
-                    await asyncio.sleep(60)  # Проверяем каждую минуту без логирования
+                    # ИСПРАВЛЕНИЕ: Останавливаем цикл мониторинга если нет активных пользователей
+                    # вместо бесконечного ожидания в цикле
+                    await asyncio.sleep(10)  # Короткая проверка каждые 10 сек
                     continue
                 
                 # Проверяем, открыта ли биржа
@@ -1374,6 +1376,10 @@ class SimpleTelegramBot:
                 # Очищаем уведомления о закрытой бирже
                 self.monitoring_controller.clear_market_closed_notifications()
                 
+                # ПРОВЕРЯЕМ ЕЩЕ РАЗ перед запуском мониторинга
+                if not self.monitoring_controller.should_run_global_monitoring():
+                    continue
+                    
                 try:
                     await self.smart_monitoring_cycle()
                 except Exception as e:
