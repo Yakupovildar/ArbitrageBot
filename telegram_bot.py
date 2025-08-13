@@ -472,7 +472,7 @@ class SimpleTelegramBot:
             # Показываем список сканируемых пар
             pairs_text = "📊 *ТОРГОВЫЕ ПАРЫ ДЛЯ АРБИТРАЖА*\n\n"
             pairs_count = len(self.config.MONITORED_INSTRUMENTS)
-            pairs_text += f"🔢 *Всего пар: {pairs_count}*\n\n"
+            pairs_text += f"🔢 *Всего пар: {pairs_count}* (в 10 раз больше!)\n\n"
             
             pairs_text += "📈 *Акция* → 📊 *Фьючерс*\n"
             pairs_text += "─" * 25 + "\n"
@@ -654,10 +654,34 @@ class SimpleTelegramBot:
             
         # Обработка настроек пользователя
         elif callback_data == "settings_back":
-            settings_summary = self.user_settings.get_settings_summary(user_id)
-            keyboard = self.user_settings.get_settings_keyboard(user_id)
-            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
-            await self.answer_callback_query(callback_query_id, "Настройки")
+            # Возвращаемся к главному меню
+            welcome_text = """🤖 *MOEX Arbitrage Bot - Главное меню*
+
+🎯 *Быстрое управление ботом:*"""
+            
+            main_menu_keyboard = {
+                "inline_keyboard": [
+                    [
+                        {"text": "🟢 Запустить мониторинг", "callback_data": "cmd_start_monitoring"},
+                        {"text": "🔴 Остановить мониторинг", "callback_data": "cmd_stop_monitoring"}
+                    ],
+                    [
+                        {"text": "⚙️ Настройки", "callback_data": "cmd_settings"},
+                        {"text": "📊 Статус", "callback_data": "cmd_status"}
+                    ],
+                    [
+                        {"text": "📈 История", "callback_data": "cmd_history"},
+                        {"text": "🕒 Расписание", "callback_data": "cmd_schedule"}
+                    ],
+                    [
+                        {"text": "🎯 Демо", "callback_data": "cmd_demo"},
+                        {"text": "🆘 Поддержка", "callback_data": "cmd_support"}
+                    ]
+                ]
+            }
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], welcome_text, main_menu_keyboard)
+            await self.answer_callback_query(callback_query_id, "Главное меню")
             
         elif callback_data == "settings_interval":
             keyboard = self.user_settings.get_interval_keyboard()
@@ -829,14 +853,15 @@ class SimpleTelegramBot:
         """Сохранение всех настроек пользователей в базу данных"""
         try:
             for user_id, settings in self.user_settings.user_settings.items():
-                db_settings = self.db.UserSettings(
+                from database import UserSettings as DBUserSettings
+                db_settings = DBUserSettings(
                     user_id=user_id,
                     monitoring_interval=settings.monitoring_interval,
                     spread_threshold=settings.spread_threshold,
                     max_signals=settings.max_signals,
                     is_monitoring=self.monitoring_controller.is_user_monitoring(user_id)
                 )
-                await self.db.save_user_settings(db_settings)
+                await db.save_user_settings(db_settings)
             
             logger.info("💾 Все настройки пользователей сохранены в базу данных")
             
@@ -847,14 +872,15 @@ class SimpleTelegramBot:
         """Сохранение настроек конкретного пользователя"""
         try:
             settings = self.user_settings.get_user_settings(user_id)
-            db_settings = self.db.UserSettings(
+            from database import UserSettings as DBUserSettings
+            db_settings = DBUserSettings(
                 user_id=user_id,
                 monitoring_interval=settings.monitoring_interval,
                 spread_threshold=settings.spread_threshold,
                 max_signals=settings.max_signals,
                 is_monitoring=self.monitoring_controller.is_user_monitoring(user_id)
             )
-            await self.db.save_user_settings(db_settings)
+            await db.save_user_settings(db_settings)
             
         except Exception as e:
             logger.error(f"❌ Ошибка сохранения настроек пользователя {user_id}: {e}")

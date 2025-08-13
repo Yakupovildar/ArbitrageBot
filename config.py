@@ -56,7 +56,7 @@ class Config:
         """Инициализация после создания объекта"""
         if not self.MONITORED_INSTRUMENTS:
             self.MONITORED_INSTRUMENTS = {
-                # Акции и соответствующие фьючерсы
+                # Основные голубые фишки
                 "SBER": "SiM5",  # Сбербанк
                 "GAZP": "GZM5",  # Газпром
                 "LKOH": "LKM5",  # Лукойл
@@ -72,6 +72,223 @@ class Config:
                 "ALRS": "ALM5",  # Алроса
                 "TATN": "TTM5",  # Татнефть
                 "MTSS": "MTM5",  # МТС
+                
+                # Банковский сектор
+                "AFKS": "AFM5",  # АФК Система
+                "BANE": "BNM5",  # Башнефть
+                "CBOM": "CBM5",  # МКБ
+                "CHMF": "CHM5",  # Северсталь
+                "FEES": "FEM5",  # ФСК ЕЭС
+                "HYDR": "HYM5",  # РусГидро
+                "IRAO": "IRM5",  # Интер РАО
+                "MAIL": "MAM5",  # VK (Mail.ru)
+                "MOEX": "MOM5",  # Московская биржа
+                "NLMK": "NLM5",  # НЛМК
+                "PIKK": "PKM5",  # ПИК
+                "RTKM": "RTM5",  # Ростелеком
+                "RUAL": "RUM5",  # РУСАЛ
+                "SBRF": "SBM5",  # Сбербанк преф
+                "SIBN": "SIM5",  # Газпром нефть
+                "TRNFP": "TRM5", # Транснефть преф
+                
+                # Металлургия и химия
+                "ABRD": "ABM5",  # Абрау-Дюрсо
+                "ACKO": "ACM5",  # Аско
+                "AKRN": "AKM5",  # Акрон
+                "AQUA": "AQM5",  # Инарктика
+                "BANEP": "BAM5", # Башнефть преф
+                "BSPB": "BSM5",  # Банк Санкт-Петербург
+                "CHMK": "CKM5",  # ЧМК
+                "DSKY": "DSM5",  # Детский мир
+                "FIVE": "FIM5",  # X5 Retail Group
+                "FLOT": "FLM5",  # Совкомфлот
+                "GAZS": "GSM5",  # Газпром газораспределение
+                "HHRU": "HHM5",  # HeadHunter
+                "IMOEX": "IMM5", # Индекс МосБиржи
+                "KAZT": "KZM5",  # Казаньоргсинтез
+                "KMAZ": "KMM5",  # КАМАЗ
+                "KROT": "KRM5",  # Красный Октябрь
+                "LEAS": "LEM5",  # Европлан
+                "LNTA": "LNM5",  # Лента
+                "MAGN": "MAM5",  # ММК
+                "MFON": "MFM5",  # МегаФон
+                "MSNG": "MSM5",  # МосЭнерго
+                "MSRS": "MRM5",  # МОЭСК
+                "MVID": "MVM5",  # М.Видео
+                "NKNC": "NKM5",  # НКНХ
+                "NMTP": "NMM5",  # НМТП
+                "OKEY": "OKM5",  # О'Кей
+                "OTCP": "OTM5",  # ОТП Банк
+                "PHOR": "PHM5",  # ФосАгро
+                "POLY": "PLM5",  # Polymetal
+                "QIWI": "QIM5",  # QIWI
+                "RASP": "RAM5",  # Распадская
+                "RBCM": "RBM5",  # РБК
+                "RENI": "REM5",  # Ренессанс
+                "ROLO": "ROM5",  # Русолово
+                "RTGZ": "RGM5",  # Ритейл
+                "RTSB": "RSM5",  # Российские сети
+                "RUGR": "RGM5",  # Русгрэйн
+                "RUSI": "RIM5",  # РусИнвест
+                "RZSB": "RZM5",  # Райффайзен
+                "SELG": "SEM5",  # Селигдар
+                "SGZH": "SGM5",  # Сегежа
+                "SMLT": "SMM5",  # Самолет
+                "SPBE": "SPM5",  # СПБ Биржа
+                "SVAV": "SVM5",  # Солвэй
+                "TCSG": "TCM5",  # TCS Group
+                "TGKA": "TGM5",  # ТГК-1
+                "TGKB": "TKM5",  # ТГК-2
+                "TGKD": "TDM5",  # ТГК-4
+                "TGKN": "TNM5",  # ТГК-14
+                "TORS": "TOM5",  # Торгсин
+                "TRMK": "TRM5",  # ТМК
+                "TUZA": "TUM5",  # Туза
+                "UGLD": "UGM5",  # Южуралзолото
+                "UKUZ": "UKM5",  # УГМК
+                "UNAC": "UNM5",  # ОАК
+                "UPRO": "UPM5",  # Юнипро
+                "USBN": "USM5",  # Банк Урал ФД
+                "UTAR": "UTM5",  # Утар
+                "VEON": "VEM5",  # VEON
+                "VGBF": "VGM5",  # ВГБ ФИН
+                "VKCO": "VKM5",  # VK Company
+                "VSMO": "VSM5",  # ВСМПО-АВИСМА
+                "WTCM": "WTM5",  # ВайТи
+                "YAKG": "YAM5",  # ЯТЭК
+                "YKEN": "YKM5",  # Якутскэнерго
+                "YRSB": "YRM5",  # Ярославль
+                "ZAYM": "ZAM5",  # Займер
+                "ZILL": "ZIM5",  # ЗИЛ
+                
+                # Дополнительные ликвидные пары
+                "AFLT": "AFL5",  # Аэрофлот
+                "AGRO": "AGR5",  # АГРО
+                "APTK": "APT5",  # Аптечная сеть 36,6
+                "ARSA": "ARS5",  # Арсагера
+                "ASSB": "ASS5",  # Ассоциация
+                "AVAN": "AVA5",  # Авангард
+                "BLNG": "BLN5",  # Белон
+                "BRZL": "BRZ5",  # Бразилия
+                "CHEP": "CHE5",  # Черкизово
+                "CIAN": "CIA5",  # Циан
+                "DVEC": "DVE5",  # ДЭК
+                "EELT": "EEL5",  # Еврохим
+                "ENRU": "ENR5",  # Энел Россия
+                "ETLN": "ETL5",  # Эталон
+                "FESH": "FES5",  # ДВМП
+                "FIXP": "FIX5",  # Fix Price
+                "GCHE": "GCH5",  # Черкизово
+                "GEMC": "GEM5",  # Джем
+                "GLTR": "GLT5",  # Глобалтранс
+                "GTRK": "GTR5",  # ГТМ
+                "HEAD": "HEA5",  # Хедхантер
+                "HIMCP": "HIM5", # Химпром преф
+                "HNFG": "HNF5",  # Хендэ
+                "HSVL": "HSV5",  # Хуавэй
+                "IGST": "IGS5",  # Игмас
+                "INGR": "ING5",  # Ингосстрах
+                "IRKT": "IRK5",  # Иркут
+                "JNOS": "JNO5",  # Дженос
+                "KLSB": "KLS5",  # Калужская сбытовая
+                "KOGK": "KOG5",  # Коломенская ГК
+                "KRKN": "KRK5",  # Саратов
+                "KRKNP": "KRP5", # Саратов преф
+                "KTSB": "KTS5",  # КТС
+                "KUZB": "KUZ5",  # Кузбасс
+                "LIFE": "LIF5",  # Фарм
+                "LKOD": "LKO5",  # Лукойл-дил
+                "LPSB": "LPS5",  # Липецк
+                "LVHK": "LVH5",  # Левенгук
+                "MAGE": "MAG5",  # Магаданэнерго
+                "MGTSP": "MGT5", # Мостстрой преф
+                "MIDD": "MID5",  # Миддл
+                "MISB": "MIS5",  # МИС
+                "MOBB": "MOB5",  # Мобильные
+                "MORI": "MOR5",  # Мориа
+                "MRKC": "MRC5",  # МРСК Центра
+                "MRKK": "MRK5",  # МРСК Кавказа
+                "MRKP": "MRP5",  # МРСК Приволжья
+                "MRKS": "MRS5",  # МРСК Сибири
+                "MRKU": "MRU5",  # МРСК Урала
+                "MRKV": "MRV5",  # МРСК Волги
+                "MRKZ": "MRZ5",  # МРСК Северо-Запада
+                "NFAZ": "NFA5",  # НФАЗ
+                "NKHP": "NKH5",  # НКХП
+                "NNSB": "NNS5",  # ННС
+                "NOVT": "NOV5",  # Новатранс
+                "NPOF": "NPO5",  # НПО
+                "NSVZ": "NSV5",  # Наука-Связь
+                "NVNG": "NVN5",  # Новый поток
+                "OGKB": "OGB5",  # ОГК-2
+                "PMSBP": "PMS5", # ПМС преф
+                "PMSB": "PMB5",  # ПМС
+                "PRFN": "PRF5",  # Профинанс
+                "PRMB": "PRM5",  # Приморье
+                "PTSS": "PTS5",  # ПТС
+                "RGSS": "RGS5",  # Росгосстрах
+                "RKKE": "RKK5",  # РКК
+                "RNFT": "RNF5",  # РН Финанс
+                "ROLO": "ROL5",  # Русолово
+                "RPMO": "RPM5",  # Росперсонал
+                "RSTI": "RST5",  # Российские технологии
+                "RUGR": "RUG5",  # Русгрэйн
+                "RUAL": "RUA5",  # Русал
+                "RZSB": "RZS5",  # Райффайзен
+                "SAGB": "SAG5",  # Сага
+                "SARE": "SAR5",  # Сарэнерго
+                "SAREP": "SAP5", # Сарэнерго преф
+                "SBERP": "SBP5", # Сбербанк преф
+                "SELGP": "SEP5", # Селигдар преф
+                "SFIN": "SFI5",  # СФИ
+                "SGML": "SGM5",  # Сигма
+                "SLEN": "SLE5",  # Сахалинэнерго
+                "SLENP": "SLP5", # Сахалинэнерго преф
+                "SMLT": "SML5",  # Самолет
+                "SNGS": "SNG5",  # Сургутнефтегаз
+                "SNGSP": "SNP5", # Сургутнефтегаз преф
+                "SOFL": "SOF5",  # Софт
+                "STSB": "STS5",  # Ставрополье
+                "STSBP": "STP5", # Ставрополье преф
+                "SVAV": "SVA5",  # Солвэй
+                "TASB": "TAS5",  # Татфондбанк
+                "TASBP": "TAP5", # Татфондбанк преф
+                "TATN": "TAT5",  # Татнефть
+                "TATNP": "TAP5", # Татнефть преф
+                "TGKA": "TGA5",  # ТГК-1
+                "TGKBP": "TGP5", # ТГК-2 преф
+                "TGKD": "TGD5",  # ТГК-4
+                "TGKDP": "TDP5", # ТГК-4 преф
+                "TGKN": "TGN5",  # ТГК-14
+                "TGKNP": "TNP5", # ТГК-14 преф
+                "TNSE": "TNS5",  # Транснефть
+                "TORS": "TOR5",  # Торгсин
+                "TRMK": "TRM5",  # ТМК
+                "TUZA": "TUZ5",  # Туза
+                "UGLD": "UGL5",  # Южуралзолото
+                "UKUZ": "UKU5",  # УГМК
+                "UNAC": "UNA5",  # ОАК
+                "URKZ": "URK5",  # Уралкуз
+                "USBN": "USB5",  # Банк Урал ФД
+                "UTAR": "UTA5",  # Утар
+                "UWGN": "UWG5",  # ЮГК
+                "VEON": "VEO5",  # VEON
+                "VGSB": "VGS5",  # Волгоградсбыт
+                "VGSBP": "VGP5", # Волгоградсбыт преф
+                "VLHZ": "VLH5",  # Волжанин
+                "VRSB": "VRS5",  # Воронежсбыт
+                "VRSBP": "VRP5", # Воронежсбыт преф
+                "VSMO": "VSM5",  # ВСМПО-АВИСМА
+                "VSYDP": "VSP5", # Выс преф
+                "WTCM": "WTC5",  # ВайТи
+                "YAKG": "YAK5",  # ЯТЭК
+                "YKEN": "YKE5",  # Якутскэнерго
+                "YKENP": "YKP5", # Якутскэнерго преф
+                "YRSB": "YRS5",  # Ярославль
+                "YRSBP": "YRP5", # Ярославль преф
+                "ZAYM": "ZAY5",  # Займер
+                "ZILL": "ZIL5",  # ЗИЛ
+                "ZVEZ": "ZVE5",  # Звезда
             }
     
     @classmethod
