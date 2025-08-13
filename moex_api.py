@@ -61,8 +61,11 @@ class MOEXAPIClient:
         # Добавляем параметр для получения свежих данных
         if params is None:
             params = {}
-        # Добавляем временную метку для избежания кеширования
-        params['_fresh'] = int(time.time())
+        # Добавляем случайные параметры для избежания кеширования
+        import random
+        params['_t'] = int(time.time())
+        params['_r'] = random.randint(1000, 9999)
+        params['_nocache'] = 1
         
         if not self.session:
             raise RuntimeError("Сессия не инициализирована")
@@ -272,11 +275,11 @@ class MOEXAPIClient:
         elif ticker in ['FSZ5']:
             return price / 10.0
         
-        # Фьючерсы на металлы - торгуются с большим множителем
-        elif ticker in ['GKZ5']:  # ГМК Норникель: множитель 100
+        # Фьючерсы на металлы - нужен больший коэффициент
+        elif ticker in ['GKZ5']:  # ГМК Норникель: умножить на 100 (13.7 → 1370)
             return price * 100.0
-        elif ticker in ['LKZ5']:  # Лукойл: множитель 10  
-            return price * 10.0
+        elif ticker in ['LKZ5']:  # Лукойл: делить на 10
+            return price / 10.0
         
         # Остальные фьючерсы - торгуются в пунктах (1 пункт = 0.01₽)
         elif ticker in ['RNZ5', 'TTZ5', 'ALZ5', 'NMZ5', 'MGZ5', 'CHZ5']:
