@@ -430,25 +430,7 @@ class SimpleTelegramBot:
             # Запускаем асинхронную задачу тестового мониторинга
             asyncio.create_task(self._test_monitoring_task(user_id))
         
-        elif command.startswith("/check_settings"):
-            # Команда для проверки сохранения настроек
-            settings = await self.user_settings.load_user_settings(user_id)
-            if settings:
-                check_message = f"""🔍 **ПРОВЕРКА НАСТРОЕК:**
 
-📊 Пользователь ID: {user_id}
-⏱️ Интервал мониторинга: {settings.monitoring_interval}с
-📈 Порог спреда: {settings.spread_threshold}%
-🔢 Макс. сигналов: {settings.max_signals}
-🟢 Мониторинг активен: {'Да' if settings.is_monitoring else 'Нет'}
-🎯 Выбранные инструменты: {len(settings.get_selected_instruments_list())} из 30
-
-✅ Настройки сохраняются в PostgreSQL"""
-            else:
-                check_message = "❌ Настройки не найдены в базе данных"
-                
-            await self.send_message(chat_id, check_message)
-        
         elif command.startswith("/demo"):
             demo_message = """🎯 ДЕМОНСТРАЦИЯ СИГНАЛОВ
 
@@ -503,25 +485,7 @@ class SimpleTelegramBot:
 🕒 Время ответа: обычно в течение нескольких часов"""
             await self.send_message(chat_id, support_message)
             
-        elif command.startswith("/pairs") or command.startswith("/instruments"):
-            # Показываем список сканируемых пар
-            pairs_text = "📊 *ТОРГОВЫЕ ПАРЫ ДЛЯ АРБИТРАЖА*\n\n"
-            pairs_count = len(self.config.MONITORED_INSTRUMENTS)
-            pairs_text += f"🔢 *Всего пар: {pairs_count}* (в 10 раз больше!)\n\n"
-            
-            pairs_text += "📈 *Акция* → 📊 *Фьючерс*\n"
-            pairs_text += "─" * 25 + "\n"
-            
-            for i, (stock, futures) in enumerate(self.config.MONITORED_INSTRUMENTS.items(), 1):
-                pairs_text += f"{i:2d}. {stock} → {futures}\n"
-            
-            pairs_text += f"\n⚡ *Параметры мониторинга:*"
-            pairs_text += f"\n🔄 Каждые 30 секунд (10 источников)"  
-            pairs_text += f"\n📈 Спреды от 0.2% до 5%+"
-            pairs_text += f"\n🎯 Московская биржа (MOEX)"
-            pairs_text += f"\n⏰ 09:00-18:45 МСК (пн-пт)"
-            
-            await self.send_message(chat_id, pairs_text)
+
             
         elif command.startswith("/reconnect_stats"):
             if self.source_reconnector and sources_library:
