@@ -33,12 +33,12 @@ Preferred communication style: Simple, everyday language.
 - **User-controlled**: Start/stop with same command for easy testing
 - **Visual indicators**: Color-coded spreads with current prices displayed
 
-✅ **STABILIZED API CONFIGURATION (COMPLETE)**
-- **Proven stable limits**: 20 requests/minute, 1 concurrent request for zero blocks
+✅ **ULTRA-CONSERVATIVE API CONFIGURATION (EMERGENCY UPDATE)**
+- **Emergency limits**: 15 requests/minute (reduced from 20), 1 concurrent request
+- **5-second delays**: Increased from 2 seconds to prevent rate limit violations
+- **Smaller batches**: 5 pairs per cycle (reduced from 10) for minimal API load
 - **Sequential processing**: No parallel requests - each API call waits for previous
-- **Balanced delays**: 2 seconds between pairs, moderate timeouts for reliability
-- **Core focus**: Only most liquid instruments to ensure consistent performance
-- **Smart rotation**: Systematic coverage of essential Russian market instruments
+- **Extended cycles**: 6 cycles to cover 30 pairs (30/5) with longer intervals
 
 🔄 **TEMPORARILY DISABLED FOR STABILITY:**
 - Металлургия: 40+ пар

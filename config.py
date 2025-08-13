@@ -11,21 +11,21 @@ class Config:
     # API настройки
     MOEX_API_BASE_URL: str = "https://iss.moex.com/iss"
     REQUEST_TIMEOUT: int = 30
-    RATE_LIMIT_DELAY: float = 1.0  # Задержка между запросами к MOEX API
+    RATE_LIMIT_DELAY: float = 5.0  # Задержка между запросами к MOEX API (увеличена)
     
-    # Правила MOEX API для избежания блокировок (максимально консервативные)
-    MAX_REQUESTS_PER_MINUTE: int = 20  # Максимум запросов в минуту (радикально снижено)
+    # Правила MOEX API для избежания блокировок (ультраконсервативные)
+    MAX_REQUESTS_PER_MINUTE: int = 15  # Максимум запросов в минуту (еще больше снижено)
     MAX_CONCURRENT_REQUESTS: int = 1   # Только 1 одновременный запрос
     RETRY_ATTEMPTS: int = 1            # Минимум попыток
-    RETRY_DELAY: float = 5.0           # Максимальная задержка
+    RETRY_DELAY: float = 8.0           # Увеличенная задержка
     BACKOFF_MULTIPLIER: float = 4.0    # Максимальный множитель задержки
     
-    # Настройки для работы с основными инструментами (стабильная версия)
-    MAX_PAIRS_PER_BATCH: int = 10      # 10 пар за цикл для основных голубых фишек
-    BATCH_DELAY: float = 2.0           # Умеренная задержка между батчами
+    # Настройки для работы с основными инструментами (ультраконсервативная версия)
+    MAX_PAIRS_PER_BATCH: int = 5       # 5 пар за цикл для минимальной нагрузки
+    BATCH_DELAY: float = 5.0           # Увеличенная задержка между батчами
     SMART_ROTATION_ENABLED: bool = True # Умная ротация без повторов
-    FULL_SCAN_CYCLES: int = 3          # Меньше циклов для 30 основных пар (30/10)
-    MIN_REQUEST_INTERVAL: float = 2.0  # Умеренный интервал между запросами
+    FULL_SCAN_CYCLES: int = 6          # Больше циклов для 30 основных пар (30/5)
+    MIN_REQUEST_INTERVAL: float = 5.0  # Увеличенный интервал между запросами
     
     # Настройки мониторинга
     MONITORING_INTERVAL_MIN: int = 300  # 5 минут в секундах
