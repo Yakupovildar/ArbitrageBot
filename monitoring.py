@@ -283,16 +283,16 @@ class ArbitrageMonitor:
             format_end = ""
         
         # Определяем направление стрелок
-        stock_arrow = "📈" if signal.stock_position == "BUY" else "📉"
-        futures_arrow = "📈" if signal.futures_position == "BUY" else "📉"
+        stock_arrow = "↗️" if signal.stock_position == "BUY" else "↘️"
+        futures_arrow = "↗️" if signal.futures_position == "BUY" else "↘️"
         
         message = f"{emoji} {format_start}АРБИТРАЖ СИГНАЛ{format_end}\n\n"
         message += f"🎯 *{signal.stock_ticker}/{signal.futures_ticker}*\n"
         message += f"📊 Спред: *{signal.spread_percent:.2f}%*\n\n"
         
         message += f"💼 *Позиции:*\n"
-        message += f"{stock_arrow} Акции {signal.stock_ticker}: *{signal.stock_position}* {signal.stock_lots} лотов\n"
-        message += f"{futures_arrow} Фьючерс {signal.futures_ticker}: *{signal.futures_position}* {signal.futures_lots} лотов\n\n"
+        message += f"{stock_arrow} Акции {signal.stock_ticker}: *{signal.stock_position}* {self._format_lots(signal.stock_lots)}\n"
+        message += f"{futures_arrow} Фьючерс {signal.futures_ticker}: *{signal.futures_position}* {self._format_lots(signal.futures_lots)}\n\n"
         
         message += f"💰 *Цены:*\n"
         message += f"📈 {signal.stock_ticker}: {signal.stock_price:.2f} ₽\n"
@@ -307,6 +307,15 @@ class ArbitrageMonitor:
         
         return message
     
+    def _format_lots(self, count: int) -> str:
+        """Правильное склонение слова 'лот' в русском языке"""
+        if count % 10 == 1 and count % 100 != 11:
+            return f"{count} лот"
+        elif count % 10 in [2, 3, 4] and count % 100 not in [12, 13, 14]:
+            return f"{count} лота"
+        else:
+            return f"{count} лотов"
+    
     def _format_close_signal(self, signal: ArbitrageSignal) -> str:
         """Форматирование сигнала на закрытие"""
         
@@ -316,8 +325,8 @@ class ArbitrageMonitor:
         message += f"📉 Спред снизился до: *{signal.spread_percent:.2f}%*\n\n"
         
         message += f"🔚 *Закрываем позицию:*\n"
-        message += f"• Акции {signal.stock_ticker}: *{signal.stock_position}* {signal.stock_lots} лотов\n"
-        message += f"• Фьючерс {signal.futures_ticker}: *{signal.futures_position}* {signal.futures_lots} лотов\n\n"
+        message += f"• Акции {signal.stock_ticker}: *{signal.stock_position}* {self._format_lots(signal.stock_lots)}\n"
+        message += f"• Фьючерс {signal.futures_ticker}: *{signal.futures_position}* {self._format_lots(signal.futures_lots)}\n\n"
         
         message += f"⏰ Время: {signal.timestamp}"
         

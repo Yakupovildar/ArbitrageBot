@@ -41,22 +41,30 @@ class ArbitrageCalculator:
         
     def calculate_spread(self, stock_price: float, futures_price: float, 
                         stock_ticker: str, futures_ticker: str) -> Optional[float]:
-        """Расчет спреда между спотом и фьючерсом
+        """Расчет спреда между спотом и фьючерсом с учетом размеров лотов
         
         Логика арбитража:
         - Лонг спот (акция) - КУПИТЬ
         - Шорт фьючерс - ПРОДАТЬ  
         - Ожидаем что фьючерс торгуется с премией к споту
-        - Спред = (фьючерс - спот) / спот * 100%
+        - Спред = (фьючерс_за_лот - спот_за_лот) / спот_за_лот * 100%
         """
         try:
             if stock_price <= 0 or futures_price <= 0:
                 return None
             
-            # Простой расчет спреда в процентах
-            # Если спред положительный - фьючерс дороже спота (нормальная ситуация)
-            # Если спред отрицательный - спот дороже фьючерса (арбитраж)
-            spread_percent = ((futures_price - stock_price) / stock_price) * 100
+            # Получаем размеры лотов
+            stock_lot_size = self.config.get_lot_multipliers().get(stock_ticker, 1)
+            futures_lot_value = self.config.get_futures_lot_value(futures_ticker)
+            
+            # Рассчитываем стоимость одного лота для каждого инструмента
+            stock_lot_cost = stock_price * stock_lot_size  # Цена за лот акций
+            futures_lot_cost = futures_price * futures_lot_value  # Цена за лот фьючерса
+            
+            # Спред рассчитывается между лотами, а не между отдельными ценами
+            spread_percent = ((futures_lot_cost - stock_lot_cost) / stock_lot_cost) * 100
+            
+            logger.debug(f"Спред {stock_ticker}/{futures_ticker}: акция {stock_price}*{stock_lot_size}={stock_lot_cost:.2f}, фьючерс {futures_price}*{futures_lot_value}={futures_lot_cost:.2f}, спред {spread_percent:.4f}%")
             
             return spread_percent
             
@@ -66,18 +74,36 @@ class ArbitrageCalculator:
     
     def calculate_position_sizes(self, stock_ticker: str, futures_ticker: str, 
                                investment_amount: float = 100000) -> Tuple[int, int]:
-        """Расчет размеров позиций для арбитража"""
+        """Расчет размеров позиций для арбитража с учетом лотности"""
         try:
-            # Используем стандартное соотношение для простоты
-            # 100 лотов акций к 1 лоту фьючерса для большинства инструментов
-            stock_lots = 100
-            futures_lots = 1
+            # Получаем размеры лотов
+            stock_lot_size = self.config.get_lot_multipliers().get(stock_ticker, 1)
+            futures_lot_value = self.config.get_futures_lot_value(futures_ticker)
             
-            return stock_lots, futures_lots
+            # Рассчитываем количество лотов для сбалансированной позиции
+            # Стремимся к тому, чтобы стоимость позиций была примерно равной
+            if stock_lot_size == futures_lot_value:
+                # Равные размеры лотов - 1 к 1
+                stock_lots = 1
+                futures_lots = 1
+            elif stock_lot_size > futures_lot_value:
+                # Лот акций больше - берем меньше лотов акций
+                ratio = stock_lot_size // futures_lot_value
+                stock_lots = 1
+                futures_lots = ratio
+            else:
+                # Лот фьючерса больше - берем больше лотов акций
+                ratio = futures_lot_value // stock_lot_size
+                stock_lots = ratio
+                futures_lots = 1
+            
+            logger.debug(f"Позиции {stock_ticker}/{futures_ticker}: {stock_lots} лотов акций ({stock_lot_size} акций/лот), {futures_lots} лотов фьючерса ({futures_lot_value} акций/контракт)")
+            
+            return int(stock_lots), int(futures_lots)
             
         except Exception as e:
             logger.error(f"Ошибка расчета размеров позиций для {stock_ticker}/{futures_ticker}: {e}")
-            return 100, 1
+            return 1, 1
     
     def analyze_arbitrage_opportunity(self, stock_ticker: str, futures_ticker: str,
                                     stock_price: float, futures_price: float,
