@@ -839,16 +839,41 @@ class SimpleTelegramBot:
             await self.answer_callback_query(callback_query_id, "Выбор инструментов")
             
         elif callback_data.startswith("instrument_add_"):
-            instrument = callback_data.replace("instrument_add_", "")
-            success = self.user_settings.add_user_instrument(user_id, instrument)
-            
-            if success:
-                # Сохраняем в базу
-                await self._save_user_settings_to_db(user_id)
+            # Формат: instrument_add_{sector_hash}_{instrument}
+            parts = callback_data.replace("instrument_add_", "").split("_", 1)
+            if len(parts) == 2:
+                sector_hash, instrument = parts
+                sector_hash = int(sector_hash)
+                sector_name = self.user_settings.get_sector_name_by_hash(sector_hash, self.config.MONITORED_INSTRUMENTS)
                 
-                # Обновляем клавиатуру
-                keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
-                instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
+                success = self.user_settings.add_user_instrument(user_id, instrument)
+                
+                if success:
+                    # Сохраняем в базу
+                    await self._save_user_settings_to_db(user_id)
+                    
+                    # Остаемся в том же секторе - обновляем клавиатуру сектора
+                    keyboard = self.user_settings.get_sector_instruments_keyboard(user_id, sector_name, self.config.MONITORED_INSTRUMENTS)
+                    sector_text = f"""📊 *{sector_name}*
+
+Выберите инструменты для мониторинга:
+
+✅ = выбрано, ⭕ = не выбрано
+Лимит: максимум 10 пар на пользователя"""
+                    
+                    await self.edit_message_text(chat_id, callback_query["message"]["message_id"], sector_text, keyboard)
+                    await self.answer_callback_query(callback_query_id, f"✅ {instrument} добавлен")
+                else:
+                    await self.answer_callback_query(callback_query_id, "❌ Максимум 10 инструментов")
+            else:
+                # Старый формат - вернуться к общему списку
+                instrument = callback_data.replace("instrument_add_", "")
+                success = self.user_settings.add_user_instrument(user_id, instrument)
+                
+                if success:
+                    await self._save_user_settings_to_db(user_id)
+                    keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
+                    instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
 
 ⚠️ *Ограничения:*
 • Максимум 10 пар на пользователя
@@ -856,23 +881,48 @@ class SimpleTelegramBot:
 • Снижает нагрузку на систему
 
 ✅ = выбрано, ⭕ = не выбрано"""
-                
-                await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
-                await self.answer_callback_query(callback_query_id, f"✅ {instrument} добавлен")
-            else:
-                await self.answer_callback_query(callback_query_id, "❌ Максимум 10 инструментов")
+                    
+                    await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
+                    await self.answer_callback_query(callback_query_id, f"✅ {instrument} добавлен")
+                else:
+                    await self.answer_callback_query(callback_query_id, "❌ Максимум 10 инструментов")
                 
         elif callback_data.startswith("instrument_remove_"):
-            instrument = callback_data.replace("instrument_remove_", "")
-            success = self.user_settings.remove_user_instrument(user_id, instrument)
-            
-            if success:
-                # Сохраняем в базу
-                await self._save_user_settings_to_db(user_id)
+            # Формат: instrument_remove_{sector_hash}_{instrument}
+            parts = callback_data.replace("instrument_remove_", "").split("_", 1)
+            if len(parts) == 2:
+                sector_hash, instrument = parts
+                sector_hash = int(sector_hash)
+                sector_name = self.user_settings.get_sector_name_by_hash(sector_hash, self.config.MONITORED_INSTRUMENTS)
                 
-                # Обновляем клавиатуру
-                keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
-                instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
+                success = self.user_settings.remove_user_instrument(user_id, instrument)
+                
+                if success:
+                    # Сохраняем в базу
+                    await self._save_user_settings_to_db(user_id)
+                    
+                    # Остаемся в том же секторе - обновляем клавиатуру сектора
+                    keyboard = self.user_settings.get_sector_instruments_keyboard(user_id, sector_name, self.config.MONITORED_INSTRUMENTS)
+                    sector_text = f"""📊 *{sector_name}*
+
+Выберите инструменты для мониторинга:
+
+✅ = выбрано, ⭕ = не выбрано
+Лимит: максимум 10 пар на пользователя"""
+                    
+                    await self.edit_message_text(chat_id, callback_query["message"]["message_id"], sector_text, keyboard)
+                    await self.answer_callback_query(callback_query_id, f"❌ {instrument} удален")
+                else:
+                    await self.answer_callback_query(callback_query_id, "Ошибка удаления")
+            else:
+                # Старый формат
+                instrument = callback_data.replace("instrument_remove_", "")
+                success = self.user_settings.remove_user_instrument(user_id, instrument)
+                
+                if success:
+                    await self._save_user_settings_to_db(user_id)
+                    keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
+                    instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
 
 ⚠️ *Ограничения:*
 • Максимум 10 пар на пользователя
@@ -880,11 +930,11 @@ class SimpleTelegramBot:
 • Снижает нагрузку на систему
 
 ✅ = выбрано, ⭕ = не выбрано"""
-                
-                await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
-                await self.answer_callback_query(callback_query_id, f"❌ {instrument} удален")
-            else:
-                await self.answer_callback_query(callback_query_id, "Ошибка удаления")
+                    
+                    await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
+                    await self.answer_callback_query(callback_query_id, f"❌ {instrument} удален")
+                else:
+                    await self.answer_callback_query(callback_query_id, "Ошибка удаления")
                 
         elif callback_data == "instruments_clear":
             self.user_settings.clear_user_instruments(user_id)
@@ -1347,9 +1397,9 @@ class SimpleTelegramBot:
                 pair_count = 0
                 processed_pairs = []
                 
-                # Обрабатываем первые 5 пар с данными
+                # Обрабатываем ВСЕ пары с данными (не ограничиваем до 5)
                 for stock_ticker, quote_data in quotes.items():
-                    if pair_count >= 5:
+                    if pair_count >= 15:  # Увеличим лимит до 15 пар
                         break
                     
                     # Проверяем структуру данных
@@ -1438,13 +1488,10 @@ class SimpleTelegramBot:
                 
                 await self.send_message(user_id, test_message)
                 
-                # Если это первая итерация, ждем меньше
-                if iteration == 1:
-                    await asyncio.sleep(30)  # 30 секунд до второй итерации
-                else:
-                    # Рандомная задержка 5-7 минут для последующих итераций
-                    delay = random.randint(300, 420)
-                    await asyncio.sleep(delay)
+                # Фиксированная задержка 2 минуты между итерациями для более частого обновления
+                delay = 120  # 2 минуты
+                logger.info(f"Следующая проверка через {delay} секунд...")
+                await asyncio.sleep(delay)
                 
             except Exception as e:
                 error_msg = f"⚠️ Ошибка в тестовом мониторинге: {str(e)}"
