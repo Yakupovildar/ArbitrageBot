@@ -50,22 +50,14 @@ class ArbitrageCalculator:
         - Спред = (фьючерс_за_лот - спот_за_лот) / спот_за_лот * 100%
         """
         try:
+            # БАЗОВАЯ ПРОВЕРКА: цены должны быть положительными
             if stock_price <= 0 or futures_price <= 0:
-                return None
-            
-            # КРИТИЧЕСКАЯ ПРОВЕРКА: отклоняем абсурдные цены
-            if stock_price < 1.0 and futures_price > 1000.0:
-                logger.warning(f"Подозрительные цены {stock_ticker}/{futures_ticker}: акция {stock_price:.2f}₽, фьючерс {futures_price:.2f}₽ - пропускаем")
+                logger.warning(f"Некорректные цены {stock_ticker}/{futures_ticker}: акция {stock_price:.2f}₽, фьючерс {futures_price:.2f}₽")
                 return None
             
             # ИСПРАВЛЕННЫЙ РАСЧЕТ: Сравниваем цены за одну акцию, а не за лоты
             # Спред = (цена_фьючерса - цена_акции) / цена_акции * 100%
             spread_percent = ((futures_price - stock_price) / stock_price) * 100
-            
-            # Проверяем что спред не превышает разумные пределы (±50%)
-            if abs(spread_percent) > 50.0:
-                logger.warning(f"Аномально большой спред {stock_ticker}/{futures_ticker}: {spread_percent:.2f}% - возможна ошибка в ценах")
-                return None
             
             logger.debug(f"Спред {stock_ticker}/{futures_ticker}: акция {stock_price:.2f}₽, фьючерс {futures_price:.2f}₽, спред {spread_percent:.4f}%")
             

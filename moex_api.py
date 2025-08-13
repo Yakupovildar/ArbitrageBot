@@ -128,7 +128,7 @@ class MOEXAPIClient:
         params = {
             'iss.meta': 'off',
             'iss.only': 'securities',
-            'securities.columns': 'SECID,LAST,PREVPRICE'
+            'securities.columns': 'SECID,LAST,PREVPRICE,LOTSIZE'
         }
         
         data = await self._make_request(url, params)
@@ -144,21 +144,32 @@ class MOEXAPIClient:
                     if not row or row[0] != ticker:
                         continue
                     
+                    # Получаем размер лота
+                    lot_size = 1
+                    if 'LOTSIZE' in columns:
+                        lot_index = columns.index('LOTSIZE')
+                        if len(row) > lot_index and row[lot_index] is not None:
+                            lot_size = int(row[lot_index])
+                    
                     # Сначала пробуем LAST (цена последней сделки)
                     if 'LAST' in columns:
                         last_index = columns.index('LAST')
                         if len(row) > last_index and row[last_index] is not None:
-                            price = float(row[last_index])
-                            logger.debug(f"Цена акции {ticker} (LAST): {price}")
-                            return price
+                            price_per_share = float(row[last_index])
+                            # Для арбитража нужна цена за лот (как для фьючерсов)
+                            price_per_lot = price_per_share * lot_size
+                            logger.debug(f"Цена акции {ticker} (LAST): {price_per_share}₽/шт × {lot_size} = {price_per_lot}₽/лот")
+                            return price_per_lot
                     
                     # Если LAST нет, используем PREVPRICE (цена предыдущего дня)
                     if 'PREVPRICE' in columns:
                         prev_index = columns.index('PREVPRICE')
                         if len(row) > prev_index and row[prev_index] is not None:
-                            price = float(row[prev_index])
-                            logger.debug(f"Цена акции {ticker} (PREVPRICE): {price}")
-                            return price
+                            price_per_share = float(row[prev_index])
+                            # Для арбитража нужна цена за лот (как для фьючерсов)
+                            price_per_lot = price_per_share * lot_size
+                            logger.debug(f"Цена акции {ticker} (PREVPRICE): {price_per_share}₽/шт × {lot_size} = {price_per_lot}₽/лот")
+                            return price_per_lot
                             
             return None
             
