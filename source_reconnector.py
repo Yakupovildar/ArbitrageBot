@@ -15,9 +15,10 @@ logger = logging.getLogger(__name__)
 class SourceReconnector:
     """Класс для автоматического переподключения к неисправным источникам"""
     
-    def __init__(self, data_sources: DataSourceManager, config: Config):
+    def __init__(self, data_sources: DataSourceManager, config: Config, sources_library=None):
         self.data_sources = data_sources
         self.config = config
+        self.sources_library = sources_library
         self.reconnect_interval = 1800  # 30 минут в секундах
         self.is_running = False
         self.task = None
@@ -72,7 +73,25 @@ class SourceReconnector:
             
         logger.info(f"🔄 Начало переподключения к {len(failed_sources)} источникам")
         
+        # Сначала пытаемся переподключиться к существующим источникам
+        success_count = await self._try_reconnect_existing(failed_sources)
+        
+        # Если есть библиотека источников - проверяем замены
+        if self.sources_library:
+            replaced_count = await self.sources_library.check_and_replace_failed_sources()
+            if replaced_count > 0:
+                logger.info(f"🔄 Заменено {replaced_count} неисправных источников")
+                success_count += replaced_count
+        
+        if success_count > 0:
+            logger.info(f"🎉 Всего восстановлено/заменено: {success_count} источников")
+        else:
+            logger.warning("⚠️ Не удалось восстановить или заменить ни один источник")
+    
+    async def _try_reconnect_existing(self, failed_sources: List[str]) -> int:
+        """Попытка переподключения к существующим источникам"""
         success_count = 0
+        
         for source_name in failed_sources:
             try:
                 # Проверяем, не слишком ли часто пытаемся переподключиться
@@ -102,10 +121,7 @@ class SourceReconnector:
             except Exception as e:
                 logger.error(f"Ошибка при переподключении к {source_name}: {e}")
         
-        if success_count > 0:
-            logger.info(f"🎉 Успешно восстановлено соединение с {success_count} источниками")
-        else:
-            logger.warning("⚠️ Не удалось восстановить соединение ни с одним источником")
+        return success_count
     
     async def _get_failed_sources(self) -> List[str]:
         """Получение списка неисправных источников"""

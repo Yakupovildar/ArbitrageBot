@@ -73,7 +73,7 @@ class Database:
                     status VARCHAR(50) DEFAULT 'unknown',
                     last_check TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     error_count INTEGER DEFAULT 0,
-                    last_error TEXT
+                    last_error TEXT DEFAULT NULL
                 )
             """)
             
@@ -174,6 +174,7 @@ class Database:
         """Обновление статуса источника данных"""
         try:
             async with self.pool.acquire() as conn:
+                error_text = error if error is not None else None
                 await conn.execute("""
                     INSERT INTO data_sources_status 
                     (source_name, status, last_check, error_count, last_error)
@@ -188,7 +189,7 @@ class Database:
                             ELSE 0
                         END,
                         last_error = EXCLUDED.last_error
-                """, source_name, status, error)
+                """, source_name, status, error_text)
                 
         except Exception as e:
             logger.error(f"❌ Ошибка обновления статуса источника: {e}")

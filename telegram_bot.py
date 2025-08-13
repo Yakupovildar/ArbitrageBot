@@ -22,6 +22,7 @@ from user_settings import UserSettingsManager
 from signal_queue import SignalQueue, UserMonitoringScheduler
 from source_reconnector import SourceReconnector
 from database import db
+from sources_library import sources_library
 
 # Класс для хранения истории спредов  
 class SpreadHistory:
@@ -91,11 +92,15 @@ class SimpleTelegramBot:
         # Инициализация базы данных
         await db.init_connection()
         
+        # Инициализация библиотеки источников (поиск лучших 10 источников)
+        logger.info("🔍 Инициализация активных источников данных...")
+        await sources_library.initialize_active_sources(10)
+        
         # Загрузка сохраненных настроек пользователей
         await self._restore_user_settings()
         
-        # Запуск автопереподключения
-        self.source_reconnector = SourceReconnector(self.data_sources, self.config)
+        # Запуск автопереподключения с интеграцией библиотеки источников
+        self.source_reconnector = SourceReconnector(self.data_sources, self.config, sources_library)
         await self.source_reconnector.start()
         
         return self
@@ -451,27 +456,58 @@ class SimpleTelegramBot:
 
 🔧 *Техническая информация:*
 • /reconnect_stats - статистика источников данных
+• /sources_info - информация об активных источниках
 
 🕒 Время ответа: обычно в течение нескольких часов"""
             await self.send_message(chat_id, support_message)
             
         elif command.startswith("/reconnect_stats"):
-            if self.source_reconnector:
-                stats = await self.source_reconnector.get_reconnect_stats()
+            if self.source_reconnector and sources_library:
+                # Статистика переподключения
+                reconnect_stats = await self.source_reconnector.get_reconnect_stats()
+                
+                # Статистика библиотеки источников
+                library_stats = sources_library.get_library_stats()
+                
                 message = f"""📊 Статистика источников данных:
 
-🔗 Всего источников: {stats['total_sources']}
-✅ Работает: {stats['working_sources']}
-❌ Неисправно: {stats['failed_sources']}
+📚 **Библиотека источников:**
+🔗 Всего в библиотеке: {library_stats['total_sources']}
+✅ Активных: {library_stats['active_sources']}
+📈 Средняя надежность: {library_stats['average_reliability']}%
+🔄 Замен выполнено: {library_stats['replacement_count']}
 
-⏰ Последняя проверка: {stats['last_check']}
-🔄 Следующая через: {stats['next_check_in']}
+🔧 **Текущее состояние:**
+✅ Работает: {reconnect_stats['working_sources']}
+❌ Неисправно: {reconnect_stats['failed_sources']}
+
+⏰ Последняя проверка: {reconnect_stats['last_check']}
+🔄 Следующая через: {reconnect_stats['next_check_in']}
 
 🔄 Автопереподключение каждые 30 минут во время торгов
+🔀 Автозамена после 3 неудачных попыток (90 минут)
 
-ℹ️ Некоторые источники требуют API ключи для полноценной работы"""
+ℹ️ Система автоматически заменяет неисправные источники на рабочие из библиотеки"""
             else:
                 message = "❌ Система переподключения недоступна"
+                
+            await self.send_message(chat_id, message)
+            
+        elif command.startswith("/sources_info"):
+            if sources_library:
+                active_sources = sources_library.get_active_sources_info()
+                
+                message = "📋 **Активные источники данных:**\n\n"
+                
+                for i, source in enumerate(active_sources, 1):
+                    message += f"{i}. **{source['name']}**\n"
+                    message += f"   📊 Надежность: {source['reliability']}%\n"
+                    message += f"   🔒 Авторизация: {'Требуется' if source['requires_auth'] else 'Не требуется'}\n"
+                    message += f"   📝 {source['description']}\n\n"
+                
+                message += "💡 Используйте /reconnect_stats для общей статистики"
+            else:
+                message = "❌ Библиотека источников недоступна"
                 
             await self.send_message(chat_id, message)
             
