@@ -1122,15 +1122,26 @@ class SimpleTelegramBot:
                 test_message += f"📊 Проверено пар: {len(quotes)}\n\n"
                 
                 spread_found = False
-                for stock_ticker, (stock_price, futures_price) in list(quotes.items())[:5]:  # Первые 5 пар
+                pair_count = 0
+                for stock_ticker, (stock_price, futures_price) in quotes.items():
+                    if pair_count >= 5:  # Показываем только первые 5 пар
+                        break
+                        
                     if stock_price is None or futures_price is None:
+                        logger.debug(f"Нет данных для {stock_ticker}: спот={stock_price}, фьючерс={futures_price}")
                         continue
                     
-                    futures_ticker = self.config.MONITORED_INSTRUMENTS[stock_ticker]
+                    futures_ticker = self.config.MONITORED_INSTRUMENTS.get(stock_ticker)
+                    if not futures_ticker:
+                        continue
                     
-                    # Рассчитываем спред
-                    spread = ((futures_price - stock_price) / stock_price) * 100
+                    # Рассчитываем спред используя калькулятор
+                    spread = self.calculator.calculate_spread(stock_price, futures_price, stock_ticker, futures_ticker)
+                    if spread is None:
+                        continue
+                    
                     spread_found = True
+                    pair_count += 1
                     
                     # Определяем эмодзи для спреда
                     if abs(spread) >= 2.0:

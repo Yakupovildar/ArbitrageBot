@@ -41,23 +41,22 @@ class ArbitrageCalculator:
         
     def calculate_spread(self, stock_price: float, futures_price: float, 
                         stock_ticker: str, futures_ticker: str) -> Optional[float]:
-        """Расчет спреда между спотом и фьючерсом"""
+        """Расчет спреда между спотом и фьючерсом
+        
+        Логика арбитража:
+        - Лонг спот (акция) - КУПИТЬ
+        - Шорт фьючерс - ПРОДАТЬ  
+        - Ожидаем что фьючерс торгуется с премией к споту
+        - Спред = (фьючерс - спот) / спот * 100%
+        """
         try:
             if stock_price <= 0 or futures_price <= 0:
                 return None
             
-            # Получаем спецификацию фьючерса для корректного расчета
-            futures_specs = self.config.get_futures_specs()
-            
-            if futures_ticker in futures_specs:
-                lot_size = futures_specs[futures_ticker]["lot_size"]
-                # Корректируем цену фьючерса с учетом размера лота
-                adjusted_futures_price = futures_price / lot_size
-            else:
-                adjusted_futures_price = futures_price
-            
-            # Рассчитываем спред в процентах
-            spread_percent = ((adjusted_futures_price - stock_price) / stock_price) * 100
+            # Простой расчет спреда в процентах
+            # Если спред положительный - фьючерс дороже спота (нормальная ситуация)
+            # Если спред отрицательный - спот дороже фьючерса (арбитраж)
+            spread_percent = ((futures_price - stock_price) / stock_price) * 100
             
             return spread_percent
             
@@ -69,28 +68,20 @@ class ArbitrageCalculator:
                                investment_amount: float = 100000) -> Tuple[int, int]:
         """Расчет размеров позиций для арбитража"""
         try:
-            futures_specs = self.config.get_futures_specs()
-            
-            if futures_ticker not in futures_specs:
-                # Используем стандартное соотношение 1:1
-                return 1, 1
-            
-            lot_size = futures_specs[futures_ticker]["lot_size"]
-            
-            # Рассчитываем оптимальные размеры позиций
-            # Для простоты используем соотношение на основе размера лота фьючерса
-            futures_lots = max(1, int(investment_amount / (100 * lot_size)))
-            stock_lots = futures_lots * lot_size
+            # Используем стандартное соотношение для простоты
+            # 100 лотов акций к 1 лоту фьючерса для большинства инструментов
+            stock_lots = 100
+            futures_lots = 1
             
             return stock_lots, futures_lots
             
         except Exception as e:
             logger.error(f"Ошибка расчета размеров позиций для {stock_ticker}/{futures_ticker}: {e}")
-            return 1, 1
+            return 100, 1
     
     def analyze_arbitrage_opportunity(self, stock_ticker: str, futures_ticker: str,
                                     stock_price: float, futures_price: float,
-                                    timestamp: str, min_spread_threshold: float = None) -> Optional[ArbitrageSignal]:
+                                    timestamp: str, min_spread_threshold: float = 1.0) -> Optional[ArbitrageSignal]:
         """Анализ арбитражной возможности"""
         
         spread = self.calculate_spread(stock_price, futures_price, stock_ticker, futures_ticker)
