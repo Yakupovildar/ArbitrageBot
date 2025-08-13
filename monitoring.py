@@ -148,7 +148,7 @@ class ArbitrageMonitor:
             
             progress_percent = (len(self.instruments_processed_in_cycle) / len(all_instruments)) * 100
             
-            logger.info(f"📦 Умный батч {batch_index + 1}/{total_batches}: {len(batch_instruments)} пар | Покрытие: {progress_percent:.1f}%")
+            logger.info(f"📦 Консервативный батч {batch_index + 1}/{total_batches}: {len(batch_instruments)} пар | Покрытие: {progress_percent:.1f}%")
             
             # Получаем котировки только для текущего батча
             async with MOEXAPIClient() as moex_client:

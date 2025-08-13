@@ -213,14 +213,18 @@ class MOEXAPIClient:
             futures_task = self.get_futures_price(futures_ticker)
             tasks.append((stock_ticker, stock_task, futures_task))
         
-        # Правило 7: Ограничиваем количество одновременных запросов
-        semaphore = asyncio.Semaphore(self.config.MAX_CONCURRENT_REQUESTS)
+        # Правило 7: Ограничиваем количество одновременных запросов (ужесточено)
+        semaphore = asyncio.Semaphore(1)  # Только 1 одновременный запрос
         
         async def fetch_pair(stock_ticker, stock_task, futures_task):
             async with semaphore:
-                stock_price, futures_price = await asyncio.gather(
-                    stock_task, futures_task, return_exceptions=True
-                )
+                # Добавляем задержку перед каждой парой
+                await asyncio.sleep(self.config.MIN_REQUEST_INTERVAL)
+                
+                # Получаем цены последовательно, а не параллельно
+                stock_price = await stock_task
+                await asyncio.sleep(0.5)  # Минимальная задержка между запросами
+                futures_price = await futures_task
                 
                 # Обработка исключений
                 if isinstance(stock_price, Exception):

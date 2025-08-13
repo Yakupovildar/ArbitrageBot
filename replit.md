@@ -20,18 +20,18 @@ Preferred communication style: Simple, everyday language.
 
 ✅ **INTELLIGENT SCANNING SYSTEM: 300+ TRADING PAIRS (COMPLETE)**
 - **20x increase**: Expanded from 15 to 300+ trading pairs (comprehensive MOEX coverage)
-- **Smart sequential rotation**: 25 pairs per cycle with NO REPEATS until full scan complete
-- **Guaranteed coverage**: Every pair scanned within 12 cycles (6 minutes at 30s intervals)
+- **Smart sequential rotation**: 15 pairs per cycle with NO REPEATS until full scan complete
+- **Guaranteed coverage**: Every pair scanned within 20 cycles (10 minutes at 30s intervals)
 - **Progress tracking**: Real-time coverage percentage and cycle completion status
 - **Settings persistence fixed**: User configurations now properly save to database
 - **Navigation improved**: Back button returns to main menu correctly
 
-✅ **INTELLIGENT BATCH PROCESSING (COMPLETE)**
-- **Sequential scanning**: No more random duplicates - systematic coverage of all pairs
-- **Increased batch size**: 25 pairs per cycle (2.5x more than before)
-- **Faster completion**: Full market scan in 12 cycles vs random infinite time
-- **Progress visibility**: Shows exact coverage progress (0% → 100%)
-- **Smart reset**: Automatically starts new cycle when 100% coverage reached
+✅ **CONSERVATIVE API OPTIMIZATION (COMPLETE)**
+- **Ultra-safe limits**: 30 requests/minute, 1 concurrent request for zero blocks
+- **Sequential processing**: No parallel requests - each API call waits for previous
+- **Extended delays**: 2.5 seconds between requests, 0.5s between stock/futures
+- **Batch processing**: 15 pairs per cycle to stay well under API limits
+- **Smart rotation**: Systematic coverage without duplicates ensures efficiency
 
 ✅ **DATABASE INTEGRATION & PERSISTENT SETTINGS (COMPLETE)**
 - **PostgreSQL database**: Added full database integration with asyncpg
