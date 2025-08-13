@@ -18,11 +18,20 @@ class MOEXAPIClient:
         self.last_request_time = 0
         self.request_times = []  # История времен запросов для контроля частоты
         self.failed_requests = {}  # Счетчик неудачных запросов по URL
+        self.cache_cleared_at = 0  # Время последней очистки кеша
         
     async def __aenter__(self):
         """Асинхронный контекст менеджер - вход"""
+        # Создаем сессию с агрессивными заголовками против кеширования
+        headers = {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'User-Agent': f'ArbitrageBot/{int(time.time())}'
+        }
         self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=self.config.REQUEST_TIMEOUT)
+            timeout=aiohttp.ClientTimeout(total=self.config.REQUEST_TIMEOUT),
+            headers=headers
         )
         return self
         
@@ -61,11 +70,18 @@ class MOEXAPIClient:
         # Добавляем параметр для получения свежих данных
         if params is None:
             params = {}
-        # Добавляем случайные параметры для избежания кеширования
+        # Агрессивная борьба с кешированием
         import random
-        params['_t'] = int(time.time())
-        params['_r'] = random.randint(1000, 9999)
-        params['_nocache'] = 1
+        current_time = int(time.time() * 1000)  # Миллисекунды для точности
+        params.update({
+            '_t': current_time,
+            '_r': random.randint(10000, 99999),
+            '_nocache': 1,
+            'cache': 'no',
+            'pragma': 'no-cache',
+            '_v': random.randint(1, 999),
+            '_bust': current_time % 10000
+        })
         
         if not self.session:
             raise RuntimeError("Сессия не инициализирована")

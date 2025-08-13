@@ -150,8 +150,15 @@ class ArbitrageMonitor:
             
             logger.info(f"📦 Консервативный батч {batch_index + 1}/{total_batches}: {len(batch_instruments)} пар | Покрытие: {progress_percent:.1f}%")
             
-            # Получаем котировки только для текущего батча
+            # Получаем котировки только для текущего батча с очисткой кеша
             async with MOEXAPIClient() as moex_client:
+                # Принудительно очищаем кеш перед запросом
+                try:
+                    if hasattr(moex_client, 'clear_cache'):
+                        await moex_client.clear_cache()
+                except Exception:
+                    pass  # Игнорируем ошибки очистки кеша
+                    
                 quotes = await moex_client.get_multiple_quotes(batch_instruments)
             
             if not quotes:
