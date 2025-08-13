@@ -80,7 +80,7 @@ class SimpleTelegramBot:
         self.monitoring_controller = MonitoringController()
         self.data_sources = DataSourceManager()
         self.user_settings = UserSettingsManager()
-        self.signal_queue = SignalQueue(max_signals_per_batch=5, signal_interval=3.0)
+        self.signal_queue = SignalQueue(max_signals_per_batch=3, signal_interval=3.0)
         self.monitoring_scheduler = UserMonitoringScheduler()
         
         # Автопереподключение к источникам

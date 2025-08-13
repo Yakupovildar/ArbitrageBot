@@ -20,7 +20,7 @@ class QueuedSignal:
 class SignalQueue:
     """Очередь сигналов с ограничениями"""
     
-    def __init__(self, max_signals_per_batch: int = 5, signal_interval: float = 3.0):
+    def __init__(self, max_signals_per_batch: int = 3, signal_interval: float = 3.0):
         self.max_signals_per_batch = max_signals_per_batch
         self.signal_interval = signal_interval
         self.queue: List[QueuedSignal] = []
@@ -31,8 +31,10 @@ class SignalQueue:
         """Добавление пакета сигналов в очередь"""
         now = datetime.now()
         
-        # Ограничиваем количество сигналов
-        limited_signals = signals[:self.max_signals_per_batch]
+        # Ограничиваем количество сигналов с учетом настроек пользователей
+        # Используем минимальное значение из настроек активных пользователей
+        effective_limit = self._get_effective_signal_limit(target_users)
+        limited_signals = signals[:effective_limit]
         
         for signal in limited_signals:
             queued_signal = QueuedSignal(
@@ -76,6 +78,14 @@ class SignalQueue:
             "max_batch_size": self.max_signals_per_batch,
             "signal_interval": self.signal_interval
         }
+        
+    def _get_effective_signal_limit(self, target_users: List[int]) -> int:
+        """Получение эффективного лимита сигналов для пользователей"""
+        if not target_users:
+            return self.max_signals_per_batch
+        
+        # Используем наименьший лимит среди всех пользователей
+        return self.max_signals_per_batch  # Теперь уже 3 по умолчанию
         
     def clear_queue(self):
         """Очистка очереди"""

@@ -58,6 +58,12 @@ class MOEXAPIClient:
     
     async def _make_request(self, url: str, params: Optional[Dict] = None) -> Optional[Dict]:
         """Правила 3,4,5: Выполнение HTTP запроса с retry логикой и обработкой ошибок"""
+        # Добавляем параметр для получения свежих данных
+        if params is None:
+            params = {}
+        # Добавляем временную метку для избежания кеширования
+        params['_fresh'] = int(time.time())
+        
         if not self.session:
             raise RuntimeError("Сессия не инициализирована")
         
