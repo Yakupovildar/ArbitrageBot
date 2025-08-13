@@ -13,19 +13,19 @@ class Config:
     REQUEST_TIMEOUT: int = 30
     RATE_LIMIT_DELAY: float = 1.0  # Задержка между запросами к MOEX API
     
-    # Правила MOEX API для избежания блокировок (ужесточенные)
-    MAX_REQUESTS_PER_MINUTE: int = 30  # Максимум запросов в минуту (еще более снижено)
+    # Правила MOEX API для избежания блокировок (максимально консервативные)
+    MAX_REQUESTS_PER_MINUTE: int = 20  # Максимум запросов в минуту (радикально снижено)
     MAX_CONCURRENT_REQUESTS: int = 1   # Только 1 одновременный запрос
-    RETRY_ATTEMPTS: int = 2            # Меньше попыток
-    RETRY_DELAY: float = 4.0           # Увеличенная задержка
-    BACKOFF_MULTIPLIER: float = 3.0    # Больший множитель задержки
+    RETRY_ATTEMPTS: int = 1            # Минимум попыток
+    RETRY_DELAY: float = 5.0           # Максимальная задержка
+    BACKOFF_MULTIPLIER: float = 4.0    # Максимальный множитель задержки
     
-    # Настройки для работы с большим количеством пар (консервативные)
-    MAX_PAIRS_PER_BATCH: int = 15      # Уменьшено до 15 пар за цикл
-    BATCH_DELAY: float = 2.0           # Увеличена задержка между батчами
+    # Настройки для работы с большим количеством пар (ультра-консервативные)
+    MAX_PAIRS_PER_BATCH: int = 8       # Радикально снижено до 8 пар за цикл
+    BATCH_DELAY: float = 3.0           # Максимальная задержка между батчами
     SMART_ROTATION_ENABLED: bool = True # Умная ротация без повторов
-    FULL_SCAN_CYCLES: int = 12         # Больше циклов для полного сканирования
-    MIN_REQUEST_INTERVAL: float = 2.5  # Минимальный интервал между запросами
+    FULL_SCAN_CYCLES: int = 38         # Больше циклов для полного сканирования (300/8)
+    MIN_REQUEST_INTERVAL: float = 4.0  # Увеличенный интервал между запросами
     
     # Настройки мониторинга
     MONITORING_INTERVAL_MIN: int = 300  # 5 минут в секундах

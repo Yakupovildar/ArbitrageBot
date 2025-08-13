@@ -221,9 +221,9 @@ class MOEXAPIClient:
                 # Добавляем задержку перед каждой парой
                 await asyncio.sleep(self.config.MIN_REQUEST_INTERVAL)
                 
-                # Получаем цены последовательно, а не параллельно
+                # Получаем цены последовательно с максимальными задержками
                 stock_price = await stock_task
-                await asyncio.sleep(0.5)  # Минимальная задержка между запросами
+                await asyncio.sleep(1.0)  # Увеличенная задержка между запросами
                 futures_price = await futures_task
                 
                 # Обработка исключений
