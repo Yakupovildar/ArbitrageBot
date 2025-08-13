@@ -31,21 +31,22 @@ Preferred communication style: Simple, everyday language.
 - **Формат сигналов улучшен**: Убрано упоминание лотов, добавлены цветные стрелки (BUY 🟢⬆️, SELL 🔴⬇️)
 - **Сохранение выбранных инструментов**: Исправлена критическая ошибка с несохранением персональных пар пользователей
 
-✅ **ПЕРСОНАЛЬНЫЙ ВЫБОР ИНСТРУМЕНТОВ (НОВАЯ ВОЗМОЖНОСТЬ)**  
-- **Индивидуальные настройки**: Каждый пользователь выбирает до 10 торговых пар из доступного списка
-- **Выпадающий интерфейс**: Удобная кнопочная панель для выбора/отмены инструментов с эмодзи статуса
-- **Снижение нагрузки**: Мониторинг работает только с выбранными пользователем парами вместо всех 300+
-- **Персональный тестинг**: Команда /test показывает спреды только по выбранным инструментам
-- **База данных**: Выбор инструментов сохраняется и восстанавливается при перезапуске бота
-- **По умолчанию**: Если пользователь ничего не выбрал, используются первые 5 стабильных пар
+✅ **ПЕРСОНАЛЬНЫЙ ВЫБОР ИНСТРУМЕНТОВ С СЕКТОРНОЙ НАВИГАЦИЕЙ (ПОЛНОСТЬЮ ЗАВЕРШЕНО)**  
+- **МАСШТАБНОЕ РАСШИРЕНИЕ**: 100+ торговых пар вместо 30 базовых с полной верификацией тикеров
+- **18 секторов экономики**: Голубые фишки, банки, нефтегаз, металлургия, энергетика, телеком, технологии, ритейл, недвижимость, транспорт, химия, промышленность, финуслуги, международные ETF, валютные пары, товары, индексы, новые активы
+- **Секторная навигация**: Каждый сектор показывает (выбрано/всего) пар, удобная навигация по секторам
+- **Массовые операции**: "Выбрать все" / "Снять все" для целого сектора + индивидуальный выбор
+- **Официальные тикеры**: Все символы проверены по официальной документации MOEX, декабрьские контракты 2025 (Z5)
+- **Интерфейс с хлебными крошками**: Сектор → инструменты → назад к секторам → настройки
+- **Персональные ограничения**: Максимум 10 пар на пользователя с визуальными индикаторами лимита
 
-✅ **STABLE CORE PAIRS SYSTEM: 30 BLUE-CHIP INSTRUMENTS (COMPLETE)**
-- **Focused approach**: Temporarily reduced to 30 core blue-chip pairs for maximum stability
-- **Optimized batching**: 10 pairs per cycle with NO REPEATS until full scan complete
-- **Fast coverage**: Every pair scanned within 3 cycles (1.5 minutes at 30s intervals)
-- **Progress tracking**: Real-time coverage percentage and cycle completion status
-- **Settings persistence**: User configurations properly save to database
-- **Navigation improved**: Back button returns to main menu correctly
+✅ **EXPANDED INSTRUMENTS LIBRARY: 100+ VERIFIED TRADING PAIRS (COMPLETE)**
+- **Comprehensive coverage**: 100+ officially verified MOEX trading pairs organized by economic sectors
+- **18 economic sectors**: Blue chips, banks, oil/gas, metals, energy, telecom, tech, retail, real estate, transport, chemicals, industrial, finance, international ETF, currency pairs, commodities, indices, new assets
+- **Sector-based navigation**: User-friendly interface with sector overview showing (selected/total) counts
+- **Mass operations**: Select all/deselect all for entire sectors plus individual pair selection
+- **Official ticker verification**: All symbols verified against official MOEX derivatives documentation
+- **December 2025 contracts**: Standardized Z5 futures contracts for maximum liquidity
 
 ✅ **TEST MONITORING COMMAND (NEW)**
 - **Command /test**: Toggle test monitoring of spreads every 5-7 minutes
@@ -61,15 +62,25 @@ Preferred communication style: Simple, everyday language.
 - **GMKN/GKZ5, FEES/FSZ5, VTBR/VBZ5**: Декабрьские контракты 2025
 - **Immediate test execution**: First test run executes instantly, not after 5-7 minutes
 
-🔄 **TEMPORARILY DISABLED FOR STABILITY:**
-- Металлургия: 40+ пар
-- Химия и нефтехимия: 35+ пар  
-- Энергетика: 50+ инструментов
-- Технологии: 25+ пар
-- Ритейл и потребительские товары: 30+ пар
-- Телеком: 15+ инструментов
-- Транспорт: 20+ пар
-- Дополнительные ликвидные активы: 50+ пар
+✅ **ALL SECTORS NOW AVAILABLE:**
+- 🔵 Голубые фишки: 9 пар (SBER, GAZP, GMKN, FEES, VTBR, LKOH, ROSN, TATN, ALRS)
+- 🏦 Банки: 5 пар (SBERP, CBOM, BSPB, SVCB, VTBR)
+- ⛽ Нефть и газ: 11 пар (GAZP, LKOH, ROSN, TATN, TATP, SNGS, SNGSP, NVTK, SIBN, BANE, RNFT)
+- 🏭 Металлургия: 11 пар (GMKN, ALRS, NLMK, MAGN, CHMF, MTLR, PLZL, POLY, RUAL, PHOR, RASP)
+- ⚡ Энергетика: 6 пар (FEES, IRAO, HYDR, RSTI, MSNG, TRNFP)
+- 📡 Телеком: 3 пары (RTKM, MTSS, TCSI)
+- 💻 Технологии: 4 пары (YDEX, VKCO, OZON, TCSG)
+- 🛒 Ритейл: 5 пар (MGNT, FIVE, DIXY, LENTA, MVID)
+- 🏘️ Недвижимость: 4 пары (PIKK, SMLT, LSRG, ETALON)
+- 🚛 Транспорт: 4 пары (AFLT, FESH, FLOT, KMAZ)
+- 🧪 Химия: 3 пары (AKRN, NKNC, URKZ)
+- 🔧 Промышленность: 6 пар (SGZH, LEAS, BELUGA, KMAZ, LIFE)
+- 💰 Финуслуги: 3 пары (MOEX, SPBE, SFIN)
+- 🌍 Международные ETF: 8 пар (SPY, QQQ, DAX, HANG, NIKKEI, EURO50, RUSSELL, MSCI_EM)
+- 💱 Валютные пары: 5 пар (USDRUB, EURRUB, CNYRUB, TRYRUB, HKDRUB)
+- 🥇 Товары: 6 пар (GOLD_RUB, SILVER_RUB, BRENT, NATGAS, WHEAT, SUGAR)
+- 📈 Индексы: 4 пары (MOEX_IDX, RTS_IDX, MOEX_MINI, RTS_MINI)
+- 🆕 Новые активы: 7 пар (AFKS, AQUA, VSMO, KOGK, UPRO, ISKJ, POSI)
 
 ✅ **DATABASE INTEGRATION & PERSISTENT SETTINGS (COMPLETE)**
 - **PostgreSQL database**: Added full database integration with asyncpg

@@ -263,16 +263,45 @@ class UserSettingsManager:
         settings = self.get_user_settings(user_id)
         return settings.get_selected_instruments_dict(all_instruments)
     
-    def get_instruments_keyboard(self, user_id: int, all_instruments: Dict[str, str]) -> Dict:
-        """Создать клавиатуру выбора инструментов"""
+    def get_instruments_keyboard(self, user_id: int, all_instruments: Dict[str, str], page: int = 0) -> Dict:
+        """Создать клавиатуру выбора инструментов с разбивкой по секторам"""
         settings = self.get_user_settings(user_id)
         keyboard_rows = []
         
-        # Показываем все доступные инструменты
-        instruments_list = list(all_instruments.items())
+        # Группируем инструменты по секторам
+        sectors = self._group_instruments_by_sectors(all_instruments)
+        
+        # Показываем меню выбора сектора
+        if page == 0:
+            for sector_name, instruments in sectors.items():
+                selected_count = sum(1 for stock in instruments.keys() if stock in settings.selected_instruments)
+                total_count = len(instruments)
+                
+                keyboard_rows.append([{
+                    "text": f"📊 {sector_name} ({selected_count}/{total_count})", 
+                    "callback_data": f"sector_{hash(sector_name) % 1000}"
+                }])
+            
+            # Кнопки управления
+            keyboard_rows.append([
+                {"text": "🔄 Сбросить выбор", "callback_data": "instruments_clear"},
+                {"text": "🎯 По умолчанию", "callback_data": "instruments_default"}
+            ])
+            keyboard_rows.append([{"text": "🔙 Назад", "callback_data": "settings_back"}])
+        
+        return {"inline_keyboard": keyboard_rows}
+    
+    def get_sector_instruments_keyboard(self, user_id: int, sector_name: str, all_instruments: Dict[str, str]) -> Dict:
+        """Создать клавиатуру для выбора инструментов в конкретном секторе"""
+        settings = self.get_user_settings(user_id)
+        keyboard_rows = []
+        
+        # Получаем инструменты сектора
+        sectors = self._group_instruments_by_sectors(all_instruments)
+        sector_instruments = sectors.get(sector_name, {})
         
         # По 1 инструменту на строку для наглядности
-        for stock, futures in instruments_list:
+        for stock, futures in sector_instruments.items():
             is_selected = stock in settings.selected_instruments
             emoji = "✅" if is_selected else "⭕"
             action = "remove" if is_selected else "add"
@@ -284,12 +313,106 @@ class UserSettingsManager:
         
         # Кнопки управления
         keyboard_rows.append([
-            {"text": "🔄 Сбросить выбор", "callback_data": "instruments_clear"},
-            {"text": "🎯 По умолчанию", "callback_data": "instruments_default"}
+            {"text": "✅ Выбрать все", "callback_data": f"sector_select_all_{hash(sector_name) % 1000}"},
+            {"text": "❌ Снять все", "callback_data": f"sector_clear_all_{hash(sector_name) % 1000}"}
         ])
-        keyboard_rows.append([{"text": "🔙 Назад", "callback_data": "settings_back"}])
+        keyboard_rows.append([{"text": "🔙 К секторам", "callback_data": "instruments_back_to_sectors"}])
         
         return {"inline_keyboard": keyboard_rows}
+    
+    def _group_instruments_by_sectors(self, all_instruments: Dict[str, str]) -> Dict[str, Dict[str, str]]:
+        """Группировка инструментов по секторам"""
+        sectors = {
+            "🔵 Голубые фишки": {},
+            "🏦 Банки": {},
+            "⛽ Нефть и газ": {},
+            "🏭 Металлургия": {},
+            "⚡ Энергетика": {},
+            "📡 Телеком": {},
+            "💻 Технологии": {},
+            "🛒 Ритейл": {},
+            "🏘️ Недвижимость": {},
+            "🚛 Транспорт": {},
+            "🧪 Химия": {},
+            "🔧 Промышленность": {},
+            "💰 Финуслуги": {},
+            "🌍 Международные ETF": {},
+            "💱 Валютные пары": {},
+            "🥇 Товары": {},
+            "📈 Индексы": {},
+            "🆕 Новые активы": {}
+        }
+        
+        # Распределяем инструменты по секторам
+        blue_chips = ["SBER", "GAZP", "GMKN", "FEES", "VTBR", "LKOH", "ROSN", "TATN", "ALRS"]
+        banks = ["SBERP", "CBOM", "BSPB", "SVCB", "VTBR"]
+        oil_gas = ["GAZP", "LKOH", "ROSN", "TATN", "TATP", "SNGS", "SNGSP", "NVTK", "SIBN", "BANE", "RNFT"]
+        metals = ["GMKN", "ALRS", "NLMK", "MAGN", "CHMF", "MTLR", "PLZL", "POLY", "RUAL", "PHOR", "RASP"]
+        energy = ["FEES", "IRAO", "HYDR", "RSTI", "MSNG", "TRNFP"]
+        telecom = ["RTKM", "MTSS", "TCSI"]
+        tech = ["YDEX", "VKCO", "OZON", "TCSG"]
+        retail = ["MGNT", "FIVE", "DIXY", "LENTA", "MVID"]
+        real_estate = ["PIKK", "SMLT", "LSRG", "ETALON"]
+        transport = ["AFLT", "FESH", "FLOT", "KMAZ"]
+        chemical = ["AKRN", "NKNC", "URKZ"]
+        industrial = ["SGZH", "LEAS", "BELUGA", "KMAZ", "LIFE"]
+        finance = ["MOEX", "SPBE", "SFIN"]
+        international = ["SPY", "QQQ", "DAX", "HANG", "NIKKEI", "EURO50", "RUSSELL", "MSCI_EM"]
+        currency = ["USDRUB", "EURRUB", "CNYRUB", "TRYRUB", "HKDRUB"]
+        commodities = ["GOLD_RUB", "SILVER_RUB", "BRENT", "NATGAS", "WHEAT", "SUGAR"]
+        indices = ["MOEX_IDX", "RTS_IDX", "MOEX_MINI", "RTS_MINI"]
+        new_assets = ["AFKS", "AQUA", "VSMO", "KOGK", "UPRO", "ISKJ", "POSI", "ASTR", "SOFL", "WUSH", "DIAS"]
+        
+        for stock, futures in all_instruments.items():
+            if stock in blue_chips:
+                sectors["🔵 Голубые фишки"][stock] = futures
+            elif stock in banks:
+                sectors["🏦 Банки"][stock] = futures
+            elif stock in oil_gas:
+                sectors["⛽ Нефть и газ"][stock] = futures
+            elif stock in metals:
+                sectors["🏭 Металлургия"][stock] = futures
+            elif stock in energy:
+                sectors["⚡ Энергетика"][stock] = futures
+            elif stock in telecom:
+                sectors["📡 Телеком"][stock] = futures
+            elif stock in tech:
+                sectors["💻 Технологии"][stock] = futures
+            elif stock in retail:
+                sectors["🛒 Ритейл"][stock] = futures
+            elif stock in real_estate:
+                sectors["🏘️ Недвижимость"][stock] = futures
+            elif stock in transport:
+                sectors["🚛 Транспорт"][stock] = futures
+            elif stock in chemical:
+                sectors["🧪 Химия"][stock] = futures
+            elif stock in industrial:
+                sectors["🔧 Промышленность"][stock] = futures
+            elif stock in finance:
+                sectors["💰 Финуслуги"][stock] = futures
+            elif stock in international:
+                sectors["🌍 Международные ETF"][stock] = futures
+            elif stock in currency:
+                sectors["💱 Валютные пары"][stock] = futures
+            elif stock in commodities:
+                sectors["🥇 Товары"][stock] = futures
+            elif stock in indices:
+                sectors["📈 Индексы"][stock] = futures
+            elif stock in new_assets:
+                sectors["🆕 Новые активы"][stock] = futures
+            else:
+                sectors["🔧 Промышленность"][stock] = futures  # По умолчанию
+        
+        # Удаляем пустые секторы
+        return {name: instruments for name, instruments in sectors.items() if instruments}
+    
+    def get_sector_name_by_hash(self, sector_hash: int, all_instruments: Dict[str, str]) -> str:
+        """Получить название сектора по хешу"""
+        sectors = self._group_instruments_by_sectors(all_instruments)
+        for sector_name in sectors.keys():
+            if hash(sector_name) % 1000 == sector_hash:
+                return sector_name
+        return "🔧 Промышленность"  # По умолчанию
     
     def clear_user_instruments(self, user_id: int):
         """Очистить выбранные инструменты пользователя"""

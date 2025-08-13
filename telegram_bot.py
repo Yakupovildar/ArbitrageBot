@@ -825,12 +825,15 @@ class SimpleTelegramBot:
             keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
             instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
 
+🎯 *Всего доступно: {len(self.config.MONITORED_INSTRUMENTS)} торговых пар*
+
+📊 *Разбивка по секторам:*
+Выберите сектор для просмотра инструментов
+
 ⚠️ *Ограничения:*
 • Максимум 10 пар на пользователя
-• Только выбранные пары будут мониториться
-• Снижает нагрузку на систему
-
-✅ = выбрано, ⭕ = не выбрано"""
+• Только выбранные пары будут мониториться  
+• Снижает нагрузку на систему"""
             
             await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
             await self.answer_callback_query(callback_query_id, "Выбор инструментов")
@@ -918,6 +921,95 @@ class SimpleTelegramBot:
             
             await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
             await self.answer_callback_query(callback_query_id, "🎯 Выбраны по умолчанию")
+            
+        # Обработчики для выбора секторов
+        elif callback_data.startswith("sector_"):
+            sector_hash = int(callback_data.replace("sector_", ""))
+            sector_name = self.user_settings.get_sector_name_by_hash(sector_hash, self.config.MONITORED_INSTRUMENTS)
+            
+            keyboard = self.user_settings.get_sector_instruments_keyboard(user_id, sector_name, self.config.MONITORED_INSTRUMENTS)
+            sector_text = f"""📊 *{sector_name}*
+
+Выберите инструменты для мониторинга:
+
+✅ = выбрано, ⭕ = не выбрано
+Лимит: максимум 10 пар на пользователя"""
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], sector_text, keyboard)
+            await self.answer_callback_query(callback_query_id, f"Сектор: {sector_name}")
+            
+        elif callback_data == "instruments_back_to_sectors":
+            keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
+            instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
+
+🎯 *Всего доступно: {len(self.config.MONITORED_INSTRUMENTS)} торговых пар*
+
+📊 *Разбивка по секторам:*
+Выберите сектор для просмотра инструментов
+
+⚠️ *Ограничения:*
+• Максимум 10 пар на пользователя
+• Только выбранные пары будут мониториться  
+• Снижает нагрузку на систему"""
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
+            await self.answer_callback_query(callback_query_id, "К секторам")
+            
+        elif callback_data.startswith("sector_select_all_"):
+            sector_hash = int(callback_data.replace("sector_select_all_", ""))
+            sector_name = self.user_settings.get_sector_name_by_hash(sector_hash, self.config.MONITORED_INSTRUMENTS)
+            
+            # Добавляем все инструменты сектора (с учетом лимита)
+            sectors = self.user_settings._group_instruments_by_sectors(self.config.MONITORED_INSTRUMENTS)
+            sector_instruments = sectors.get(sector_name, {})
+            
+            added_count = 0
+            for stock in sector_instruments.keys():
+                if self.user_settings.add_user_instrument(user_id, stock):
+                    added_count += 1
+            
+            if added_count > 0:
+                await self._save_user_settings_to_db(user_id)
+            
+            # Обновляем клавиатуру
+            keyboard = self.user_settings.get_sector_instruments_keyboard(user_id, sector_name, self.config.MONITORED_INSTRUMENTS)
+            sector_text = f"""📊 *{sector_name}*
+
+Выберите инструменты для мониторинга:
+
+✅ = выбрано, ⭕ = не выбрано
+Лимит: максимум 10 пар на пользователя"""
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], sector_text, keyboard)
+            await self.answer_callback_query(callback_query_id, f"✅ Добавлено: {added_count}")
+            
+        elif callback_data.startswith("sector_clear_all_"):
+            sector_hash = int(callback_data.replace("sector_clear_all_", ""))
+            sector_name = self.user_settings.get_sector_name_by_hash(sector_hash, self.config.MONITORED_INSTRUMENTS)
+            
+            # Удаляем все инструменты сектора
+            sectors = self.user_settings._group_instruments_by_sectors(self.config.MONITORED_INSTRUMENTS)
+            sector_instruments = sectors.get(sector_name, {})
+            
+            removed_count = 0
+            for stock in sector_instruments.keys():
+                if self.user_settings.remove_user_instrument(user_id, stock):
+                    removed_count += 1
+            
+            if removed_count > 0:
+                await self._save_user_settings_to_db(user_id)
+            
+            # Обновляем клавиатуру
+            keyboard = self.user_settings.get_sector_instruments_keyboard(user_id, sector_name, self.config.MONITORED_INSTRUMENTS)
+            sector_text = f"""📊 *{sector_name}*
+
+Выберите инструменты для мониторинга:
+
+✅ = выбрано, ⭕ = не выбрано
+Лимит: максимум 10 пар на пользователя"""
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], sector_text, keyboard)
+            await self.answer_callback_query(callback_query_id, f"❌ Удалено: {removed_count}")
     
     async def _restore_user_settings(self):
         """Восстановление настроек пользователей из базы данных"""
