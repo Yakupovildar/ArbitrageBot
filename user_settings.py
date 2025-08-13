@@ -17,6 +17,7 @@ class UserSettings:
     spread_threshold: float = 1.0   # По умолчанию 1%
     max_signals: int = 3            # Максимум сигналов за раз
     source_rotation_index: int = 0  # Индекс текущего источника данных
+    selected_instruments: List[str] = field(default_factory=list)  # Выбранные пользователем инструменты (макс 10)
     
     # Доступные интервалы мониторинга
     AVAILABLE_INTERVALS = {
@@ -57,6 +58,34 @@ class UserSettings:
         """Получить следующий индекс источника для ротации"""
         self.source_rotation_index = (self.source_rotation_index + 1) % total_sources
         return self.source_rotation_index
+    
+    def add_instrument(self, instrument_key: str) -> bool:
+        """Добавить инструмент в список выбранных (максимум 10)"""
+        if len(self.selected_instruments) >= 10:
+            return False
+        if instrument_key not in self.selected_instruments:
+            self.selected_instruments.append(instrument_key)
+        return True
+    
+    def remove_instrument(self, instrument_key: str) -> bool:
+        """Удалить инструмент из списка выбранных"""
+        if instrument_key in self.selected_instruments:
+            self.selected_instruments.remove(instrument_key)
+            return True
+        return False
+    
+    def get_selected_instruments_dict(self, all_instruments: Dict[str, str]) -> Dict[str, str]:
+        """Получить словарь выбранных инструментов пользователя"""
+        if not self.selected_instruments:
+            # Если пользователь ничего не выбрал, возвращаем первые 5 инструментов по умолчанию
+            default_instruments = list(all_instruments.keys())[:5]
+            return {k: all_instruments[k] for k in default_instruments if k in all_instruments}
+        
+        return {k: all_instruments[k] for k in self.selected_instruments if k in all_instruments}
+    
+    def get_selected_count(self) -> int:
+        """Получить количество выбранных инструментов"""
+        return len(self.selected_instruments)
 
 class UserSettingsManager:
     """Менеджер персональных настроек пользователей"""
@@ -132,7 +161,8 @@ class UserSettingsManager:
                     {"text": f"📊 Спред: {settings.get_spread_display()}", "callback_data": "settings_spread"}
                 ],
                 [
-                    {"text": f"🔢 Сигналов: {settings.max_signals}", "callback_data": "settings_signals"}
+                    {"text": f"🔢 Сигналов: {settings.max_signals}", "callback_data": "settings_signals"},
+                    {"text": f"📈 Инструменты: {settings.get_selected_count()}/10", "callback_data": "settings_instruments"}
                 ],
                 [
                     {"text": "🔙 Назад", "callback_data": "settings_back"}
@@ -205,6 +235,7 @@ class UserSettingsManager:
 ⏱️ Интервал мониторинга: {settings.get_interval_display()}
 📊 Порог спреда: {settings.get_spread_display()}
 🔢 Максимум сигналов: {settings.max_signals} за раз
+📈 Выбрано инструментов: {settings.get_selected_count()}/10
 
 """
         
@@ -216,3 +247,59 @@ class UserSettingsManager:
         summary += "Нажмите на настройку чтобы изменить:"
         
         return summary
+    
+    def add_user_instrument(self, user_id: int, instrument_key: str) -> bool:
+        """Добавить инструмент для пользователя"""
+        settings = self.get_user_settings(user_id)
+        return settings.add_instrument(instrument_key)
+    
+    def remove_user_instrument(self, user_id: int, instrument_key: str) -> bool:
+        """Удалить инструмент у пользователя"""
+        settings = self.get_user_settings(user_id)
+        return settings.remove_instrument(instrument_key)
+    
+    def get_user_instruments_dict(self, user_id: int, all_instruments: Dict[str, str]) -> Dict[str, str]:
+        """Получить выбранные инструменты пользователя"""
+        settings = self.get_user_settings(user_id)
+        return settings.get_selected_instruments_dict(all_instruments)
+    
+    def get_instruments_keyboard(self, user_id: int, all_instruments: Dict[str, str]) -> Dict:
+        """Создать клавиатуру выбора инструментов"""
+        settings = self.get_user_settings(user_id)
+        keyboard_rows = []
+        
+        # Показываем все доступные инструменты
+        instruments_list = list(all_instruments.items())
+        
+        # По 1 инструменту на строку для наглядности
+        for stock, futures in instruments_list:
+            is_selected = stock in settings.selected_instruments
+            emoji = "✅" if is_selected else "⭕"
+            action = "remove" if is_selected else "add"
+            
+            keyboard_rows.append([{
+                "text": f"{emoji} {stock} → {futures}", 
+                "callback_data": f"instrument_{action}_{stock}"
+            }])
+        
+        # Кнопки управления
+        keyboard_rows.append([
+            {"text": "🔄 Сбросить выбор", "callback_data": "instruments_clear"},
+            {"text": "🎯 По умолчанию", "callback_data": "instruments_default"}
+        ])
+        keyboard_rows.append([{"text": "🔙 Назад", "callback_data": "settings_back"}])
+        
+        return {"inline_keyboard": keyboard_rows}
+    
+    def clear_user_instruments(self, user_id: int):
+        """Очистить выбранные инструменты пользователя"""
+        settings = self.get_user_settings(user_id)
+        settings.selected_instruments = []
+        logger.info(f"Пользователь {user_id} очистил список инструментов")
+    
+    def set_default_instruments(self, user_id: int, all_instruments: Dict[str, str]):
+        """Установить инструменты по умолчанию (первые 5)"""
+        settings = self.get_user_settings(user_id)
+        default_instruments = list(all_instruments.keys())[:5]
+        settings.selected_instruments = default_instruments
+        logger.info(f"Пользователь {user_id} выбрал инструменты по умолчанию: {default_instruments}")

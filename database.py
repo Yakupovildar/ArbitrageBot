@@ -16,6 +16,7 @@ class UserSettings:
     spread_threshold: float = 1.0  # процент
     max_signals: int = 3  # максимум сигналов за раз
     is_monitoring: bool = False
+    selected_instruments: str = "[]"  # JSON строка с выбранными инструментами
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
@@ -61,10 +62,22 @@ class Database:
                     spread_threshold REAL DEFAULT 1.0,
                     max_signals INTEGER DEFAULT 3,
                     is_monitoring BOOLEAN DEFAULT FALSE,
+                    selected_instruments TEXT DEFAULT '[]',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+            
+            # Добавляем колонку selected_instruments к существующей таблице если её нет
+            try:
+                await conn.execute("""
+                    ALTER TABLE user_settings 
+                    ADD COLUMN selected_instruments TEXT DEFAULT '[]'
+                """)
+                logger.info("✅ Добавлена колонка selected_instruments")
+            except Exception:
+                # Колонка уже существует
+                pass
             
             # Таблица состояния источников данных
             await conn.execute("""
@@ -97,17 +110,18 @@ class Database:
             async with self.pool.acquire() as conn:
                 await conn.execute("""
                     INSERT INTO user_settings 
-                    (user_id, monitoring_interval, spread_threshold, max_signals, is_monitoring, updated_at)
-                    VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
+                    (user_id, monitoring_interval, spread_threshold, max_signals, is_monitoring, selected_instruments, updated_at)
+                    VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
                     ON CONFLICT (user_id) 
                     DO UPDATE SET 
                         monitoring_interval = EXCLUDED.monitoring_interval,
                         spread_threshold = EXCLUDED.spread_threshold,
                         max_signals = EXCLUDED.max_signals,
                         is_monitoring = EXCLUDED.is_monitoring,
+                        selected_instruments = EXCLUDED.selected_instruments,
                         updated_at = CURRENT_TIMESTAMP
                 """, settings.user_id, settings.monitoring_interval, 
-                    settings.spread_threshold, settings.max_signals, settings.is_monitoring)
+                    settings.spread_threshold, settings.max_signals, settings.is_monitoring, settings.selected_instruments)
                 
                 logger.info(f"💾 Настройки пользователя {settings.user_id} сохранены")
                 return True
@@ -131,6 +145,7 @@ class Database:
                         spread_threshold=row['spread_threshold'],
                         max_signals=row['max_signals'],
                         is_monitoring=row['is_monitoring'],
+                        selected_instruments=row.get('selected_instruments', '[]'),
                         created_at=row['created_at'],
                         updated_at=row['updated_at']
                     )
@@ -160,6 +175,7 @@ class Database:
                         spread_threshold=row['spread_threshold'],
                         max_signals=row['max_signals'],
                         is_monitoring=row['is_monitoring'],
+                        selected_instruments=row.get('selected_instruments', '[]'),
                         created_at=row['created_at'],
                         updated_at=row['updated_at']
                     ))

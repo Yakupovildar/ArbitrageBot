@@ -836,6 +836,105 @@ class SimpleTelegramBot:
         elif callback_data == "cmd_support":
             await self.handle_command(chat_id, "/support", user_id)
             await self.answer_callback_query(callback_query_id, "Поддержка")
+            
+        # Обработчики для настройки инструментов
+        elif callback_data == "settings_instruments":
+            keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
+            instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
+
+⚠️ *Ограничения:*
+• Максимум 10 пар на пользователя
+• Только выбранные пары будут мониториться
+• Снижает нагрузку на систему
+
+✅ = выбрано, ⭕ = не выбрано"""
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
+            await self.answer_callback_query(callback_query_id, "Выбор инструментов")
+            
+        elif callback_data.startswith("instrument_add_"):
+            instrument = callback_data.replace("instrument_add_", "")
+            success = self.user_settings.add_user_instrument(user_id, instrument)
+            
+            if success:
+                # Сохраняем в базу
+                await self._save_user_settings_to_db(user_id)
+                
+                # Обновляем клавиатуру
+                keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
+                instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
+
+⚠️ *Ограничения:*
+• Максимум 10 пар на пользователя
+• Только выбранные пары будут мониториться
+• Снижает нагрузку на систему
+
+✅ = выбрано, ⭕ = не выбрано"""
+                
+                await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
+                await self.answer_callback_query(callback_query_id, f"✅ {instrument} добавлен")
+            else:
+                await self.answer_callback_query(callback_query_id, "❌ Максимум 10 инструментов")
+                
+        elif callback_data.startswith("instrument_remove_"):
+            instrument = callback_data.replace("instrument_remove_", "")
+            success = self.user_settings.remove_user_instrument(user_id, instrument)
+            
+            if success:
+                # Сохраняем в базу
+                await self._save_user_settings_to_db(user_id)
+                
+                # Обновляем клавиатуру
+                keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
+                instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
+
+⚠️ *Ограничения:*
+• Максимум 10 пар на пользователя
+• Только выбранные пары будут мониториться
+• Снижает нагрузку на систему
+
+✅ = выбрано, ⭕ = не выбрано"""
+                
+                await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
+                await self.answer_callback_query(callback_query_id, f"❌ {instrument} удален")
+            else:
+                await self.answer_callback_query(callback_query_id, "Ошибка удаления")
+                
+        elif callback_data == "instruments_clear":
+            self.user_settings.clear_user_instruments(user_id)
+            await self._save_user_settings_to_db(user_id)
+            
+            # Обновляем клавиатуру
+            keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
+            instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
+
+⚠️ *Ограничения:*
+• Максимум 10 пар на пользователя
+• Только выбранные пары будут мониториться
+• Снижает нагрузку на систему
+
+✅ = выбрано, ⭕ = не выбрано"""
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
+            await self.answer_callback_query(callback_query_id, "🔄 Выбор очищен")
+            
+        elif callback_data == "instruments_default":
+            self.user_settings.set_default_instruments(user_id, self.config.MONITORED_INSTRUMENTS)
+            await self._save_user_settings_to_db(user_id)
+            
+            # Обновляем клавиатуру
+            keyboard = self.user_settings.get_instruments_keyboard(user_id, self.config.MONITORED_INSTRUMENTS)
+            instruments_text = f"""📈 *Выберите торговые пары для мониторинга*
+
+⚠️ *Ограничения:*
+• Максимум 10 пар на пользователя
+• Только выбранные пары будут мониториться
+• Снижает нагрузку на систему
+
+✅ = выбрано, ⭕ = не выбрано"""
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], instruments_text, keyboard)
+            await self.answer_callback_query(callback_query_id, "🎯 Выбраны по умолчанию")
     
     async def _restore_user_settings(self):
         """Восстановление настроек пользователей из базы данных"""
@@ -849,6 +948,15 @@ class SimpleTelegramBot:
                 user_settings.monitoring_interval = db_settings.monitoring_interval
                 user_settings.spread_threshold = db_settings.spread_threshold
                 user_settings.max_signals = db_settings.max_signals
+                
+                # Восстанавливаем выбранные инструменты если есть
+                if hasattr(db_settings, 'selected_instruments') and db_settings.selected_instruments:
+                    try:
+                        import json
+                        user_settings.selected_instruments = json.loads(db_settings.selected_instruments)
+                    except Exception as e:
+                        logger.warning(f"Ошибка загрузки инструментов для пользователя {db_settings.user_id}: {e}")
+                        user_settings.selected_instruments = []
                 
                 # Если у пользователя был активен мониторинг - восстанавливаем
                 if db_settings.is_monitoring:
@@ -870,12 +978,15 @@ class SimpleTelegramBot:
         try:
             for user_id, settings in self.user_settings.user_settings.items():
                 from database import UserSettings as DBUserSettings
+                import json
+                
                 db_settings = DBUserSettings(
                     user_id=user_id,
                     monitoring_interval=settings.monitoring_interval,
                     spread_threshold=settings.spread_threshold,
                     max_signals=settings.max_signals,
-                    is_monitoring=self.monitoring_controller.is_user_monitoring(user_id)
+                    is_monitoring=self.monitoring_controller.is_user_monitoring(user_id),
+                    selected_instruments=json.dumps(settings.selected_instruments)
                 )
                 await db.save_user_settings(db_settings)
             
@@ -993,9 +1104,17 @@ class SimpleTelegramBot:
                         await asyncio.sleep(pause_seconds)
                         return  # Выходим из этого цикла мониторинга
             
-            # Получаем котировки через MOEX API
+            # Получаем персональные инструменты всех пользователей для этого интервала
+            all_user_instruments = {}
+            for user_id in target_users:
+                user_instruments = self.user_settings.get_user_instruments_dict(user_id, self.config.MONITORED_INSTRUMENTS)
+                all_user_instruments.update(user_instruments)
+            
+            # Получаем котировки только для инструментов, выбранных пользователями
+            instruments_to_monitor = all_user_instruments if all_user_instruments else self.config.MONITORED_INSTRUMENTS
+            
             async with MOEXAPIClient() as moex_client:
-                quotes = await moex_client.get_multiple_quotes(self.config.MONITORED_INSTRUMENTS)
+                quotes = await moex_client.get_multiple_quotes(instruments_to_monitor)
             
             if not quotes:
                 logger.warning("Не удалось получить котировки")
@@ -1008,7 +1127,7 @@ class SimpleTelegramBot:
                 if stock_price is None or futures_price is None:
                     continue
                 
-                futures_ticker = self.config.MONITORED_INSTRUMENTS[stock_ticker]
+                futures_ticker = instruments_to_monitor[stock_ticker]
                 # Получаем минимальный порог спреда от всех активных пользователей
                 min_threshold = self._get_minimum_spread_threshold(target_users)
                 
@@ -1045,7 +1164,11 @@ class SimpleTelegramBot:
                     filtered_users = []
                     for user_id in target_users:
                         user_settings = self.user_settings.get_user_settings(user_id)
-                        if signal.spread_percent >= user_settings.spread_threshold:
+                        user_instruments = self.user_settings.get_user_instruments_dict(user_id, self.config.MONITORED_INSTRUMENTS)
+                        
+                        # Проверяем что пользователь выбрал этот инструмент и спред превышает его порог
+                        if (signal.stock_ticker in user_instruments and 
+                            signal.spread_percent >= user_settings.spread_threshold):
                             filtered_users.append(user_id)
                     
                     if filtered_users:
@@ -1113,9 +1236,13 @@ class SimpleTelegramBot:
                 iteration += 1
                 logger.info(f"Тестовый мониторинг - итерация {iteration} для пользователя {user_id}")
                 
+                # Получаем персональные инструменты пользователя
+                user_instruments = self.user_settings.get_user_instruments_dict(user_id, self.config.MONITORED_INSTRUMENTS)
+                instruments_to_test = user_instruments if user_instruments else self.config.MONITORED_INSTRUMENTS
+                
                 # Получаем текущие котировки через MOEX API
                 async with MOEXAPIClient() as moex_client:
-                    quotes = await moex_client.get_multiple_quotes(self.config.MONITORED_INSTRUMENTS)
+                    quotes = await moex_client.get_multiple_quotes(instruments_to_test)
                 
                 logger.info(f"Получено котировок: {len(quotes) if quotes else 0}")
                 
@@ -1150,7 +1277,7 @@ class SimpleTelegramBot:
                         logger.debug(f"Нет данных для {stock_ticker}: спот={stock_price}, фьючерс={futures_price}")
                         continue
                     
-                    futures_ticker = self.config.MONITORED_INSTRUMENTS.get(stock_ticker)
+                    futures_ticker = instruments_to_test.get(stock_ticker)
                     if not futures_ticker:
                         logger.debug(f"Нет фьючерса для {stock_ticker}")
                         continue
