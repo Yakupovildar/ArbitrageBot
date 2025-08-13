@@ -208,3 +208,30 @@ class DataSourceManager:
         """Получение списка работающих источников"""
         return [key for key, source in self.sources.items() 
                 if source["status"] == "working" and source["active"]]
+    
+    def sync_with_library(self, sources_library):
+        """Синхронизация с библиотекой источников"""
+        logger.info("🔄 Обновление источников данных из библиотеки...")
+        
+        # Сохраняем текущие статусы
+        old_statuses = {k: v.get("status", "unknown") for k, v in self.sources.items()}
+        
+        # Очищаем и пересоздаем источники на основе библиотеки
+        self.sources = {}
+        
+        # Добавляем активные источники из библиотеки
+        for i, source_key in enumerate(sources_library.active_sources, 1):
+            source_info = sources_library.get_source_info(source_key)
+            if source_info:
+                self.sources[source_key] = {
+                    "name": source_info["name"],
+                    "url": source_info["url"],
+                    "status": "working",  # Предполагаем что источники из библиотеки работают
+                    "last_check": datetime.now(),
+                    "priority": i,
+                    "active": True,
+                    "reliability": source_info["reliability"]
+                }
+        
+        logger.info(f"✅ Синхронизировано {len(self.sources)} источников из библиотеки")
+        return len(self.sources)

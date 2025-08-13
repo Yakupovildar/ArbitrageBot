@@ -94,7 +94,11 @@ class SimpleTelegramBot:
         
         # Инициализация библиотеки источников (поиск лучших 10 источников)
         logger.info("🔍 Инициализация активных источников данных...")
-        await sources_library.initialize_active_sources(10)
+        active_sources = await sources_library.initialize_active_sources(10)
+        
+        # Синхронизируем старую систему data_sources с новой библиотекой
+        logger.info("🔄 Синхронизация системы источников данных...")
+        self.data_sources.sync_with_library(sources_library)
         
         # Загрузка сохраненных настроек пользователей
         await self._restore_user_settings()
