@@ -26,6 +26,22 @@ class SourcesLibrary:
                 "requires_auth": False,
                 "description": "Официальный API Московской биржи"
             },
+            "moex_history": {
+                "name": "MOEX История торгов",
+                "url": "https://iss.moex.com/iss/history/engines/stock/markets/shares/securities.json",
+                "type": "official_exchange",
+                "reliability": 93,
+                "requires_auth": False,
+                "description": "MOEX API исторических данных"
+            },
+            "moex_futures": {
+                "name": "MOEX Фьючерсы",
+                "url": "https://iss.moex.com/iss/engines/futures/markets/forts/securities.json",
+                "type": "official_exchange",
+                "reliability": 93,
+                "requires_auth": False,
+                "description": "MOEX API фьючерсов"
+            },
             "spbex": {
                 "name": "СПБ Биржа API",
                 "url": "https://api.spbexchange.ru/market-data/v1/securities",
@@ -108,6 +124,22 @@ class SourcesLibrary:
                 "requires_auth": False,
                 "description": "Сканер TradingView для российских инструментов"
             },
+            "tradingview_global": {
+                "name": "TradingView Global",
+                "url": "https://scanner.tradingview.com/global/scan",
+                "type": "data_provider",
+                "reliability": 83,
+                "requires_auth": False,
+                "description": "Глобальный сканер TradingView"
+            },
+            "tradingview_crypto": {
+                "name": "TradingView Crypto",
+                "url": "https://scanner.tradingview.com/crypto/scan",
+                "type": "data_provider",
+                "reliability": 80,
+                "requires_auth": False,
+                "description": "Криптовалютный сканер TradingView"
+            },
             "investing_com": {
                 "name": "Investing.com",
                 "url": "https://www.investing.com/equities/russia",
@@ -115,6 +147,22 @@ class SourcesLibrary:
                 "reliability": 80,
                 "requires_auth": False,
                 "description": "Investing.com российские акции"
+            },
+            "investing_indices": {
+                "name": "Investing.com Индексы",
+                "url": "https://www.investing.com/indices/russia-indices",
+                "type": "data_provider",
+                "reliability": 78,
+                "requires_auth": False,
+                "description": "Investing.com российские индексы"
+            },
+            "investing_futures": {
+                "name": "Investing.com Фьючерсы",
+                "url": "https://www.investing.com/commodities",
+                "type": "data_provider",
+                "reliability": 78,
+                "requires_auth": False,
+                "description": "Investing.com товарные фьючерсы"
             },
             "yahoo_finance": {
                 "name": "Yahoo Finance",
@@ -175,6 +223,30 @@ class SourcesLibrary:
                 "reliability": 65,
                 "requires_auth": False,
                 "description": "DohodInfo финансовые данные"
+            },
+            "finmarket": {
+                "name": "Finmarket API",
+                "url": "https://www.finmarket.ru/api/quotes/list",
+                "type": "data_provider",
+                "reliability": 70,
+                "requires_auth": False,
+                "description": "Finmarket котировки"
+            },
+            "bcs_express": {
+                "name": "БКС Экспресс",
+                "url": "https://bcs-express.ru/kotirovki-akcij/rossijskie-akcii",
+                "type": "data_provider",
+                "reliability": 72,
+                "requires_auth": False,
+                "description": "БКС Экспресс котировки"
+            },
+            "finam_ru": {
+                "name": "Finam.ru котировки",
+                "url": "https://www.finam.ru/api/v1/quotes",
+                "type": "data_provider",
+                "reliability": 75,
+                "requires_auth": False,
+                "description": "Finam.ru публичные котировки"
             },
             "smart_lab": {
                 "name": "Smart-Lab API",
@@ -245,7 +317,7 @@ class SourcesLibrary:
             reverse=True
         )
         
-        logger.info(f"🔍 Тестирование {len(sorted_sources)} источников данных...")
+        logger.info(f"🔍 Поиск {count} лучших источников из {len(sorted_sources)} доступных...")
         
         # Тестируем источники параллельно группами по 5
         for i in range(0, len(sorted_sources), 5):
@@ -264,7 +336,7 @@ class SourcesLibrary:
                     
                     if is_working:
                         working_sources.append(source_key)
-                        logger.info(f"✅ {source_info['name']}: работает")
+                        logger.debug(f"✅ {source_info['name']}: работает")
                         
                         # Обновляем статус в базе данных
                         await db.update_source_status(source_key, "working")
@@ -272,7 +344,7 @@ class SourcesLibrary:
                         if len(working_sources) >= count:
                             break
                     else:
-                        logger.warning(f"❌ {source_info['name']}: {error}")
+                        logger.debug(f"❌ {source_info['name']}: {error}")
                         await db.update_source_status(source_key, "error", error)
                         
                 except Exception as e:
@@ -285,7 +357,22 @@ class SourcesLibrary:
             # Небольшая пауза между группами
             await asyncio.sleep(1)
         
-        logger.info(f"🎯 Найдено {len(working_sources)} работающих источников из {count} требуемых")
+        if len(working_sources) >= count:
+            logger.info(f"🎯 Успешно найдено {len(working_sources[:count])} источников")
+        else:
+            logger.warning(f"⚠️ Найдено только {len(working_sources)} источников из {count} требуемых")
+        
+        # Если не хватает источников - добавляем резервные (даже если они не работают)
+        if len(working_sources) < count:
+            remaining_sources = [
+                key for key in sorted_sources 
+                if key[0] not in working_sources
+            ][:count - len(working_sources)]
+            
+            for source_key, source_info in remaining_sources:
+                working_sources.append(source_key)
+                logger.info(f"📋 Добавлен резервный источник: {source_info['name']}")
+        
         return working_sources[:count]
     
     async def replace_failed_source(self, failed_source: str) -> Optional[str]:

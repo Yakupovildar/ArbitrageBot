@@ -8,7 +8,7 @@ Successfully deployed Telegram bot for monitoring arbitrage opportunities betwee
 - Bot successfully running with intelligent source management
 - Persistent database storage with automatic recovery
 - Smart auto-replacement of failed data sources
-- Comprehensive 22+ source library with reliability ranking
+- Comprehensive 30+ source library with reliability ranking
 - Scalable for 100+ users with advanced configuration options
 - User can now interact with the bot via Telegram
 
@@ -37,12 +37,13 @@ Preferred communication style: Simple, everyday language.
 - **Status tracking**: /reconnect_stats command shows real-time source health
 
 ✅ **SMART SOURCES LIBRARY & AUTO-REPLACEMENT (COMPLETE)**
-- **22+ data sources**: Comprehensive library with Russian exchanges, brokers, international providers
+- **30+ data sources**: Comprehensive library with Russian exchanges, brokers, international providers
 - **Automatic source selection**: Bot finds 10 best working sources on startup
 - **Smart replacement system**: Failed sources automatically replaced with working alternatives
 - **3-strike rule**: Sources replaced after 3 failed reconnection attempts (90 minutes)
 - **Reliability ranking**: Sources prioritized by reliability percentage (60-95%)
 - **Status tracking**: Real-time monitoring of all source health in database
+- **Clean console output**: Debug logs moved to reduce console spam
 
 ✅ **TIMEZONE & MARKET HOURS FIX (COMPLETE)**
 - **Moscow timezone**: Fixed timezone calculation using pytz Europe/Moscow

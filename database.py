@@ -192,7 +192,7 @@ class Database:
                 """, source_name, status, error_text)
                 
         except Exception as e:
-            logger.error(f"❌ Ошибка обновления статуса источника: {e}")
+            logger.debug(f"❌ Ошибка обновления статуса источника: {e}")
     
     async def get_failed_sources(self) -> List[str]:
         """Получение списка неисправных источников"""
