@@ -337,6 +337,9 @@ class MOEXAPIClient:
     
     async def get_multiple_quotes(self, instruments: Dict[str, str]) -> Dict[str, Tuple[Optional[float], Optional[float]]]:
         """Получение котировок для множества инструментов"""
+        # ПРИНУДИТЕЛЬНАЯ ОЧИСТКА КЕША ПЕРЕД КАЖДЫМ ЗАПРОСОМ
+        await self._force_cache_clear()
+        
         results = {}
         
         # Группируем запросы для оптимизации
@@ -419,3 +422,41 @@ class MOEXAPIClient:
                 "futures_market": False,
                 "api_available": False
             }
+    
+    async def _force_cache_clear(self):
+        """Принудительная очистка всех кешей и перезапуск сессии"""
+        logger.info("🔄 Принудительная очистка кеша MOEX API")
+        
+        # Закрываем текущую сессию
+        if self.session:
+            await self.session.close()
+            await asyncio.sleep(0.1)  # Даем время на закрытие
+        
+        # Создаем новую сессию с уникальными заголовками
+        import random
+        current_time = int(time.time() * 1000)
+        headers = {
+            'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'If-Modified-Since': 'Mon, 01 Jan 1990 00:00:00 GMT',
+            'If-None-Match': '*',
+            'User-Agent': f'ArbitrageBot/{current_time}_{random.randint(1000, 9999)}',
+            'Accept': 'application/json, */*',
+            'Accept-Encoding': 'identity'  # Отключаем сжатие для борьбы с кешем
+        }
+        
+        # Создаем новую сессию с отключенным кешированием
+        connector = aiohttp.TCPConnector(
+            force_close=True,  # Принудительно закрываем соединения
+            enable_cleanup_closed=True
+        )
+        
+        self.session = aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=self.config.REQUEST_TIMEOUT),
+            headers=headers,
+            connector=connector
+        )
+        
+        self.cache_cleared_at = time.time()
+        logger.info("✅ Кеш очищен, новая сессия создана")
