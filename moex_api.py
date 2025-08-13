@@ -212,15 +212,13 @@ class MOEXAPIClient:
                         if len(row) > last_index and row[last_index] is not None:
                             price_in_points = float(row[last_index])
                             
-                            # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Фьючерсы торгуются в пунктах
-                            # 1 пункт = 0.01₽ для большинства инструментов MOEX
-                            # Конвертируем пункты в рубли
-                            price_in_rubles = price_in_points * 0.01
+                            # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Разные фьючерсы имеют разные коэффициенты
+                            price_in_rubles = self._convert_futures_price_to_rubles(ticker, price_in_points)
                             
                             # Умножаем на размер контракта (если есть лотность)
                             price_total = price_in_rubles * lot_size
                             
-                            logger.debug(f"Цена фьючерса {ticker} (LAST): {price_in_points} пунктов = {price_in_rubles}₽ × {lot_size} = {price_total}₽")
+                            logger.debug(f"Цена фьючерса {ticker} (LAST): {price_in_points} -> {price_in_rubles}₽ × {lot_size} = {price_total}₽")
                             return price_total
                     
                     # Если LAST нет, используем PREVPRICE (цена предыдущего дня)
@@ -229,15 +227,13 @@ class MOEXAPIClient:
                         if len(row) > prev_index and row[prev_index] is not None:
                             price_in_points = float(row[prev_index])
                             
-                            # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Фьючерсы торгуются в пунктах
-                            # 1 пункт = 0.01₽ для большинства инструментов MOEX
-                            # Конвертируем пункты в рубли
-                            price_in_rubles = price_in_points * 0.01
+                            # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Разные фьючерсы имеют разные коэффициенты
+                            price_in_rubles = self._convert_futures_price_to_rubles(ticker, price_in_points)
                             
                             # Умножаем на размер контракта (если есть лотность)
                             price_total = price_in_rubles * lot_size
                             
-                            logger.debug(f"Цена фьючерса {ticker} (PREVPRICE): {price_in_points} пунктов = {price_in_rubles}₽ × {lot_size} = {price_total}₽")
+                            logger.debug(f"Цена фьючерса {ticker} (PREVPRICE): {price_in_points} -> {price_in_rubles}₽ × {lot_size} = {price_total}₽")
                             return price_total
                             
             return None
@@ -245,6 +241,34 @@ class MOEXAPIClient:
         except (KeyError, ValueError, IndexError) as e:
             logger.error(f"Ошибка парсинга цены фьючерса {ticker}: {e}")
             return None
+    
+    def _convert_futures_price_to_rubles(self, ticker: str, price: float) -> float:
+        """Конвертация цены фьючерса в рубли с учетом специфики каждого инструмента"""
+        
+        # По результатам тестирования MOEX API - все фьючерсы уже возвращаются в правильном масштабе
+        # SBERF: 3.192 это уже цена в рублях за акцию, НЕ в пунктах
+        # VBZ5: 84.51 это уже цена в рублях за акцию
+        # GKZ5: 13.66 нужно умножить на 0.01, так как это в пунктах
+        
+        # Фьючерсы на акции, которые торгуются в рублях за акцию (как обычные акции)
+        if ticker in ['SBERF', 'GAZPF']:
+            return price
+        
+        # Фьючерсы которые торгуются в копейках - нужно поделить на 100
+        elif ticker in ['VBZ5']:
+            return price / 100.0
+        
+        # Фьючерсы с коэффициентом 10 - поделить на 10 
+        elif ticker in ['FSZ5']:
+            return price / 10.0
+        
+        # Фьючерсы на металлы и другие товары - торгуются в пунктах (1 пункт = 0.01₽)
+        elif ticker in ['GKZ5', 'LKZ5', 'RNZ5', 'TTZ5', 'ALZ5', 'NMZ5', 'MGZ5', 'CHZ5']:
+            return price * 0.01
+        
+        # По умолчанию считаем что это пункты
+        else:
+            return price * 0.01
     
     async def get_instrument_info(self, ticker: str, instrument_type: str) -> Optional[Dict]:
         """Получение информации об инструменте"""
