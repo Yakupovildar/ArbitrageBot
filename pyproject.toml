@@ -6,4 +6,6 @@ requires-python = ">=3.11"
 dependencies = [
     "aiohttp>=3.12.15",
     "python-telegram-bot==21.6",
+    "pytz>=2025.2",
+    "telegram>=0.0.1",
 ]

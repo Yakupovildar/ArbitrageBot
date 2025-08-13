@@ -111,8 +111,9 @@ class Config:
     def is_market_open(self, dt: Optional[datetime] = None) -> bool:
         """Проверка, открыта ли биржа в указанное время"""
         if dt is None:
-            # Используем московское время (UTC+3)
-            moscow_tz = timezone(timedelta(hours=3))
+            # Используем московское время - UTC + 3 часа сейчас зимой
+            import pytz
+            moscow_tz = pytz.timezone('Europe/Moscow')
             dt = datetime.now(moscow_tz)
         
         # Проверяем день недели (0=Понедельник, 6=Воскресенье)
@@ -125,8 +126,9 @@ class Config:
     
     def get_market_status_message(self) -> str:
         """Получение сообщения о статусе рынка"""
-        # Используем московское время (UTC+3)
-        moscow_tz = timezone(timedelta(hours=3))
+        # Используем московское время
+        import pytz
+        moscow_tz = pytz.timezone('Europe/Moscow')
         now = datetime.now(moscow_tz)
         
         if self.is_market_open(now):
