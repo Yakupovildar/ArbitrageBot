@@ -91,6 +91,7 @@ class SimpleTelegramBot:
         self.session = aiohttp.ClientSession()
         
         # Инициализация базы данных
+        self.db = db  # Сохраняем ссылку на объект базы данных
         await db.init_connection()
         
         # Инициализация библиотеки источников (поиск лучших 10 источников)
@@ -324,6 +325,7 @@ class SimpleTelegramBot:
 /demo - Демонстрация функций бота
 /settings - Персональные настройки мониторинга
 /support - Связь с технической поддержкой
+/pairs - Список торговых пар для арбитража
 /subscribe - Подписаться на уведомления
 /unsubscribe - Отписаться от уведомлений
 
@@ -465,6 +467,26 @@ class SimpleTelegramBot:
 
 🕒 Время ответа: обычно в течение нескольких часов"""
             await self.send_message(chat_id, support_message)
+            
+        elif command.startswith("/pairs") or command.startswith("/instruments"):
+            # Показываем список сканируемых пар
+            pairs_text = "📊 *ТОРГОВЫЕ ПАРЫ ДЛЯ АРБИТРАЖА*\n\n"
+            pairs_count = len(self.config.MONITORED_INSTRUMENTS)
+            pairs_text += f"🔢 *Всего пар: {pairs_count}*\n\n"
+            
+            pairs_text += "📈 *Акция* → 📊 *Фьючерс*\n"
+            pairs_text += "─" * 25 + "\n"
+            
+            for i, (stock, futures) in enumerate(self.config.MONITORED_INSTRUMENTS.items(), 1):
+                pairs_text += f"{i:2d}. {stock} → {futures}\n"
+            
+            pairs_text += f"\n⚡ *Параметры мониторинга:*"
+            pairs_text += f"\n🔄 Каждые 30 секунд (10 источников)"  
+            pairs_text += f"\n📈 Спреды от 0.2% до 5%+"
+            pairs_text += f"\n🎯 Московская биржа (MOEX)"
+            pairs_text += f"\n⏰ 09:00-18:45 МСК (пн-пт)"
+            
+            await self.send_message(chat_id, pairs_text)
             
         elif command.startswith("/reconnect_stats"):
             if self.source_reconnector and sources_library:
@@ -807,14 +829,14 @@ class SimpleTelegramBot:
         """Сохранение всех настроек пользователей в базу данных"""
         try:
             for user_id, settings in self.user_settings.user_settings.items():
-                db_settings = db.UserSettings(
+                db_settings = self.db.UserSettings(
                     user_id=user_id,
                     monitoring_interval=settings.monitoring_interval,
                     spread_threshold=settings.spread_threshold,
                     max_signals=settings.max_signals,
                     is_monitoring=self.monitoring_controller.is_user_monitoring(user_id)
                 )
-                await db.save_user_settings(db_settings)
+                await self.db.save_user_settings(db_settings)
             
             logger.info("💾 Все настройки пользователей сохранены в базу данных")
             
@@ -825,14 +847,14 @@ class SimpleTelegramBot:
         """Сохранение настроек конкретного пользователя"""
         try:
             settings = self.user_settings.get_user_settings(user_id)
-            db_settings = db.UserSettings(
+            db_settings = self.db.UserSettings(
                 user_id=user_id,
                 monitoring_interval=settings.monitoring_interval,
                 spread_threshold=settings.spread_threshold,
                 max_signals=settings.max_signals,
                 is_monitoring=self.monitoring_controller.is_user_monitoring(user_id)
             )
-            await db.save_user_settings(db_settings)
+            await self.db.save_user_settings(db_settings)
             
         except Exception as e:
             logger.error(f"❌ Ошибка сохранения настроек пользователя {user_id}: {e}")
