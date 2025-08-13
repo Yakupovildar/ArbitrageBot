@@ -10,6 +10,7 @@ import aiohttp
 import json
 import logging
 import random
+import pytz
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Set
 from dataclasses import dataclass
@@ -944,12 +945,16 @@ class SimpleTelegramBot:
                     continue
                 
                 futures_ticker = self.config.MONITORED_INSTRUMENTS[stock_ticker]
+                # Получаем минимальный порог спреда от всех активных пользователей
+                min_threshold = self._get_minimum_spread_threshold(target_users)
+                
                 signal = self.calculator.analyze_arbitrage_opportunity(
                     stock_ticker=stock_ticker,
                     futures_ticker=futures_ticker,
                     stock_price=stock_price,
                     futures_price=futures_price,
-                    timestamp=current_time
+                    timestamp=current_time,
+                    min_spread_threshold=min_threshold
                 )
                 
                 if signal:
@@ -993,6 +998,17 @@ class SimpleTelegramBot:
             
         except Exception as e:
             logger.error(f"Ошибка в мониторинге {interval_seconds}с: {e}")
+    
+    def _get_minimum_spread_threshold(self, target_users: List[int]) -> float:
+        """Получает минимальный порог спреда среди целевых пользователей"""
+        min_threshold = float('inf')
+        
+        for user_id in target_users:
+            user_settings = self.user_settings.get_user_settings(user_id)
+            if user_settings.spread_threshold < min_threshold:
+                min_threshold = user_settings.spread_threshold
+        
+        return min_threshold if min_threshold != float('inf') else 0.2
             
     async def smart_monitoring_cycle(self):
         """Умный цикл мониторинга для разных групп пользователей"""
@@ -1156,10 +1172,24 @@ class SimpleTelegramBot:
 
 async def main():
     """Точка входа"""
-    # Настройка логирования
+    # Настройка логирования для московского времени
+    moscow_tz = pytz.timezone('Europe/Moscow')
+    
+    class MoscowFormatter(logging.Formatter):
+        def formatTime(self, record, datefmt=None):
+            dt = datetime.fromtimestamp(record.created, tz=moscow_tz)
+            if datefmt:
+                return dt.strftime(datefmt)
+            else:
+                return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
+    
+    formatter = MoscowFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    
     logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        level=logging.INFO
+        level=logging.INFO,
+        handlers=[handler]
     )
     
     # Получаем токен

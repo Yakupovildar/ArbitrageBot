@@ -142,12 +142,16 @@ class ArbitrageMonitor:
                 futures_ticker = self.config.MONITORED_INSTRUMENTS[stock_ticker]
                 
                 # Анализируем арбитражную возможность
+                # Получаем минимальный порог спреда от всех активных пользователей
+                min_threshold = self._get_minimum_spread_threshold()
+                
                 signal = self.calculator.analyze_arbitrage_opportunity(
                     stock_ticker=stock_ticker,
                     futures_ticker=futures_ticker,
                     stock_price=stock_price,
                     futures_price=futures_price,
-                    timestamp=current_time
+                    timestamp=current_time,
+                    min_spread_threshold=min_threshold
                 )
                 
                 if signal:
@@ -316,3 +320,19 @@ class ArbitrageMonitor:
             
         except Exception as e:
             logger.error(f"Ошибка отправки статуса рынка пользователю {subscriber_id}: {e}")
+    
+    def _get_minimum_spread_threshold(self) -> float:
+        """Получает минимальный порог спреда среди всех активных пользователей"""
+        if not hasattr(self, '_user_settings_manager') or not self._user_settings_manager:
+            return 0.2  # Возвращаем минимально возможный порог по умолчанию
+        
+        min_threshold = float('inf')
+        for user_settings in self._user_settings_manager.user_settings.values():
+            if user_settings.spread_threshold < min_threshold:
+                min_threshold = user_settings.spread_threshold
+        
+        return min_threshold if min_threshold != float('inf') else 0.2
+    
+    def set_user_settings_manager(self, user_settings_manager):
+        """Устанавливает ссылку на менеджер настроек пользователей"""
+        self._user_settings_manager = user_settings_manager

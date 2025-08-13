@@ -90,7 +90,7 @@ class ArbitrageCalculator:
     
     def analyze_arbitrage_opportunity(self, stock_ticker: str, futures_ticker: str,
                                     stock_price: float, futures_price: float,
-                                    timestamp: str) -> Optional[ArbitrageSignal]:
+                                    timestamp: str, min_spread_threshold: float = None) -> Optional[ArbitrageSignal]:
         """Анализ арбитражной возможности"""
         
         spread = self.calculate_spread(stock_price, futures_price, stock_ticker, futures_ticker)
@@ -105,8 +105,11 @@ class ArbitrageCalculator:
             return self._check_close_signal(position_key, spread, stock_price, 
                                           futures_price, timestamp)
         
+        # Используем переданный порог или конфигурационный
+        threshold = min_spread_threshold if min_spread_threshold is not None else self.config.MIN_SPREAD_THRESHOLD
+        
         # Проверяем сигналы на открытие
-        if abs_spread >= self.config.MIN_SPREAD_THRESHOLD:
+        if abs_spread >= threshold:
             return self._generate_open_signal(stock_ticker, futures_ticker, 
                                             stock_price, futures_price, 
                                             spread, timestamp)
