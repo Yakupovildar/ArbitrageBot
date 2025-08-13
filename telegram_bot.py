@@ -1383,7 +1383,7 @@ class SimpleTelegramBot:
                         if signal:
                             # Используем правильно рассчитанный спред из сигнала
                             spread = signal.spread_percent
-                            lot_size = self.config.LOT_SIZES.get(stock_ticker, 1)
+                            lot_size = self.config.get_lot_multipliers().get(stock_ticker, 1)
                             adjusted_stock_price = signal.stock_price * lot_size
                             # Используем цену фьючерса уже в рублях из сигнала
                             adjusted_futures_price = signal.futures_price
@@ -1391,7 +1391,7 @@ class SimpleTelegramBot:
                                 adjusted_futures_price = signal.futures_price * 0.01
                         else:
                             # Расчет вручную с правильными коррекциями
-                            lot_size = self.config.LOT_SIZES.get(stock_ticker, 1)
+                            lot_size = self.config.get_lot_multipliers().get(stock_ticker, 1)
                             adjusted_stock_price = stock_price * lot_size
                             
                             # Конвертируем фьючерс из пунктов в рубли (если нужно)

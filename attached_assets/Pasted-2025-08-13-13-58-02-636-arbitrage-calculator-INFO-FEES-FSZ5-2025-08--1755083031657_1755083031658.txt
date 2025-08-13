@@ -1,0 +1,26 @@
+2025-08-13 13:58:02,636 - arbitrage_calculator - INFO - Зарегистрирована позиция: FEES_FSZ5
+2025-08-13 13:58:02,636 - arbitrage_calculator - INFO - Зарегистрирована позиция: VTBR_VBZ5
+2025-08-13 13:58:02,864 - __main__ - INFO - Мониторинг 300с завершен. Найдено сигналов: 5
+2025-08-13 13:58:14,115 - __main__ - INFO - Запущен тестовый мониторинг для пользователя 371099678
+2025-08-13 13:58:14,116 - __main__ - INFO - Тестовый мониторинг - итерация 1 для пользователя 371099678
+2025-08-13 13:59:10,029 - __main__ - INFO - Получено котировок: 5
+2025-08-13 13:59:10,030 - __main__ - ERROR - Ошибка расчета спреда для SBER: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 13:59:10,030 - __main__ - ERROR - Ошибка расчета спреда для GAZP: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 13:59:10,030 - __main__ - ERROR - Ошибка расчета спреда для GMKN: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 13:59:10,030 - __main__ - ERROR - Ошибка расчета спреда для FEES: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 13:59:10,030 - __main__ - ERROR - Ошибка расчета спреда для VTBR: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 13:59:40,216 - __main__ - INFO - Тестовый мониторинг - итерация 2 для пользователя 371099678
+2025-08-13 14:00:36,426 - __main__ - INFO - Получено котировок: 5
+2025-08-13 14:00:36,426 - __main__ - ERROR - Ошибка расчета спреда для SBER: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 14:00:36,426 - __main__ - ERROR - Ошибка расчета спреда для GAZP: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 14:00:36,427 - __main__ - ERROR - Ошибка расчета спреда для GMKN: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 14:00:36,427 - __main__ - ERROR - Ошибка расчета спреда для FEES: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 14:00:36,427 - __main__ - ERROR - Ошибка расчета спреда для VTBR: 'Config' object has no attribute 'get_lot_size'
+2025-08-13 14:02:07,133 - __main__ - INFO - Запуск мониторинга для интервалов: [300]
+2025-08-13 14:02:07,133 - __main__ - INFO - Мониторинг для интервала 300с, пользователи: 1
+2025-08-13 14:03:03,073 - arbitrage_calculator - INFO - Зарегистрирована позиция: SBER_SBERF
+2025-08-13 14:03:03,074 - arbitrage_calculator - INFO - Зарегистрирована позиция: GAZP_GAZPF
+2025-08-13 14:03:03,074 - arbitrage_calculator - INFO - Зарегистрирована позиция: GMKN_GKZ5
+2025-08-13 14:03:03,074 - arbitrage_calculator - INFO - Зарегистрирована позиция: FEES_FSZ5
+2025-08-13 14:03:03,074 - arbitrage_calculator - INFO - Зарегистрирована позиция: VTBR_VBZ5
+2025-08-13 14:03:03,305 - __main__ - INFO - Мониторинг 300с завершен. Найдено сигналов: 5
