@@ -1031,8 +1031,8 @@ class SimpleTelegramBot:
             message += f"🎯 *{signal.stock_ticker}/{signal.futures_ticker}*\n"
             message += f"📊 Спред: *{signal.spread_percent:.2f}%*\n\n"
             message += f"💼 *Позиции:*\n"
-            message += f"📈 Акции {signal.stock_ticker}: *{signal.stock_position}* {signal.stock_lots} лотов\n"
-            message += f"📊 Фьючерс {signal.futures_ticker}: *{signal.futures_position}* {signal.futures_lots} лотов\n\n"
+            message += f"📈 Акции {signal.stock_ticker}: *{signal.stock_position}* {signal.stock_lots} лот\n"
+            message += f"📊 Фьючерс {signal.futures_ticker}: *{signal.futures_position}* {signal.futures_lots} лот\n\n"
             message += f"💰 *Цены:*\n"
             message += f"📈 {signal.stock_ticker}: {signal.stock_price:.2f} ₽\n"
             message += f"📊 {signal.futures_ticker}: {signal.futures_price:.2f} ₽\n\n"
@@ -1103,7 +1103,11 @@ class SimpleTelegramBot:
                 logger.warning("Не удалось получить котировки")
                 return
             
-            current_time = datetime.now().strftime("%H:%M:%S")
+            # Используем московское время
+            import pytz
+            moscow_tz = pytz.timezone('Europe/Moscow')
+            moscow_time = datetime.now(moscow_tz)
+            current_time = moscow_time.strftime("%H:%M:%S")
             signals = []
             
             for stock_ticker, (stock_price, futures_price) in quotes.items():
