@@ -18,20 +18,30 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (August 13, 2025)
 
-✅ **INTELLIGENT SCANNING SYSTEM: 300+ TRADING PAIRS (COMPLETE)**
-- **20x increase**: Expanded from 15 to 300+ trading pairs (comprehensive MOEX coverage)
-- **Minimal batching**: Only 3 pairs per cycle with NO REPEATS until full scan complete
-- **Extended coverage**: Every pair scanned within 100 cycles (50 minutes at 30s intervals)
+✅ **STABLE CORE PAIRS SYSTEM: 30 BLUE-CHIP INSTRUMENTS (COMPLETE)**
+- **Focused approach**: Temporarily reduced to 30 core blue-chip pairs for maximum stability
+- **Optimized batching**: 10 pairs per cycle with NO REPEATS until full scan complete
+- **Fast coverage**: Every pair scanned within 3 cycles (1.5 minutes at 30s intervals)
 - **Progress tracking**: Real-time coverage percentage and cycle completion status
-- **Settings persistence fixed**: User configurations now properly save to database
+- **Settings persistence**: User configurations properly save to database
 - **Navigation improved**: Back button returns to main menu correctly
 
-✅ **MAXIMUM SAFETY API OPTIMIZATION (COMPLETE)**
-- **Zero-risk approach**: 20 requests/minute, 1 concurrent request for guaranteed zero blocks
+✅ **STABILIZED API CONFIGURATION (COMPLETE)**
+- **Proven stable limits**: 20 requests/minute, 1 concurrent request for zero blocks
 - **Sequential processing**: No parallel requests - each API call waits for previous
-- **Extended delays**: 6 seconds between pairs, 2 seconds between stock/futures, 1s after pair
-- **Micro-batching**: Only 3 pairs per cycle to stay extremely far under API limits
-- **Smart rotation**: Systematic coverage without duplicates ensures full market coverage
+- **Balanced delays**: 2 seconds between pairs, moderate timeouts for reliability
+- **Core focus**: Only most liquid instruments to ensure consistent performance
+- **Smart rotation**: Systematic coverage of essential Russian market instruments
+
+🔄 **TEMPORARILY DISABLED FOR STABILITY:**
+- Металлургия: 40+ пар
+- Химия и нефтехимия: 35+ пар  
+- Энергетика: 50+ инструментов
+- Технологии: 25+ пар
+- Ритейл и потребительские товары: 30+ пар
+- Телеком: 15+ инструментов
+- Транспорт: 20+ пар
+- Дополнительные ликвидные активы: 50+ пар
 
 ✅ **DATABASE INTEGRATION & PERSISTENT SETTINGS (COMPLETE)**
 - **PostgreSQL database**: Added full database integration with asyncpg
