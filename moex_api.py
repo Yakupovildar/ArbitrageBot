@@ -125,22 +125,40 @@ class MOEXAPIClient:
     async def get_stock_price(self, ticker: str) -> Optional[float]:
         """Получение цены акции"""
         url = f"{self.config.MOEX_API_BASE_URL}/engines/stock/markets/shares/boards/TQBR/securities/{ticker}.json"
+        params = {
+            'iss.meta': 'off',
+            'iss.only': 'securities',
+            'securities.columns': 'SECID,LAST,PREVPRICE'
+        }
         
-        data = await self._make_request(url)
+        data = await self._make_request(url, params)
         if not data:
             return None
         
         try:
-            # Извлекаем данные из ответа MOEX ISS
             securities = data.get('securities', {})
             if 'data' in securities and securities['data']:
-                # Ищем цену последней сделки (LAST)
                 columns = securities.get('columns', [])
-                if 'LAST' in columns:
-                    last_index = columns.index('LAST')
-                    for row in securities['data']:
+                
+                for row in securities['data']:
+                    if not row or row[0] != ticker:
+                        continue
+                    
+                    # Сначала пробуем LAST (цена последней сделки)
+                    if 'LAST' in columns:
+                        last_index = columns.index('LAST')
                         if len(row) > last_index and row[last_index] is not None:
-                            return float(row[last_index])
+                            price = float(row[last_index])
+                            logger.debug(f"Цена акции {ticker} (LAST): {price}")
+                            return price
+                    
+                    # Если LAST нет, используем PREVPRICE (цена предыдущего дня)
+                    if 'PREVPRICE' in columns:
+                        prev_index = columns.index('PREVPRICE')
+                        if len(row) > prev_index and row[prev_index] is not None:
+                            price = float(row[prev_index])
+                            logger.debug(f"Цена акции {ticker} (PREVPRICE): {price}")
+                            return price
                             
             return None
             
@@ -151,8 +169,13 @@ class MOEXAPIClient:
     async def get_futures_price(self, ticker: str) -> Optional[float]:
         """Получение цены фьючерса"""
         url = f"{self.config.MOEX_API_BASE_URL}/engines/futures/markets/forts/boards/RFUD/securities/{ticker}.json"
+        params = {
+            'iss.meta': 'off',
+            'iss.only': 'securities', 
+            'securities.columns': 'SECID,LAST,PREVPRICE'
+        }
         
-        data = await self._make_request(url)
+        data = await self._make_request(url, params)
         if not data:
             return None
         
@@ -160,11 +183,26 @@ class MOEXAPIClient:
             securities = data.get('securities', {})
             if 'data' in securities and securities['data']:
                 columns = securities.get('columns', [])
-                if 'LAST' in columns:
-                    last_index = columns.index('LAST')
-                    for row in securities['data']:
+                
+                for row in securities['data']:
+                    if not row or row[0] != ticker:
+                        continue
+                    
+                    # Сначала пробуем LAST (цена последней сделки)
+                    if 'LAST' in columns:
+                        last_index = columns.index('LAST')
                         if len(row) > last_index and row[last_index] is not None:
-                            return float(row[last_index])
+                            price = float(row[last_index])
+                            logger.debug(f"Цена фьючерса {ticker} (LAST): {price}")
+                            return price
+                    
+                    # Если LAST нет, используем PREVPRICE (цена предыдущего дня)
+                    if 'PREVPRICE' in columns:
+                        prev_index = columns.index('PREVPRICE')
+                        if len(row) > prev_index and row[prev_index] is not None:
+                            price = float(row[prev_index])
+                            logger.debug(f"Цена фьючерса {ticker} (PREVPRICE): {price}")
+                            return price
                             
             return None
             

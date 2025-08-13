@@ -33,12 +33,12 @@ Preferred communication style: Simple, everyday language.
 - **User-controlled**: Start/stop with same command for easy testing
 - **Visual indicators**: Color-coded spreads with current prices displayed
 
-✅ **ULTRA-CONSERVATIVE API CONFIGURATION (EMERGENCY UPDATE)**
-- **Emergency limits**: 15 requests/minute (reduced from 20), 1 concurrent request
-- **5-second delays**: Increased from 2 seconds to prevent rate limit violations
-- **Smaller batches**: 5 pairs per cycle (reduced from 10) for minimal API load
-- **Sequential processing**: No parallel requests - each API call waits for previous
-- **Extended cycles**: 6 cycles to cover 30 pairs (30/5) with longer intervals
+✅ **CRITICAL TICKERS CORRECTION (FIXED)**
+- **Real MOEX futures**: Updated to actual existing futures contracts
+- **SBER/SBERF**: Сбербанк акция vs фьючерс (318₽ vs 319.2₽)
+- **GAZP/GAZPF**: Газпром акция vs фьючерс (проверен API)
+- **GMKN/GKZ5, FEES/FSZ5, VTBR/VBZ5**: Декабрьские контракты 2025
+- **Immediate test execution**: First test run executes instantly, not after 5-7 minutes
 
 🔄 **TEMPORARILY DISABLED FOR STABILITY:**
 - Металлургия: 40+ пар
