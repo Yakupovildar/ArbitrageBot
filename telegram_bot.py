@@ -20,6 +20,8 @@ from monitoring_controller import MonitoringController
 from data_sources import DataSourceManager
 from user_settings import UserSettingsManager
 from signal_queue import SignalQueue, UserMonitoringScheduler
+from source_reconnector import SourceReconnector
+from database import db
 
 # Класс для хранения истории спредов  
 class SpreadHistory:
@@ -79,13 +81,37 @@ class SimpleTelegramBot:
         self.signal_queue = SignalQueue(max_signals_per_batch=5, signal_interval=3.0)
         self.monitoring_scheduler = UserMonitoringScheduler()
         
+        # Автопереподключение к источникам
+        self.source_reconnector = None
+        
     async def __aenter__(self):
         """Асинхронный контекст менеджер"""
         self.session = aiohttp.ClientSession()
+        
+        # Инициализация базы данных
+        await db.init_connection()
+        
+        # Загрузка сохраненных настроек пользователей
+        await self._restore_user_settings()
+        
+        # Запуск автопереподключения
+        self.source_reconnector = SourceReconnector(self.data_sources, self.config)
+        await self.source_reconnector.start()
+        
         return self
         
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Закрытие сессии"""
+        # Сохранение настроек в базу
+        await self._save_all_user_settings()
+        
+        # Остановка автопереподключения
+        if self.source_reconnector:
+            await self.source_reconnector.stop()
+        
+        # Закрытие базы данных
+        await db.close_connection()
+        
         if self.session:
             await self.session.close()
     
@@ -423,8 +449,31 @@ class SimpleTelegramBot:
 • Почему нет сигналов? - Проверьте /status и время работы биржи
 • Как остановить уведомления? - /stop_monitoring
 
+🔧 *Техническая информация:*
+• /reconnect_stats - статистика источников данных
+
 🕒 Время ответа: обычно в течение нескольких часов"""
             await self.send_message(chat_id, support_message)
+            
+        elif command.startswith("/reconnect_stats"):
+            if self.source_reconnector:
+                stats = await self.source_reconnector.get_reconnect_stats()
+                message = f"""📊 Статистика источников данных:
+
+🔗 Всего источников: {stats['total_sources']}
+✅ Работает: {stats['working_sources']}
+❌ Неисправно: {stats['failed_sources']}
+
+⏰ Последняя проверка: {stats['last_check']}
+🔄 Следующая через: {stats['next_check_in']}
+
+🔄 Автопереподключение каждые 30 минут во время торгов
+
+ℹ️ Некоторые источники требуют API ключи для полноценной работы"""
+            else:
+                message = "❌ Система переподключения недоступна"
+                
+            await self.send_message(chat_id, message)
             
         elif command.startswith("/settings"):
             settings_summary = self.user_settings.get_settings_summary(user_id)
@@ -559,6 +608,12 @@ class SimpleTelegramBot:
             await self.edit_message_text(chat_id, callback_query["message"]["message_id"], message, keyboard)
             await self.answer_callback_query(callback_query_id, "Спред")
             
+        elif callback_data == "settings_signals":
+            keyboard = self.user_settings.get_signals_keyboard()
+            message = "🔢 Выберите максимальное количество сигналов за один раз:\n\n⏱️ Интервал между сигналами: 3 секунды"
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], message, keyboard)
+            await self.answer_callback_query(callback_query_id, "Количество сигналов")
+            
         elif callback_data.startswith("interval_"):
             interval = int(callback_data.replace("interval_", ""))
             if self.user_settings.update_monitoring_interval(user_id, interval):
@@ -568,6 +623,9 @@ class SimpleTelegramBot:
                 # Обновляем планировщик, если пользователь активен
                 if self.monitoring_controller.is_user_monitoring(user_id):
                     self.monitoring_scheduler.add_user_to_group(user_id, settings.monitoring_interval)
+                
+                # Сохраняем в базу данных
+                await self._save_user_settings_to_db(user_id)
                 
                 # Возвращаемся к главному меню настроек
                 settings_summary = self.user_settings.get_settings_summary(user_id)
@@ -581,6 +639,29 @@ class SimpleTelegramBot:
             if self.user_settings.update_spread_threshold(user_id, spread):
                 settings = self.user_settings.get_user_settings(user_id)
                 await self.answer_callback_query(callback_query_id, f"Спред: {settings.get_spread_display()}")
+                
+                # Сохраняем в базу данных
+                await self._save_user_settings_to_db(user_id)
+                
+                # Возвращаемся к главному меню настроек
+                settings_summary = self.user_settings.get_settings_summary(user_id)
+                keyboard = self.user_settings.get_settings_keyboard(user_id)
+                await self.edit_message_text(chat_id, callback_query["message"]["message_id"], settings_summary, keyboard)
+            else:
+                await self.answer_callback_query(callback_query_id, "Ошибка обновления")
+                
+        elif callback_data.startswith("signals_"):
+            max_signals = int(callback_data.replace("signals_", ""))
+            if self.user_settings.update_max_signals(user_id, max_signals):
+                settings = self.user_settings.get_user_settings(user_id)
+                await self.answer_callback_query(callback_query_id, f"Сигналов: {settings.max_signals}")
+                
+                # Обновляем лимит в очереди сигналов
+                user_max_signals = settings.max_signals
+                self.signal_queue.max_signals_per_batch = user_max_signals
+                
+                # Сохраняем в базу данных
+                await self._save_user_settings_to_db(user_id)
                 
                 # Возвращаемся к главному меню настроек
                 settings_summary = self.user_settings.get_settings_summary(user_id)
@@ -652,6 +733,68 @@ class SimpleTelegramBot:
         elif callback_data == "cmd_support":
             await self.handle_command(chat_id, "/support", user_id)
             await self.answer_callback_query(callback_query_id, "Поддержка")
+    
+    async def _restore_user_settings(self):
+        """Восстановление настроек пользователей из базы данных"""
+        try:
+            monitoring_users = await db.get_all_monitoring_users()
+            logger.info(f"🔄 Восстановление настроек для {len(monitoring_users)} пользователей")
+            
+            for db_settings in monitoring_users:
+                # Восстанавливаем настройки в менеджере
+                user_settings = self.user_settings.get_user_settings(db_settings.user_id)
+                user_settings.monitoring_interval = db_settings.monitoring_interval
+                user_settings.spread_threshold = db_settings.spread_threshold
+                user_settings.max_signals = db_settings.max_signals
+                
+                # Если у пользователя был активен мониторинг - восстанавливаем
+                if db_settings.is_monitoring:
+                    self.monitoring_controller.start_user_monitoring(db_settings.user_id)
+                    self.monitoring_scheduler.add_user_to_group(
+                        db_settings.user_id, 
+                        db_settings.monitoring_interval
+                    )
+                    logger.info(f"✅ Восстановлен мониторинг для пользователя {db_settings.user_id}")
+            
+            if monitoring_users:
+                logger.info("🎯 Настройки пользователей восстановлены из базы данных")
+                
+        except Exception as e:
+            logger.error(f"❌ Ошибка восстановления настроек: {e}")
+    
+    async def _save_all_user_settings(self):
+        """Сохранение всех настроек пользователей в базу данных"""
+        try:
+            for user_id, settings in self.user_settings.user_settings.items():
+                db_settings = db.UserSettings(
+                    user_id=user_id,
+                    monitoring_interval=settings.monitoring_interval,
+                    spread_threshold=settings.spread_threshold,
+                    max_signals=settings.max_signals,
+                    is_monitoring=self.monitoring_controller.is_user_monitoring(user_id)
+                )
+                await db.save_user_settings(db_settings)
+            
+            logger.info("💾 Все настройки пользователей сохранены в базу данных")
+            
+        except Exception as e:
+            logger.error(f"❌ Ошибка сохранения настроек: {e}")
+    
+    async def _save_user_settings_to_db(self, user_id: int):
+        """Сохранение настроек конкретного пользователя"""
+        try:
+            settings = self.user_settings.get_user_settings(user_id)
+            db_settings = db.UserSettings(
+                user_id=user_id,
+                monitoring_interval=settings.monitoring_interval,
+                spread_threshold=settings.spread_threshold,
+                max_signals=settings.max_signals,
+                is_monitoring=self.monitoring_controller.is_user_monitoring(user_id)
+            )
+            await db.save_user_settings(db_settings)
+            
+        except Exception as e:
+            logger.error(f"❌ Ошибка сохранения настроек пользователя {user_id}: {e}")
             
     async def handle_support_message(self, chat_id: int, user_id: int, message: str):
         """Обработка сообщений поддержки"""

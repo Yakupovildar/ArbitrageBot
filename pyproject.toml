@@ -5,6 +5,7 @@ description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
     "aiohttp>=3.12.15",
+    "asyncpg>=0.30.0",
     "python-telegram-bot==21.6",
     "pytz>=2025.2",
     "telegram>=0.0.1",

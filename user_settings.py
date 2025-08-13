@@ -15,6 +15,7 @@ class UserSettings:
     user_id: int
     monitoring_interval: int = 300  # По умолчанию 5 минут (в секундах)
     spread_threshold: float = 1.0   # По умолчанию 1%
+    max_signals: int = 3            # Максимум сигналов за раз
     source_rotation_index: int = 0  # Индекс текущего источника данных
     
     # Доступные интервалы мониторинга
@@ -28,6 +29,9 @@ class UserSettings:
     
     # Доступные пороги спредов
     AVAILABLE_SPREADS = {
+        0.2: "0.2%",
+        0.3: "0.3%",
+        0.4: "0.4%",
         0.5: "0.5%",
         0.7: "0.7%", 
         0.9: "0.9%",
@@ -93,6 +97,16 @@ class UserSettingsManager:
         logger.info(f"Пользователь {user_id} изменил порог спреда на {threshold}%")
         return True
     
+    def update_max_signals(self, user_id: int, max_signals: int) -> bool:
+        """Обновить максимальное количество сигналов за раз"""
+        if max_signals < 1 or max_signals > 5:
+            return False
+            
+        settings = self.get_user_settings(user_id)
+        settings.max_signals = max_signals
+        logger.info(f"Пользователь {user_id} изменил макс. сигналов на {max_signals}")
+        return True
+    
     def get_current_source_for_user(self, user_id: int) -> str:
         """Получить текущий источник данных для пользователя (с ротацией для быстрого мониторинга)"""
         settings = self.get_user_settings(user_id)
@@ -116,6 +130,9 @@ class UserSettingsManager:
                 [
                     {"text": f"⏱️ Интервал: {settings.get_interval_display()}", "callback_data": "settings_interval"},
                     {"text": f"📊 Спред: {settings.get_spread_display()}", "callback_data": "settings_spread"}
+                ],
+                [
+                    {"text": f"🔢 Сигналов: {settings.max_signals}", "callback_data": "settings_signals"}
                 ],
                 [
                     {"text": "🔙 Назад", "callback_data": "settings_back"}
@@ -160,6 +177,25 @@ class UserSettingsManager:
         
         return {"inline_keyboard": keyboard_rows}
     
+    def get_signals_keyboard(self) -> Dict:
+        """Создать клавиатуру выбора количества сигналов"""
+        return {
+            "inline_keyboard": [
+                [
+                    {"text": "1 сигнал", "callback_data": "signals_1"},
+                    {"text": "2 сигнала", "callback_data": "signals_2"},
+                    {"text": "3 сигнала", "callback_data": "signals_3"}
+                ],
+                [
+                    {"text": "4 сигнала", "callback_data": "signals_4"},
+                    {"text": "5 сигналов", "callback_data": "signals_5"}
+                ],
+                [
+                    {"text": "🔙 Назад", "callback_data": "settings_back"}
+                ]
+            ]
+        }
+    
     def get_settings_summary(self, user_id: int) -> str:
         """Получить сводку настроек пользователя"""
         settings = self.get_user_settings(user_id)
@@ -168,6 +204,7 @@ class UserSettingsManager:
 
 ⏱️ Интервал мониторинга: {settings.get_interval_display()}
 📊 Порог спреда: {settings.get_spread_display()}
+🔢 Максимум сигналов: {settings.max_signals} за раз
 
 """
         

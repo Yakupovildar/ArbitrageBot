@@ -15,24 +15,32 @@ Successfully deployed Telegram bot for monitoring arbitrage opportunities betwee
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (August 12, 2025)
+## Recent Changes (August 13, 2025)
 
-✅ **Complete bot implementation with custom HTTP API approach**
-- Resolved python-telegram-bot library conflicts by implementing direct Telegram Bot API integration
-- Created fully functional bot with all requested features
-- Successfully deployed and tested with real TELEGRAM_BOT_TOKEN
+✅ **DATABASE INTEGRATION & PERSISTENT SETTINGS (COMPLETE)**
+- **PostgreSQL database**: Added full database integration with asyncpg
+- **Persistent user settings**: All user configurations survive bot restarts
+- **Automatic recovery**: Bot restores monitoring states and user settings on restart
+- **Database schema**: Comprehensive tables for user settings, source status, and monitoring history
 
-✅ **Major improvements based on user feedback:**
-- **Controlled monitoring**: Users must explicitly start monitoring with /start_monitoring
-- **No automatic API calls**: Bot only monitors when users request it, preventing unnecessary API usage
-- **Market-aware prompts**: Interactive prompts when market is closed with yes/no options
-- **Individual user control**: Each user has their own monitoring state, shared global monitoring only when needed
-- **Demo functionality**: /demo command shows example signals without real data
-- **Support system**: /support command and message forwarding to admin
-- **Error notifications**: Admin receives alerts for API failures and critical errors
-- **Scalable for 100+ users**: Efficient architecture that doesn't duplicate monitoring cycles
+✅ **GRANULAR CONFIGURATION OPTIONS (COMPLETE)**
+- **Enhanced spread thresholds**: Added 0.2%, 0.3%, 0.4% options for high-frequency trading
+- **Signal batch control**: Users can choose 1-5 signals per batch with 3-second intervals
+- **Individual settings**: Each user has personal thresholds and signal limits
+- **Real-time updates**: Settings changes apply immediately and persist in database
 
-✅ **Latest optimizations (Aug 12, 9:12 PM - FINAL):**
+✅ **AUTO-RECONNECTION SYSTEM (COMPLETE)**
+- **30-minute cycles**: Automatic reconnection attempts every 30 minutes during trading hours
+- **Source monitoring**: Tracks status of all 10 data sources in database
+- **Smart recovery**: Prevents excessive reconnection attempts (15-min cooldown per source)
+- **Status tracking**: /reconnect_stats command shows real-time source health
+
+✅ **TIMEZONE & MARKET HOURS FIX (COMPLETE)**
+- **Moscow timezone**: Fixed timezone calculation using pytz Europe/Moscow
+- **Accurate trading hours**: Bot correctly detects MOEX hours (9:00-18:45 MSK weekdays)
+- **Market awareness**: All monitoring respects actual trading schedule
+
+✅ **Previous optimizations (Aug 12, 2025):**
 - **Scaled to 10 data sources**: Added Tinkoff, Sberbank, BCS, VTB APIs for better redundancy
 - **Smart signal limiting**: Maximum 5 signals per batch with 3-second intervals to prevent spam
 - **Advanced monitoring scheduler**: Different user groups run on their own schedules (30s, 1min, 3min, 5min, 15min)
