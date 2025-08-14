@@ -181,10 +181,9 @@ class MOEXAPIClient:
                         prev_index = columns.index('PREVPRICE')
                         if len(row) > prev_index and row[prev_index] is not None:
                             price_per_share = float(row[prev_index])
-                            # Для арбитража нужна цена за лот (как для фьючерсов)
-                            price_per_lot = price_per_share * lot_size
-                            logger.debug(f"✅ Цена акции {ticker}: {price_per_share}₽/шт × {lot_size} = {price_per_lot}₽/лот")
-                            return price_per_lot
+                            # Возвращаем цену за акцию (не за лот) для корректного отображения спредов
+                            logger.debug(f"✅ Цена акции {ticker}: {price_per_share}₽/акция")
+                            return price_per_share
                             
             return None
             
@@ -230,11 +229,9 @@ class MOEXAPIClient:
                             # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Разные фьючерсы имеют разные коэффициенты
                             price_in_rubles = self._convert_futures_price_to_rubles(ticker, price_in_points)
                             
-                            # Умножаем на размер контракта (если есть лотность)
-                            price_total = price_in_rubles * lot_size
-                            
-                            logger.debug(f"✅ Цена фьючерса {ticker}: {price_in_points} -> {price_in_rubles}₽ × {lot_size} = {price_total}₽")
-                            return price_total
+                            # Возвращаем цену за акцию (не за лот) для корректного отображения спредов
+                            logger.debug(f"✅ Цена фьючерса {ticker}: {price_in_points} -> {price_in_rubles}₽/акция")
+                            return price_in_rubles
                             
             return None
             

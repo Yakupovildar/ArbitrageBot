@@ -1392,7 +1392,7 @@ class SimpleTelegramBot:
                 user_instruments = self.user_settings.get_user_instruments_dict(user_id, self.config.MONITORED_INSTRUMENTS)
                 instruments_to_test = user_instruments if user_instruments else self.config.MONITORED_INSTRUMENTS
                 
-                # Получаем текущие котировки через MOEX API
+                # Получаем текущие котировки через MOEX API (с правильной конвертацией)
                 async with MOEXAPIClient() as moex_client:
                     quotes = await moex_client.get_multiple_quotes(instruments_to_test)
                 
