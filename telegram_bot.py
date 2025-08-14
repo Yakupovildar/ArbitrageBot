@@ -1072,10 +1072,10 @@ class SimpleTelegramBot:
     async def _restore_user_settings(self):
         """Восстановление настроек пользователей из базы данных"""
         try:
-            monitoring_users = await db.get_all_monitoring_users()
-            logger.info(f"🔄 Восстановление настроек для {len(monitoring_users)} пользователей")
+            all_users = await db.get_all_users()
+            logger.info(f"🔄 Восстановление настроек для {len(all_users)} пользователей")
             
-            for db_settings in monitoring_users:
+            for db_settings in all_users:
                 # Восстанавливаем настройки в менеджере
                 user_settings = self.user_settings.get_user_settings(db_settings.user_id)
                 user_settings.monitoring_interval = db_settings.monitoring_interval
@@ -1108,7 +1108,7 @@ class SimpleTelegramBot:
                     await db.save_user_settings(db_user_settings)
                     logger.info(f"🔄 Мониторинг пользователя {db_settings.user_id} сброшен - требуется ручной запуск")
             
-            if monitoring_users:
+            if all_users:
                 logger.info("🎯 Настройки пользователей восстановлены из базы данных")
                 
         except Exception as e:

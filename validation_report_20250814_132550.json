@@ -1,0 +1,80 @@
+{
+  "timestamp": "2025-08-14T13:25:50.143478",
+  "total_pairs": 8,
+  "valid_pairs": 8,
+  "invalid_pairs": 0,
+  "results": {
+    "SBER_SBERF": {
+      "stock_ticker": "SBER",
+      "futures_ticker": "SBERF",
+      "is_valid": true,
+      "stock_price": 317.51,
+      "futures_price": 319.36,
+      "error_message": "",
+      "checked_at": "2025-08-14T13:25:47.601022"
+    },
+    "GAZP_GAZPF": {
+      "stock_ticker": "GAZP",
+      "futures_ticker": "GAZPF",
+      "is_valid": true,
+      "stock_price": 139.39,
+      "futures_price": 140.12,
+      "error_message": "",
+      "checked_at": "2025-08-14T13:25:47.964614"
+    },
+    "LKOH_LKZ5": {
+      "stock_ticker": "LKOH",
+      "futures_ticker": "LKZ5",
+      "is_valid": true,
+      "stock_price": 6336.0,
+      "futures_price": 6336.930693069307,
+      "error_message": "",
+      "checked_at": "2025-08-14T13:25:48.335079"
+    },
+    "GMKN_GKZ5": {
+      "stock_ticker": "GMKN",
+      "futures_ticker": "GKZ5",
+      "is_valid": true,
+      "stock_price": 128.2,
+      "futures_price": 127.94392523364486,
+      "error_message": "",
+      "checked_at": "2025-08-14T13:25:48.695210"
+    },
+    "VTBR_VBZ5": {
+      "stock_ticker": "VTBR",
+      "futures_ticker": "VBZ5",
+      "is_valid": true,
+      "stock_price": 78.98,
+      "futures_price": 78.96713615023474,
+      "error_message": "",
+      "checked_at": "2025-08-14T13:25:49.059725"
+    },
+    "ROSN_RNZ5": {
+      "stock_ticker": "ROSN",
+      "futures_ticker": "RNZ5",
+      "is_valid": true,
+      "stock_price": 456.6,
+      "futures_price": 456.69483568075117,
+      "error_message": "",
+      "checked_at": "2025-08-14T13:25:49.427891"
+    },
+    "TATN_TNZ5": {
+      "stock_ticker": "TATN",
+      "futures_ticker": "TNZ5",
+      "is_valid": true,
+      "stock_price": 712.5,
+      "futures_price": 711.0,
+      "error_message": "",
+      "checked_at": "2025-08-14T13:25:49.785651"
+    },
+    "ALRS_ALZ5": {
+      "stock_ticker": "ALRS",
+      "futures_ticker": "ALZ5",
+      "is_valid": true,
+      "stock_price": 48.26,
+      "futures_price": 48.189655172413794,
+      "error_message": "",
+      "checked_at": "2025-08-14T13:25:50.143202"
+    }
+  }
+}

@@ -186,6 +186,31 @@ class Database:
             logger.error(f"❌ Ошибка получения активных пользователей: {e}")
             return []
     
+    async def get_all_users(self) -> List[UserSettings]:
+        """Получение всех пользователей (независимо от статуса мониторинга)"""
+        try:
+            async with self.pool.acquire() as conn:
+                rows = await conn.fetch("SELECT * FROM user_settings")
+                
+                users = []
+                for row in rows:
+                    users.append(UserSettings(
+                        user_id=row['user_id'],
+                        monitoring_interval=row['monitoring_interval'],
+                        spread_threshold=row['spread_threshold'],
+                        max_signals=row['max_signals'],
+                        is_monitoring=row['is_monitoring'],
+                        selected_instruments=row.get('selected_instruments', '[]'),
+                        created_at=row['created_at'],
+                        updated_at=row['updated_at']
+                    ))
+                
+                return users
+                
+        except Exception as e:
+            logger.error(f"❌ Ошибка получения всех пользователей: {e}")
+            return []
+    
     async def update_source_status(self, source_name: str, status: str, error: str = None):
         """Обновление статуса источника данных"""
         try:
