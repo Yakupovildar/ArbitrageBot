@@ -79,6 +79,31 @@ class PairValidator:
         except Exception as e:
             return False, None, f"Ошибка запроса: {str(e)}"
     
+    def _convert_futures_price_to_rubles(self, ticker: str, price: float) -> float:
+        """Конвертация цены фьючерса в рубли (такая же как в moex_api.py)"""
+        
+        # Фьючерсы которые уже торгуются в рублях за акцию
+        if ticker in ['SBERF', 'GAZPF']:
+            return price
+        
+        # Фьючерсы которые торгуются в пунктах - нужна точная конвертация
+        elif ticker in ['LKZ5']:  # Лукойл
+            return price / 10.1
+        elif ticker in ['GKZ5']:  # ГМК Норникель
+            return price / 10.7
+        elif ticker in ['VBZ5']:  # ВТБ
+            return price / 106.5
+        elif ticker in ['RNZ5']:  # Роснефть
+            return price / 106.5
+        elif ticker in ['TNZ5']:  # Татнефть
+            return price / 2.0
+        elif ticker in ['ALZ5']:  # АЛРОСА
+            return price / 104.4
+        
+        # По умолчанию - делим на 100 (пункты в копейках)
+        else:
+            return price / 100.0
+
     async def validate_futures(self, ticker: str) -> Tuple[bool, Optional[float], str]:
         """Валидация фьючерса на MOEX"""
         try:
@@ -99,10 +124,12 @@ class PairValidator:
                 
                 if 'PREVPRICE' in columns:
                     prev_idx = columns.index('PREVPRICE')
-                    price = row[prev_idx] if len(row) > prev_idx else None
+                    raw_price = row[prev_idx] if len(row) > prev_idx else None
                     
-                    if price and price > 0:
-                        return True, float(price), ""
+                    if raw_price and raw_price > 0:
+                        # ПРИМЕНЯЕМ КОНВЕРТАЦИЮ
+                        converted_price = self._convert_futures_price_to_rubles(ticker, float(raw_price))
+                        return True, converted_price, ""
                     else:
                         return False, None, "Нет данных о ценах"
                 else:
