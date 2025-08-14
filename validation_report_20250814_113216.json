@@ -1,0 +1,80 @@
+{
+  "timestamp": "2025-08-14T11:32:16.939019",
+  "total_pairs": 8,
+  "valid_pairs": 8,
+  "invalid_pairs": 0,
+  "results": {
+    "SBER_SBERF": {
+      "stock_ticker": "SBER",
+      "futures_ticker": "SBERF",
+      "is_valid": true,
+      "stock_price": 317.51,
+      "futures_price": 319.36,
+      "error_message": "",
+      "checked_at": "2025-08-14T11:32:14.371148"
+    },
+    "GAZP_GAZPF": {
+      "stock_ticker": "GAZP",
+      "futures_ticker": "GAZPF",
+      "is_valid": true,
+      "stock_price": 139.39,
+      "futures_price": 140.12,
+      "error_message": "",
+      "checked_at": "2025-08-14T11:32:14.730705"
+    },
+    "LKOH_LKZ5": {
+      "stock_ticker": "LKOH",
+      "futures_ticker": "LKZ5",
+      "is_valid": true,
+      "stock_price": 6336.0,
+      "futures_price": 64003.0,
+      "error_message": "",
+      "checked_at": "2025-08-14T11:32:15.086740"
+    },
+    "GMKN_GKZ5": {
+      "stock_ticker": "GMKN",
+      "futures_ticker": "GKZ5",
+      "is_valid": true,
+      "stock_price": 128.2,
+      "futures_price": 1369.0,
+      "error_message": "",
+      "checked_at": "2025-08-14T11:32:15.444176"
+    },
+    "VTBR_VBZ5": {
+      "stock_ticker": "VTBR",
+      "futures_ticker": "VBZ5",
+      "is_valid": true,
+      "stock_price": 78.98,
+      "futures_price": 8410.0,
+      "error_message": "",
+      "checked_at": "2025-08-14T11:32:15.804305"
+    },
+    "ROSN_RNZ5": {
+      "stock_ticker": "ROSN",
+      "futures_ticker": "RNZ5",
+      "is_valid": true,
+      "stock_price": 456.6,
+      "futures_price": 48638.0,
+      "error_message": "",
+      "checked_at": "2025-08-14T11:32:16.172919"
+    },
+    "TATN_TNZ5": {
+      "stock_ticker": "TATN",
+      "futures_ticker": "TNZ5",
+      "is_valid": true,
+      "stock_price": 712.5,
+      "futures_price": 1422.0,
+      "error_message": "",
+      "checked_at": "2025-08-14T11:32:16.568918"
+    },
+    "ALRS_ALZ5": {
+      "stock_ticker": "ALRS",
+      "futures_ticker": "ALZ5",
+      "is_valid": true,
+      "stock_price": 48.26,
+      "futures_price": 5031.0,
+      "error_message": "",
+      "checked_at": "2025-08-14T11:32:16.938591"
+    }
+  }
+}
