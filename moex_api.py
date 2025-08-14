@@ -153,7 +153,7 @@ class MOEXAPIClient:
         params = {
             'iss.meta': 'off',
             'iss.only': 'securities',
-            'securities.columns': 'SECID,LAST,PREVPRICE,LOTSIZE'
+            'securities.columns': 'SECID,PREVPRICE,LOTSIZE'
         }
         
         data = await self._make_request(url, params)
@@ -176,24 +176,14 @@ class MOEXAPIClient:
                         if len(row) > lot_index and row[lot_index] is not None:
                             lot_size = int(row[lot_index])
                     
-                    # Сначала пробуем LAST (цена последней сделки)
-                    if 'LAST' in columns:
-                        last_index = columns.index('LAST')
-                        if len(row) > last_index and row[last_index] is not None:
-                            price_per_share = float(row[last_index])
-                            # Для арбитража нужна цена за лот (как для фьючерсов)
-                            price_per_lot = price_per_share * lot_size
-                            logger.debug(f"Цена акции {ticker} (LAST): {price_per_share}₽/шт × {lot_size} = {price_per_lot}₽/лот")
-                            return price_per_lot
-                    
-                    # Если LAST нет, используем PREVPRICE (цена предыдущего дня)
+                    # Используем PREVPRICE (цена закрытия предыдущего дня)
                     if 'PREVPRICE' in columns:
                         prev_index = columns.index('PREVPRICE')
                         if len(row) > prev_index and row[prev_index] is not None:
                             price_per_share = float(row[prev_index])
                             # Для арбитража нужна цена за лот (как для фьючерсов)
                             price_per_lot = price_per_share * lot_size
-                            logger.debug(f"Цена акции {ticker} (PREVPRICE): {price_per_share}₽/шт × {lot_size} = {price_per_lot}₽/лот")
+                            logger.debug(f"✅ Цена акции {ticker}: {price_per_share}₽/шт × {lot_size} = {price_per_lot}₽/лот")
                             return price_per_lot
                             
             return None
@@ -208,7 +198,7 @@ class MOEXAPIClient:
         params = {
             'iss.meta': 'off',
             'iss.only': 'securities', 
-            'securities.columns': 'SECID,LAST,PREVPRICE,LOTSIZE'
+            'securities.columns': 'SECID,PREVPRICE,LOTSIZE'
         }
         
         data = await self._make_request(url, params)
@@ -231,22 +221,7 @@ class MOEXAPIClient:
                         if len(row) > lot_index and row[lot_index] is not None:
                             lot_size = int(row[lot_index])
                     
-                    # Сначала пробуем LAST (цена последней сделки)
-                    if 'LAST' in columns:
-                        last_index = columns.index('LAST')
-                        if len(row) > last_index and row[last_index] is not None:
-                            price_in_points = float(row[last_index])
-                            
-                            # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Разные фьючерсы имеют разные коэффициенты
-                            price_in_rubles = self._convert_futures_price_to_rubles(ticker, price_in_points)
-                            
-                            # Умножаем на размер контракта (если есть лотность)
-                            price_total = price_in_rubles * lot_size
-                            
-                            logger.debug(f"Цена фьючерса {ticker} (LAST): {price_in_points} -> {price_in_rubles}₽ × {lot_size} = {price_total}₽")
-                            return price_total
-                    
-                    # Если LAST нет, используем PREVPRICE (цена предыдущего дня)
+                    # Используем PREVPRICE (цена закрытия предыдущего дня)
                     if 'PREVPRICE' in columns:
                         prev_index = columns.index('PREVPRICE')
                         if len(row) > prev_index and row[prev_index] is not None:
@@ -258,7 +233,7 @@ class MOEXAPIClient:
                             # Умножаем на размер контракта (если есть лотность)
                             price_total = price_in_rubles * lot_size
                             
-                            logger.debug(f"Цена фьючерса {ticker} (PREVPRICE): {price_in_points} -> {price_in_rubles}₽ × {lot_size} = {price_total}₽")
+                            logger.debug(f"✅ Цена фьючерса {ticker}: {price_in_points} -> {price_in_rubles}₽ × {lot_size} = {price_total}₽")
                             return price_total
                             
             return None

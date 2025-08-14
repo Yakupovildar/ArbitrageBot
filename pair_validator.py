@@ -50,7 +50,7 @@ class PairValidator:
     async def validate_stock(self, ticker: str) -> Tuple[bool, Optional[float], str]:
         """Валидация акции на MOEX"""
         try:
-            url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}.json?iss.meta=off'
+            url = f'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}.json?iss.meta=off&iss.only=securities&securities.columns=SECID,PREVPRICE'
             
             async with self.session.get(url) as response:
                 if response.status != 200:
@@ -65,14 +65,14 @@ class PairValidator:
                 row = data['securities']['data'][0]
                 columns = data['securities']['columns']
                 
-                if 'LAST' in columns:
-                    last_idx = columns.index('LAST')
-                    price = row[last_idx] if len(row) > last_idx else None
+                if 'PREVPRICE' in columns:
+                    prev_idx = columns.index('PREVPRICE')
+                    price = row[prev_idx] if len(row) > prev_idx else None
                     
                     if price and price > 0:
                         return True, float(price), ""
                     else:
-                        return False, None, "Нет текущих котировок"
+                        return False, None, "Нет данных о ценах"
                 else:
                     return False, None, "Нет данных о ценах"
                     
@@ -82,7 +82,7 @@ class PairValidator:
     async def validate_futures(self, ticker: str) -> Tuple[bool, Optional[float], str]:
         """Валидация фьючерса на MOEX"""
         try:
-            url = f'https://iss.moex.com/iss/engines/futures/markets/forts/boards/RFUD/securities/{ticker}.json?iss.meta=off'
+            url = f'https://iss.moex.com/iss/engines/futures/markets/forts/boards/RFUD/securities/{ticker}.json?iss.meta=off&iss.only=securities&securities.columns=SECID,PREVPRICE'
             
             async with self.session.get(url) as response:
                 if response.status != 200:
@@ -97,14 +97,14 @@ class PairValidator:
                 row = data['securities']['data'][0]
                 columns = data['securities']['columns']
                 
-                if 'LAST' in columns:
-                    last_idx = columns.index('LAST')
-                    price = row[last_idx] if len(row) > last_idx else None
+                if 'PREVPRICE' in columns:
+                    prev_idx = columns.index('PREVPRICE')
+                    price = row[prev_idx] if len(row) > prev_idx else None
                     
                     if price and price > 0:
                         return True, float(price), ""
                     else:
-                        return False, None, "Нет текущих котировок"
+                        return False, None, "Нет данных о ценах"
                 else:
                     return False, None, "Нет данных о ценах"
                     

@@ -1,0 +1,893 @@
+{
+  "SBER_SBERF": {
+    "stock_ticker": "SBER",
+    "futures_ticker": "SBERF",
+    "is_valid": true,
+    "stock_price": 317.51,
+    "futures_price": 319.36,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:16.956011"
+  },
+  "GAZP_GAZPF": {
+    "stock_ticker": "GAZP",
+    "futures_ticker": "GAZPF",
+    "is_valid": true,
+    "stock_price": 139.39,
+    "futures_price": 140.12,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:17.312320"
+  },
+  "LKOH_LKZ5": {
+    "stock_ticker": "LKOH",
+    "futures_ticker": "LKZ5",
+    "is_valid": true,
+    "stock_price": 6336.0,
+    "futures_price": 64003.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:17.673537"
+  },
+  "GMKN_GKZ5": {
+    "stock_ticker": "GMKN",
+    "futures_ticker": "GKZ5",
+    "is_valid": true,
+    "stock_price": 128.2,
+    "futures_price": 1369.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:18.040520"
+  },
+  "VTBR_VBZ5": {
+    "stock_ticker": "VTBR",
+    "futures_ticker": "VBZ5",
+    "is_valid": true,
+    "stock_price": 78.98,
+    "futures_price": 8410.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:18.436153"
+  },
+  "ROSN_RNZ5": {
+    "stock_ticker": "ROSN",
+    "futures_ticker": "RNZ5",
+    "is_valid": true,
+    "stock_price": 456.6,
+    "futures_price": 48638.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:18.891986"
+  },
+  "TATN_TNZ5": {
+    "stock_ticker": "TATN",
+    "futures_ticker": "TNZ5",
+    "is_valid": true,
+    "stock_price": 712.5,
+    "futures_price": 1422.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:19.250524"
+  },
+  "ALRS_ALZ5": {
+    "stock_ticker": "ALRS",
+    "futures_ticker": "ALZ5",
+    "is_valid": true,
+    "stock_price": 48.26,
+    "futures_price": 5031.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:19.605334"
+  },
+  "SBERP_SPZ5": {
+    "stock_ticker": "SBERP",
+    "futures_ticker": "SPZ5",
+    "is_valid": true,
+    "stock_price": 314.36,
+    "futures_price": 33480.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:19.990787"
+  },
+  "CBOM_CMZ5": {
+    "stock_ticker": "CBOM",
+    "futures_ticker": "CMZ5",
+    "is_valid": true,
+    "stock_price": 8.278,
+    "futures_price": 8884.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:20.431035"
+  },
+  "BSPB_BSZ5": {
+    "stock_ticker": "BSPB",
+    "futures_ticker": "BSZ5",
+    "is_valid": true,
+    "stock_price": 412.2,
+    "futures_price": 4097.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:21.016254"
+  },
+  "SVCB_SCZ5": {
+    "stock_ticker": "SVCB",
+    "futures_ticker": "SCZ5",
+    "is_valid": true,
+    "stock_price": 16.365,
+    "futures_price": 1701.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:21.372511"
+  },
+  "TATP_TPZ5": {
+    "stock_ticker": "TATP",
+    "futures_ticker": "TPZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 6940.0,
+    "error_message": "Акция TATP: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:21.738833"
+  },
+  "SNGS_SNZ5": {
+    "stock_ticker": "SNGS",
+    "futures_ticker": "SNZ5",
+    "is_valid": true,
+    "stock_price": 23.93,
+    "futures_price": 25478.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:22.097389"
+  },
+  "SNGSP_SGZ5": {
+    "stock_ticker": "SNGSP",
+    "futures_ticker": "SGZ5",
+    "is_valid": true,
+    "stock_price": 45.92,
+    "futures_price": 49452.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:22.456631"
+  },
+  "NVTK_NKZ5": {
+    "stock_ticker": "NVTK",
+    "futures_ticker": "NKZ5",
+    "is_valid": true,
+    "stock_price": 1241.2,
+    "futures_price": 129065.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:22.818239"
+  },
+  "SIBN_SOZ5": {
+    "stock_ticker": "SIBN",
+    "futures_ticker": "SOZ5",
+    "is_valid": true,
+    "stock_price": 542.5,
+    "futures_price": 5498.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:23.255257"
+  },
+  "BANE_BNZ5": {
+    "stock_ticker": "BANE",
+    "futures_ticker": "BNZ5",
+    "is_valid": true,
+    "stock_price": 1803.5,
+    "futures_price": 1891.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:23.683354"
+  },
+  "RNFT_RUZ5": {
+    "stock_ticker": "RNFT",
+    "futures_ticker": "RUZ5",
+    "is_valid": true,
+    "stock_price": 128.85,
+    "futures_price": 1379.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:24.309986"
+  },
+  "NLMK_NLZ5": {
+    "stock_ticker": "NLMK",
+    "futures_ticker": "NLZ5",
+    "is_valid": false,
+    "stock_price": 127.26,
+    "futures_price": null,
+    "error_message": "Фьючерс NLZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:24.712221"
+  },
+  "MAGN_MGZ5": {
+    "stock_ticker": "MAGN",
+    "futures_ticker": "MGZ5",
+    "is_valid": true,
+    "stock_price": 35.425,
+    "futures_price": 37653.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:25.069984"
+  },
+  "CHMF_CHZ5": {
+    "stock_ticker": "CHMF",
+    "futures_ticker": "CHZ5",
+    "is_valid": true,
+    "stock_price": 1092.0,
+    "futures_price": 117590.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:25.437280"
+  },
+  "MTLR_MCZ5": {
+    "stock_ticker": "MTLR",
+    "futures_ticker": "MCZ5",
+    "is_valid": true,
+    "stock_price": 91.23,
+    "futures_price": 9436.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:25.800859"
+  },
+  "PLZL_PZZ5": {
+    "stock_ticker": "PLZL",
+    "futures_ticker": "PZZ5",
+    "is_valid": false,
+    "stock_price": 2097.4,
+    "futures_price": null,
+    "error_message": "Фьючерс PZZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:26.159179"
+  },
+  "POLY_POZ5": {
+    "stock_ticker": "POLY",
+    "futures_ticker": "POZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция POLY: Тикер не найден в TQBR. Фьючерс POZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:26.517985"
+  },
+  "RUAL_RLZ5": {
+    "stock_ticker": "RUAL",
+    "futures_ticker": "RLZ5",
+    "is_valid": true,
+    "stock_price": 34.42,
+    "futures_price": 3725.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:26.875689"
+  },
+  "PHOR_PHZ5": {
+    "stock_ticker": "PHOR",
+    "futures_ticker": "PHZ5",
+    "is_valid": true,
+    "stock_price": 7026.0,
+    "futures_price": 7175.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:27.233395"
+  },
+  "RASP_RAZ5": {
+    "stock_ticker": "RASP",
+    "futures_ticker": "RAZ5",
+    "is_valid": true,
+    "stock_price": 226.45,
+    "futures_price": 2423.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:27.592976"
+  },
+  "IRAO_IRZ5": {
+    "stock_ticker": "IRAO",
+    "futures_ticker": "IRZ5",
+    "is_valid": true,
+    "stock_price": 3.2955,
+    "futures_price": 34860.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:27.956395"
+  },
+  "HYDR_HYZ5": {
+    "stock_ticker": "HYDR",
+    "futures_ticker": "HYZ5",
+    "is_valid": true,
+    "stock_price": 0.4616,
+    "futures_price": 4900.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:28.322724"
+  },
+  "RSTI_REZ5": {
+    "stock_ticker": "RSTI",
+    "futures_ticker": "REZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция RSTI: Тикер не найден в TQBR. Фьючерс REZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:28.677987"
+  },
+  "MSNG_MOZ5": {
+    "stock_ticker": "MSNG",
+    "futures_ticker": "MOZ5",
+    "is_valid": false,
+    "stock_price": 2.211,
+    "futures_price": null,
+    "error_message": "Фьючерс MOZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:29.051762"
+  },
+  "TRNFP_TNZ5": {
+    "stock_ticker": "TRNFP",
+    "futures_ticker": "TNZ5",
+    "is_valid": true,
+    "stock_price": 1342.0,
+    "futures_price": 1422.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:29.415192"
+  },
+  "RTKM_RTZ5": {
+    "stock_ticker": "RTKM",
+    "futures_ticker": "RTZ5",
+    "is_valid": true,
+    "stock_price": 69.5,
+    "futures_price": 7427.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:29.779674"
+  },
+  "MTSS_MTZ5": {
+    "stock_ticker": "MTSS",
+    "futures_ticker": "MTZ5",
+    "is_valid": true,
+    "stock_price": 222.1,
+    "futures_price": 23587.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:30.141993"
+  },
+  "TCSI_TIZ5": {
+    "stock_ticker": "TCSI",
+    "futures_ticker": "TIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция TCSI: Тикер не найден в TQBR. Фьючерс TIZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:30.500627"
+  },
+  "YDEX_YDZ5": {
+    "stock_ticker": "YDEX",
+    "futures_ticker": "YDZ5",
+    "is_valid": true,
+    "stock_price": 4336.0,
+    "futures_price": 4559.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:30.903845"
+  },
+  "VKCO_VKZ5": {
+    "stock_ticker": "VKCO",
+    "futures_ticker": "VKZ5",
+    "is_valid": true,
+    "stock_price": 352.7,
+    "futures_price": 3768.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:31.257785"
+  },
+  "OZON_OZZ5": {
+    "stock_ticker": "OZON",
+    "futures_ticker": "OZZ5",
+    "is_valid": false,
+    "stock_price": 4321.0,
+    "futures_price": null,
+    "error_message": "Фьючерс OZZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:31.644298"
+  },
+  "TCSG_TCZ5": {
+    "stock_ticker": "TCSG",
+    "futures_ticker": "TCZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 591.1,
+    "error_message": "Акция TCSG: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:32.010369"
+  },
+  "MGNT_MNZ5": {
+    "stock_ticker": "MGNT",
+    "futures_ticker": "MNZ5",
+    "is_valid": true,
+    "stock_price": 3740.0,
+    "futures_price": 4008.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:32.365473"
+  },
+  "FIVE_FVZ5": {
+    "stock_ticker": "FIVE",
+    "futures_ticker": "FVZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция FIVE: Тикер не найден в TQBR. Фьючерс FVZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:32.719230"
+  },
+  "DIXY_DIZ5": {
+    "stock_ticker": "DIXY",
+    "futures_ticker": "DIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция DIXY: Тикер не найден в TQBR. Фьючерс DIZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:33.077301"
+  },
+  "LENTA_LTZ5": {
+    "stock_ticker": "LENTA",
+    "futures_ticker": "LTZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция LENTA: Тикер не найден в TQBR. Фьючерс LTZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:33.435629"
+  },
+  "MVID_MVZ5": {
+    "stock_ticker": "MVID",
+    "futures_ticker": "MVZ5",
+    "is_valid": false,
+    "stock_price": 97.4,
+    "futures_price": null,
+    "error_message": "Фьючерс MVZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:33.796595"
+  },
+  "PIKK_PIZ5": {
+    "stock_ticker": "PIKK",
+    "futures_ticker": "PIZ5",
+    "is_valid": true,
+    "stock_price": 639.0,
+    "futures_price": 6840.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:34.163252"
+  },
+  "SMLT_SSZ5": {
+    "stock_ticker": "SMLT",
+    "futures_ticker": "SSZ5",
+    "is_valid": true,
+    "stock_price": 1219.5,
+    "futures_price": 1315.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:34.523748"
+  },
+  "LSRG_LSZ5": {
+    "stock_ticker": "LSRG",
+    "futures_ticker": "LSZ5",
+    "is_valid": false,
+    "stock_price": 801.8,
+    "futures_price": null,
+    "error_message": "Фьючерс LSZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:34.876471"
+  },
+  "ETALON_ETZ5": {
+    "stock_ticker": "ETALON",
+    "futures_ticker": "ETZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 38.36,
+    "error_message": "Акция ETALON: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:35.279023"
+  },
+  "AFLT_AFZ5": {
+    "stock_ticker": "AFLT",
+    "futures_ticker": "AFZ5",
+    "is_valid": true,
+    "stock_price": 68.14,
+    "futures_price": 7208.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:35.664664"
+  },
+  "FESH_FEZ5": {
+    "stock_ticker": "FESH",
+    "futures_ticker": "FEZ5",
+    "is_valid": true,
+    "stock_price": 64.5,
+    "futures_price": 6869.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:36.581261"
+  },
+  "FLOT_FLZ5": {
+    "stock_ticker": "FLOT",
+    "futures_ticker": "FLZ5",
+    "is_valid": true,
+    "stock_price": 87.37,
+    "futures_price": 9412.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:37.100142"
+  },
+  "KMAZ_KMZ5": {
+    "stock_ticker": "KMAZ",
+    "futures_ticker": "KMZ5",
+    "is_valid": true,
+    "stock_price": 95.3,
+    "futures_price": 1017.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:37.457390"
+  },
+  "PHST_PSZ5": {
+    "stock_ticker": "PHST",
+    "futures_ticker": "PSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 1491.0,
+    "error_message": "Акция PHST: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:37.821462"
+  },
+  "GEMC_GEZ5": {
+    "stock_ticker": "GEMC",
+    "futures_ticker": "GEZ5",
+    "is_valid": false,
+    "stock_price": 755.1,
+    "futures_price": null,
+    "error_message": "Фьючерс GEZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:38.180100"
+  },
+  "AKRN_AKZ5": {
+    "stock_ticker": "AKRN",
+    "futures_ticker": "AKZ5",
+    "is_valid": true,
+    "stock_price": 16100.0,
+    "futures_price": 17370.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:38.552286"
+  },
+  "NKNC_NKZ5": {
+    "stock_ticker": "NKNC",
+    "futures_ticker": "NKZ5",
+    "is_valid": true,
+    "stock_price": 87.75,
+    "futures_price": 129065.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:38.952507"
+  },
+  "URKZ_URZ5": {
+    "stock_ticker": "URKZ",
+    "futures_ticker": "URZ5",
+    "is_valid": false,
+    "stock_price": 317.4,
+    "futures_price": null,
+    "error_message": "Фьючерс URZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:39.310504"
+  },
+  "LIFE_LFZ5": {
+    "stock_ticker": "LIFE",
+    "futures_ticker": "LFZ5",
+    "is_valid": false,
+    "stock_price": 3.475,
+    "futures_price": null,
+    "error_message": "Фьючерс LFZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:39.669786"
+  },
+  "ISKJ_ISZ5": {
+    "stock_ticker": "ISKJ",
+    "futures_ticker": "ISZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 831.0,
+    "error_message": "Акция ISKJ: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:40.030578"
+  },
+  "POSI_PSZ5": {
+    "stock_ticker": "POSI",
+    "futures_ticker": "PSZ5",
+    "is_valid": true,
+    "stock_price": 1401.0,
+    "futures_price": 1491.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:40.476070"
+  },
+  "ASTR_ASZ5": {
+    "stock_ticker": "ASTR",
+    "futures_ticker": "ASZ5",
+    "is_valid": true,
+    "stock_price": 410.2,
+    "futures_price": 443.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:40.833257"
+  },
+  "SOFL_S0Z5": {
+    "stock_ticker": "SOFL",
+    "futures_ticker": "S0Z5",
+    "is_valid": true,
+    "stock_price": 114.02,
+    "futures_price": 1203.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:41.193054"
+  },
+  "WUSH_WUZ5": {
+    "stock_ticker": "WUSH",
+    "futures_ticker": "WUZ5",
+    "is_valid": true,
+    "stock_price": 142.23,
+    "futures_price": 1495.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:41.566633"
+  },
+  "DIAS_DIZ5": {
+    "stock_ticker": "DIAS",
+    "futures_ticker": "DIZ5",
+    "is_valid": false,
+    "stock_price": 2735.0,
+    "futures_price": null,
+    "error_message": "Фьючерс DIZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:41.934344"
+  },
+  "MOEX_MEZ5": {
+    "stock_ticker": "MOEX",
+    "futures_ticker": "MEZ5",
+    "is_valid": true,
+    "stock_price": 184.4,
+    "futures_price": 19596.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:42.298015"
+  },
+  "SPBE_SEZ5": {
+    "stock_ticker": "SPBE",
+    "futures_ticker": "SEZ5",
+    "is_valid": true,
+    "stock_price": 283.2,
+    "futures_price": 2944.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:42.658100"
+  },
+  "SFIN_SHZ5": {
+    "stock_ticker": "SFIN",
+    "futures_ticker": "SHZ5",
+    "is_valid": true,
+    "stock_price": 1279.8,
+    "futures_price": 1384.6,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:43.017222"
+  },
+  "SGZH_SZZ5": {
+    "stock_ticker": "SGZH",
+    "futures_ticker": "SZZ5",
+    "is_valid": true,
+    "stock_price": 1.61,
+    "futures_price": 1681.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:43.394884"
+  },
+  "LEAS_LEZ5": {
+    "stock_ticker": "LEAS",
+    "futures_ticker": "LEZ5",
+    "is_valid": true,
+    "stock_price": 660.5,
+    "futures_price": 683.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:43.775884"
+  },
+  "BELUGA_NBZ5": {
+    "stock_ticker": "BELUGA",
+    "futures_ticker": "NBZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 483.0,
+    "error_message": "Акция BELUGA: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:44.132871"
+  },
+  "SPY_SFZ5": {
+    "stock_ticker": "SPY",
+    "futures_ticker": "SFZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 652.62,
+    "error_message": "Акция SPY: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:44.490678"
+  },
+  "QQQ_NAZ5": {
+    "stock_ticker": "QQQ",
+    "futures_ticker": "NAZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 23785.0,
+    "error_message": "Акция QQQ: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:45.032756"
+  },
+  "DAX_DXZ5": {
+    "stock_ticker": "DAX",
+    "futures_ticker": "DXZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 19750.0,
+    "error_message": "Акция DAX: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:45.389955"
+  },
+  "HANG_HSZ5": {
+    "stock_ticker": "HANG",
+    "futures_ticker": "HSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 26160.0,
+    "error_message": "Акция HANG: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:45.839331"
+  },
+  "NIKKEI_N2Z5": {
+    "stock_ticker": "NIKKEI",
+    "futures_ticker": "N2Z5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 44092.0,
+    "error_message": "Акция NIKKEI: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:46.198157"
+  },
+  "EURO50_SXZ5": {
+    "stock_ticker": "EURO50",
+    "futures_ticker": "SXZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 5350.0,
+    "error_message": "Акция EURO50: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:46.557381"
+  },
+  "RUSSELL_R2Z5": {
+    "stock_ticker": "RUSSELL",
+    "futures_ticker": "R2Z5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 229.7,
+    "error_message": "Акция RUSSELL: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:46.919927"
+  },
+  "MSCI_EM_EMZ5": {
+    "stock_ticker": "MSCI_EM",
+    "futures_ticker": "EMZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 53.3,
+    "error_message": "Акция MSCI_EM: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:47.280528"
+  },
+  "USDRUB_SIZ5": {
+    "stock_ticker": "USDRUB",
+    "futures_ticker": "SIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 83411.0,
+    "error_message": "Акция USDRUB: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:47.637232"
+  },
+  "EURRUB_EuZ5": {
+    "stock_ticker": "EURRUB",
+    "futures_ticker": "EuZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 97506.0,
+    "error_message": "Акция EURRUB: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:48.000442"
+  },
+  "CNYRUB_CRZ5": {
+    "stock_ticker": "CNYRUB",
+    "futures_ticker": "CRZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 11.679,
+    "error_message": "Акция CNYRUB: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:48.664814"
+  },
+  "TRYRUB_TYZ5": {
+    "stock_ticker": "TRYRUB",
+    "futures_ticker": "TYZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 2.162,
+    "error_message": "Акция TRYRUB: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:49.028878"
+  },
+  "HKDRUB_HKZ5": {
+    "stock_ticker": "HKDRUB",
+    "futures_ticker": "HKZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция HKDRUB: Тикер не найден в TQBR. Фьючерс HKZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:25:49.390630"
+  },
+  "GOLD_RUB_GLZ5": {
+    "stock_ticker": "GOLD_RUB",
+    "futures_ticker": "GLZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 9032.5,
+    "error_message": "Акция GOLD_RUB: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:49.757272"
+  },
+  "SILVER_RUB_SLZ5": {
+    "stock_ticker": "SILVER_RUB",
+    "futures_ticker": "SLZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SILVER_RUB: Тикер не найден в TQBR. Фьючерс SLZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:50.122873"
+  },
+  "BRENT_BRZ5": {
+    "stock_ticker": "BRENT",
+    "futures_ticker": "BRZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 64.72,
+    "error_message": "Акция BRENT: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:50.483396"
+  },
+  "NATGAS_NGZ5": {
+    "stock_ticker": "NATGAS",
+    "futures_ticker": "NGZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция NATGAS: Тикер не найден в TQBR. Фьючерс NGZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:50.844135"
+  },
+  "WHEAT_WHZ5": {
+    "stock_ticker": "WHEAT",
+    "futures_ticker": "WHZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция WHEAT: Тикер не найден в TQBR. Фьючерс WHZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:51.202967"
+  },
+  "SUGAR_SUZ5": {
+    "stock_ticker": "SUGAR",
+    "futures_ticker": "SUZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SUGAR: Тикер не найден в TQBR. Фьючерс SUZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:51.558999"
+  },
+  "MOEX_IDX_MXZ5": {
+    "stock_ticker": "MOEX_IDX",
+    "futures_ticker": "MXZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 312475.0,
+    "error_message": "Акция MOEX_IDX: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:51.916768"
+  },
+  "RTS_IDX_RIZ5": {
+    "stock_ticker": "RTS_IDX",
+    "futures_ticker": "RIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 117860.0,
+    "error_message": "Акция RTS_IDX: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:52.274683"
+  },
+  "MOEX_MINI_MMZ5": {
+    "stock_ticker": "MOEX_MINI",
+    "futures_ticker": "MMZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 3130.05,
+    "error_message": "Акция MOEX_MINI: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:52.635642"
+  },
+  "RTS_MINI_RMZ5": {
+    "stock_ticker": "RTS_MINI",
+    "futures_ticker": "RMZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": 1179.5,
+    "error_message": "Акция RTS_MINI: Тикер не найден в TQBR.",
+    "checked_at": "2025-08-14T11:25:52.994800"
+  },
+  "AFKS_AKZ5": {
+    "stock_ticker": "AFKS",
+    "futures_ticker": "AKZ5",
+    "is_valid": true,
+    "stock_price": 16.454,
+    "futures_price": 17370.0,
+    "error_message": "",
+    "checked_at": "2025-08-14T11:25:53.361702"
+  },
+  "AQUA_AQZ5": {
+    "stock_ticker": "AQUA",
+    "futures_ticker": "AQZ5",
+    "is_valid": false,
+    "stock_price": 653.5,
+    "futures_price": null,
+    "error_message": "Фьючерс AQZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:53.722240"
+  },
+  "VSMO_VSZ5": {
+    "stock_ticker": "VSMO",
+    "futures_ticker": "VSZ5",
+    "is_valid": false,
+    "stock_price": 35020.0,
+    "futures_price": null,
+    "error_message": "Фьючерс VSZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:54.081281"
+  },
+  "KOGK_KOZ5": {
+    "stock_ticker": "KOGK",
+    "futures_ticker": "KOZ5",
+    "is_valid": false,
+    "stock_price": 38400.0,
+    "futures_price": null,
+    "error_message": "Фьючерс KOZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:54.442867"
+  },
+  "UPRO_UPZ5": {
+    "stock_ticker": "UPRO",
+    "futures_ticker": "UPZ5",
+    "is_valid": false,
+    "stock_price": 1.778,
+    "futures_price": null,
+    "error_message": "Фьючерс UPZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:25:54.805199"
+  }
+}

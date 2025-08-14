@@ -16,7 +16,7 @@ Preferred communication style: Simple, everyday language.
 
 **Market Data Integration**: Interfaces with the MOEX ISS API for real-time price feeds, incorporating rate limiting and error handling for data reliability.
 
-**Arbitrage Engine**: Calculates spread opportunities between stock and futures pairs, generating trading signals based on configurable thresholds. Critical calculations now correctly handle MOEX API price conversions and lot sizes, ensuring accurate spread identification.
+**Arbitrage Engine**: Calculates spread opportunities between stock and futures pairs, generating trading signals based on configurable thresholds. Critical calculations now correctly handle MOEX API price conversions and lot sizes, ensuring accurate spread identification. Fixed to use PREVPRICE field instead of LAST for reliable data retrieval.
 
 **Monitoring System**: Operates continuously in the background, tracking numerous instrument pairs and sending alerts to subscribed users. Monitoring intervals and signal limits are user-configurable.
 
