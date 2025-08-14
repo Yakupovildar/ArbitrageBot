@@ -128,7 +128,7 @@ class UserSettingsManager:
     
     def update_max_signals(self, user_id: int, max_signals: int) -> bool:
         """Обновить максимальное количество сигналов за раз"""
-        if max_signals < 1 or max_signals > 5:
+        if max_signals < 1 or max_signals > 10:
             return False
             
         settings = self.get_user_settings(user_id)
@@ -218,7 +218,8 @@ class UserSettingsManager:
                 ],
                 [
                     {"text": "4 сигнала", "callback_data": "signals_4"},
-                    {"text": "5 сигналов", "callback_data": "signals_5"}
+                    {"text": "5 сигналов", "callback_data": "signals_5"},
+                    {"text": "10 сигналов", "callback_data": "signals_10"}
                 ],
                 [
                     {"text": "🔙 Назад", "callback_data": "settings_back"}

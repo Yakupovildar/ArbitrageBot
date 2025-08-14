@@ -32,7 +32,7 @@ Preferred communication style: Simple, everyday language.
 
 **Subscriber Model**: Manages user subscriptions for customized signal delivery and notifications.
 
-**Persistent Settings**: Integrates with a PostgreSQL database to store and automatically restore all user configurations and monitoring states across bot restarts.
+**Persistent Settings**: Integrates with a PostgreSQL database to store and automatically restore all user configurations and monitoring states across bot restarts. Maximum signals per user increased from 5 to 10.
 
 **Auto-Reconnection and Source Management**: Features an intelligent system that automatically selects the best working data sources from a library of 30+, replaces failed sources, and tracks their reliability.
 
