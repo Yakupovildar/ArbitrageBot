@@ -1,0 +1,902 @@
+{
+  "SBER_SBERF": {
+    "stock_ticker": "SBER",
+    "futures_ticker": "SBERF",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SBER: Нет данных о ценах. Фьючерс SBERF: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:54.621562"
+  },
+  "VTBR_VBZ5": {
+    "stock_ticker": "VTBR",
+    "futures_ticker": "VBZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция VTBR: Нет данных о ценах. Фьючерс VBZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:55.003832"
+  },
+  "FEES_FSZ5": {
+    "stock_ticker": "FEES",
+    "futures_ticker": "FSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция FEES: Нет данных о ценах. Фьючерс FSZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:55.390926"
+  },
+  "GAZP_GAZPF": {
+    "stock_ticker": "GAZP",
+    "futures_ticker": "GAZPF",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция GAZP: Нет данных о ценах. Фьючерс GAZPF: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:55.768019"
+  },
+  "GMKN_GKZ5": {
+    "stock_ticker": "GMKN",
+    "futures_ticker": "GKZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция GMKN: Нет данных о ценах. Фьючерс GKZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:56.145210"
+  },
+  "LKOH_LKZ5": {
+    "stock_ticker": "LKOH",
+    "futures_ticker": "LKZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция LKOH: Нет данных о ценах. Фьючерс LKZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:56.515311"
+  },
+  "ROSN_RNZ5": {
+    "stock_ticker": "ROSN",
+    "futures_ticker": "RNZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция ROSN: Нет данных о ценах. Фьючерс RNZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:56.905408"
+  },
+  "TATN_TNZ5": {
+    "stock_ticker": "TATN",
+    "futures_ticker": "TNZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция TATN: Нет данных о ценах. Фьючерс TNZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:57.307883"
+  },
+  "ALRS_ALZ5": {
+    "stock_ticker": "ALRS",
+    "futures_ticker": "ALZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция ALRS: Нет данных о ценах. Фьючерс ALZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:57.685519"
+  },
+  "SBERP_SPZ5": {
+    "stock_ticker": "SBERP",
+    "futures_ticker": "SPZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SBERP: Нет данных о ценах. Фьючерс SPZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:58.076900"
+  },
+  "CBOM_CMZ5": {
+    "stock_ticker": "CBOM",
+    "futures_ticker": "CMZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция CBOM: Нет данных о ценах. Фьючерс CMZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:58.453755"
+  },
+  "BSPB_BSZ5": {
+    "stock_ticker": "BSPB",
+    "futures_ticker": "BSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция BSPB: Нет данных о ценах. Фьючерс BSZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:58.813863"
+  },
+  "SVCB_SCZ5": {
+    "stock_ticker": "SVCB",
+    "futures_ticker": "SCZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SVCB: Нет данных о ценах. Фьючерс SCZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:59.198259"
+  },
+  "TATP_TPZ5": {
+    "stock_ticker": "TATP",
+    "futures_ticker": "TPZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция TATP: Тикер не найден в TQBR. Фьючерс TPZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:59.574959"
+  },
+  "SNGS_SNZ5": {
+    "stock_ticker": "SNGS",
+    "futures_ticker": "SNZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SNGS: Нет данных о ценах. Фьючерс SNZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:07:59.954411"
+  },
+  "SNGSP_SGZ5": {
+    "stock_ticker": "SNGSP",
+    "futures_ticker": "SGZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SNGSP: Нет данных о ценах. Фьючерс SGZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:00.337253"
+  },
+  "NVTK_NKZ5": {
+    "stock_ticker": "NVTK",
+    "futures_ticker": "NKZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция NVTK: Нет данных о ценах. Фьючерс NKZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:00.748094"
+  },
+  "SIBN_SOZ5": {
+    "stock_ticker": "SIBN",
+    "futures_ticker": "SOZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SIBN: Нет данных о ценах. Фьючерс SOZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:01.142947"
+  },
+  "BANE_BNZ5": {
+    "stock_ticker": "BANE",
+    "futures_ticker": "BNZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция BANE: Нет данных о ценах. Фьючерс BNZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:01.583342"
+  },
+  "RNFT_RUZ5": {
+    "stock_ticker": "RNFT",
+    "futures_ticker": "RUZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция RNFT: Нет данных о ценах. Фьючерс RUZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:01.972505"
+  },
+  "NLMK_NLZ5": {
+    "stock_ticker": "NLMK",
+    "futures_ticker": "NLZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция NLMK: Нет данных о ценах. Фьючерс NLZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:02.370847"
+  },
+  "MAGN_MGZ5": {
+    "stock_ticker": "MAGN",
+    "futures_ticker": "MGZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MAGN: Нет данных о ценах. Фьючерс MGZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:03.066591"
+  },
+  "CHMF_CHZ5": {
+    "stock_ticker": "CHMF",
+    "futures_ticker": "CHZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция CHMF: Нет данных о ценах. Фьючерс CHZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:03.443143"
+  },
+  "MTLR_MCZ5": {
+    "stock_ticker": "MTLR",
+    "futures_ticker": "MCZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MTLR: Нет данных о ценах. Фьючерс MCZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:03.854903"
+  },
+  "PLZL_PZZ5": {
+    "stock_ticker": "PLZL",
+    "futures_ticker": "PZZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция PLZL: Нет данных о ценах. Фьючерс PZZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:04.232195"
+  },
+  "POLY_POZ5": {
+    "stock_ticker": "POLY",
+    "futures_ticker": "POZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция POLY: Тикер не найден в TQBR. Фьючерс POZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:04.612212"
+  },
+  "RUAL_RLZ5": {
+    "stock_ticker": "RUAL",
+    "futures_ticker": "RLZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция RUAL: Нет данных о ценах. Фьючерс RLZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:04.992088"
+  },
+  "PHOR_PHZ5": {
+    "stock_ticker": "PHOR",
+    "futures_ticker": "PHZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция PHOR: Нет данных о ценах. Фьючерс PHZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:05.370912"
+  },
+  "RASP_RAZ5": {
+    "stock_ticker": "RASP",
+    "futures_ticker": "RAZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция RASP: Нет данных о ценах. Фьючерс RAZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:05.746886"
+  },
+  "IRAO_IRZ5": {
+    "stock_ticker": "IRAO",
+    "futures_ticker": "IRZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция IRAO: Нет данных о ценах. Фьючерс IRZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:06.127316"
+  },
+  "HYDR_HYZ5": {
+    "stock_ticker": "HYDR",
+    "futures_ticker": "HYZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция HYDR: Нет данных о ценах. Фьючерс HYZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:06.506793"
+  },
+  "RSTI_REZ5": {
+    "stock_ticker": "RSTI",
+    "futures_ticker": "REZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция RSTI: Тикер не найден в TQBR. Фьючерс REZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:06.884156"
+  },
+  "MSNG_MOZ5": {
+    "stock_ticker": "MSNG",
+    "futures_ticker": "MOZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MSNG: Нет данных о ценах. Фьючерс MOZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:07.259897"
+  },
+  "TRNFP_TNZ5": {
+    "stock_ticker": "TRNFP",
+    "futures_ticker": "TNZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция TRNFP: Нет данных о ценах. Фьючерс TNZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:07.634539"
+  },
+  "RTKM_RTZ5": {
+    "stock_ticker": "RTKM",
+    "futures_ticker": "RTZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция RTKM: Нет данных о ценах. Фьючерс RTZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:08.016607"
+  },
+  "MTSS_MTZ5": {
+    "stock_ticker": "MTSS",
+    "futures_ticker": "MTZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MTSS: Нет данных о ценах. Фьючерс MTZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:08.420491"
+  },
+  "TCSI_TIZ5": {
+    "stock_ticker": "TCSI",
+    "futures_ticker": "TIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция TCSI: Тикер не найден в TQBR. Фьючерс TIZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:08.799858"
+  },
+  "YDEX_YDZ5": {
+    "stock_ticker": "YDEX",
+    "futures_ticker": "YDZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция YDEX: Нет данных о ценах. Фьючерс YDZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:09.194991"
+  },
+  "VKCO_VKZ5": {
+    "stock_ticker": "VKCO",
+    "futures_ticker": "VKZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция VKCO: Нет данных о ценах. Фьючерс VKZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:09.573948"
+  },
+  "OZON_OZZ5": {
+    "stock_ticker": "OZON",
+    "futures_ticker": "OZZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция OZON: Нет данных о ценах. Фьючерс OZZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:09.958854"
+  },
+  "TCSG_TCZ5": {
+    "stock_ticker": "TCSG",
+    "futures_ticker": "TCZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция TCSG: Тикер не найден в TQBR. Фьючерс TCZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:10.338200"
+  },
+  "MGNT_MNZ5": {
+    "stock_ticker": "MGNT",
+    "futures_ticker": "MNZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MGNT: Нет данных о ценах. Фьючерс MNZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:10.859273"
+  },
+  "FIVE_FVZ5": {
+    "stock_ticker": "FIVE",
+    "futures_ticker": "FVZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция FIVE: Тикер не найден в TQBR. Фьючерс FVZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:11.239409"
+  },
+  "DIXY_DIZ5": {
+    "stock_ticker": "DIXY",
+    "futures_ticker": "DIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция DIXY: Тикер не найден в TQBR. Фьючерс DIZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:11.761459"
+  },
+  "LENTA_LTZ5": {
+    "stock_ticker": "LENTA",
+    "futures_ticker": "LTZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция LENTA: Тикер не найден в TQBR. Фьючерс LTZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:12.139804"
+  },
+  "MVID_MVZ5": {
+    "stock_ticker": "MVID",
+    "futures_ticker": "MVZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MVID: Нет данных о ценах. Фьючерс MVZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:12.645446"
+  },
+  "PIKK_PIZ5": {
+    "stock_ticker": "PIKK",
+    "futures_ticker": "PIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция PIKK: Нет данных о ценах. Фьючерс PIZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:13.250494"
+  },
+  "SMLT_SSZ5": {
+    "stock_ticker": "SMLT",
+    "futures_ticker": "SSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SMLT: Нет данных о ценах. Фьючерс SSZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:13.641020"
+  },
+  "LSRG_LSZ5": {
+    "stock_ticker": "LSRG",
+    "futures_ticker": "LSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция LSRG: Нет данных о ценах. Фьючерс LSZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:14.022722"
+  },
+  "ETALON_ETZ5": {
+    "stock_ticker": "ETALON",
+    "futures_ticker": "ETZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция ETALON: Тикер не найден в TQBR. Фьючерс ETZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:14.403855"
+  },
+  "AFLT_AFZ5": {
+    "stock_ticker": "AFLT",
+    "futures_ticker": "AFZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция AFLT: Нет данных о ценах. Фьючерс AFZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:15.524661"
+  },
+  "FESH_FEZ5": {
+    "stock_ticker": "FESH",
+    "futures_ticker": "FEZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция FESH: Нет данных о ценах. Фьючерс FEZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:15.915446"
+  },
+  "FLOT_FLZ5": {
+    "stock_ticker": "FLOT",
+    "futures_ticker": "FLZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция FLOT: Нет данных о ценах. Фьючерс FLZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:16.687469"
+  },
+  "KMAZ_KMZ5": {
+    "stock_ticker": "KMAZ",
+    "futures_ticker": "KMZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция KMAZ: Нет данных о ценах. Фьючерс KMZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:17.329140"
+  },
+  "PHST_PSZ5": {
+    "stock_ticker": "PHST",
+    "futures_ticker": "PSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция PHST: Тикер не найден в TQBR. Фьючерс PSZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:17.726339"
+  },
+  "GEMC_GEZ5": {
+    "stock_ticker": "GEMC",
+    "futures_ticker": "GEZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция GEMC: Нет данных о ценах. Фьючерс GEZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:18.114853"
+  },
+  "AKRN_AKZ5": {
+    "stock_ticker": "AKRN",
+    "futures_ticker": "AKZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция AKRN: Нет данных о ценах. Фьючерс AKZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:18.498007"
+  },
+  "NKNC_NKZ5": {
+    "stock_ticker": "NKNC",
+    "futures_ticker": "NKZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция NKNC: Нет данных о ценах. Фьючерс NKZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:19.101752"
+  },
+  "URKZ_URZ5": {
+    "stock_ticker": "URKZ",
+    "futures_ticker": "URZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция URKZ: Нет данных о ценах. Фьючерс URZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:19.480813"
+  },
+  "LIFE_LFZ5": {
+    "stock_ticker": "LIFE",
+    "futures_ticker": "LFZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция LIFE: Нет данных о ценах. Фьючерс LFZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:20.158092"
+  },
+  "ISKJ_ISZ5": {
+    "stock_ticker": "ISKJ",
+    "futures_ticker": "ISZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция ISKJ: Тикер не найден в TQBR. Фьючерс ISZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:20.542671"
+  },
+  "POSI_PSZ5": {
+    "stock_ticker": "POSI",
+    "futures_ticker": "PSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция POSI: Нет данных о ценах. Фьючерс PSZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:20.905848"
+  },
+  "ASTR_ASZ5": {
+    "stock_ticker": "ASTR",
+    "futures_ticker": "ASZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция ASTR: Нет данных о ценах. Фьючерс ASZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:21.349620"
+  },
+  "SOFL_S0Z5": {
+    "stock_ticker": "SOFL",
+    "futures_ticker": "S0Z5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SOFL: Нет данных о ценах. Фьючерс S0Z5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:21.736503"
+  },
+  "WUSH_WUZ5": {
+    "stock_ticker": "WUSH",
+    "futures_ticker": "WUZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция WUSH: Нет данных о ценах. Фьючерс WUZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:22.118048"
+  },
+  "DIAS_DIZ5": {
+    "stock_ticker": "DIAS",
+    "futures_ticker": "DIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция DIAS: Нет данных о ценах. Фьючерс DIZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:22.506943"
+  },
+  "MOEX_MEZ5": {
+    "stock_ticker": "MOEX",
+    "futures_ticker": "MEZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MOEX: Нет данных о ценах. Фьючерс MEZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:22.887471"
+  },
+  "SPBE_SEZ5": {
+    "stock_ticker": "SPBE",
+    "futures_ticker": "SEZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SPBE: Нет данных о ценах. Фьючерс SEZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:23.289811"
+  },
+  "SFIN_SHZ5": {
+    "stock_ticker": "SFIN",
+    "futures_ticker": "SHZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SFIN: Нет данных о ценах. Фьючерс SHZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:23.683674"
+  },
+  "SGZH_SZZ5": {
+    "stock_ticker": "SGZH",
+    "futures_ticker": "SZZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SGZH: Нет данных о ценах. Фьючерс SZZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:24.072280"
+  },
+  "LEAS_LEZ5": {
+    "stock_ticker": "LEAS",
+    "futures_ticker": "LEZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция LEAS: Нет данных о ценах. Фьючерс LEZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:24.477484"
+  },
+  "BELUGA_NBZ5": {
+    "stock_ticker": "BELUGA",
+    "futures_ticker": "NBZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция BELUGA: Тикер не найден в TQBR. Фьючерс NBZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:24.916255"
+  },
+  "SPY_SFZ5": {
+    "stock_ticker": "SPY",
+    "futures_ticker": "SFZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SPY: Тикер не найден в TQBR. Фьючерс SFZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:25.331103"
+  },
+  "QQQ_NAZ5": {
+    "stock_ticker": "QQQ",
+    "futures_ticker": "NAZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция QQQ: Тикер не найден в TQBR. Фьючерс NAZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:25.747404"
+  },
+  "DAX_DXZ5": {
+    "stock_ticker": "DAX",
+    "futures_ticker": "DXZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция DAX: Тикер не найден в TQBR. Фьючерс DXZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:26.133425"
+  },
+  "HANG_HSZ5": {
+    "stock_ticker": "HANG",
+    "futures_ticker": "HSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция HANG: Тикер не найден в TQBR. Фьючерс HSZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:26.516426"
+  },
+  "NIKKEI_N2Z5": {
+    "stock_ticker": "NIKKEI",
+    "futures_ticker": "N2Z5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция NIKKEI: Тикер не найден в TQBR. Фьючерс N2Z5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:26.892332"
+  },
+  "EURO50_SXZ5": {
+    "stock_ticker": "EURO50",
+    "futures_ticker": "SXZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция EURO50: Тикер не найден в TQBR. Фьючерс SXZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:27.273797"
+  },
+  "RUSSELL_R2Z5": {
+    "stock_ticker": "RUSSELL",
+    "futures_ticker": "R2Z5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция RUSSELL: Тикер не найден в TQBR. Фьючерс R2Z5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:27.649819"
+  },
+  "MSCI_EM_EMZ5": {
+    "stock_ticker": "MSCI_EM",
+    "futures_ticker": "EMZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MSCI_EM: Тикер не найден в TQBR. Фьючерс EMZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:28.024212"
+  },
+  "USDRUB_SIZ5": {
+    "stock_ticker": "USDRUB",
+    "futures_ticker": "SIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция USDRUB: Тикер не найден в TQBR. Фьючерс SIZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:28.412814"
+  },
+  "EURRUB_EuZ5": {
+    "stock_ticker": "EURRUB",
+    "futures_ticker": "EuZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция EURRUB: Тикер не найден в TQBR. Фьючерс EuZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:28.791101"
+  },
+  "CNYRUB_CRZ5": {
+    "stock_ticker": "CNYRUB",
+    "futures_ticker": "CRZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция CNYRUB: Тикер не найден в TQBR. Фьючерс CRZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:29.166381"
+  },
+  "TRYRUB_TYZ5": {
+    "stock_ticker": "TRYRUB",
+    "futures_ticker": "TYZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция TRYRUB: Тикер не найден в TQBR. Фьючерс TYZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:29.547067"
+  },
+  "HKDRUB_HKZ5": {
+    "stock_ticker": "HKDRUB",
+    "futures_ticker": "HKZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция HKDRUB: Тикер не найден в TQBR. Фьючерс HKZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:29.932477"
+  },
+  "GOLD_RUB_GLZ5": {
+    "stock_ticker": "GOLD_RUB",
+    "futures_ticker": "GLZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция GOLD_RUB: Тикер не найден в TQBR. Фьючерс GLZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:30.312386"
+  },
+  "SILVER_RUB_SLZ5": {
+    "stock_ticker": "SILVER_RUB",
+    "futures_ticker": "SLZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SILVER_RUB: Тикер не найден в TQBR. Фьючерс SLZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:30.692130"
+  },
+  "BRENT_BRZ5": {
+    "stock_ticker": "BRENT",
+    "futures_ticker": "BRZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция BRENT: Тикер не найден в TQBR. Фьючерс BRZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:31.089778"
+  },
+  "NATGAS_NGZ5": {
+    "stock_ticker": "NATGAS",
+    "futures_ticker": "NGZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция NATGAS: Тикер не найден в TQBR. Фьючерс NGZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:31.480135"
+  },
+  "WHEAT_WHZ5": {
+    "stock_ticker": "WHEAT",
+    "futures_ticker": "WHZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция WHEAT: Тикер не найден в TQBR. Фьючерс WHZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:31.859822"
+  },
+  "SUGAR_SUZ5": {
+    "stock_ticker": "SUGAR",
+    "futures_ticker": "SUZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция SUGAR: Тикер не найден в TQBR. Фьючерс SUZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:32.259337"
+  },
+  "MOEX_IDX_MXZ5": {
+    "stock_ticker": "MOEX_IDX",
+    "futures_ticker": "MXZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MOEX_IDX: Тикер не найден в TQBR. Фьючерс MXZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:32.635940"
+  },
+  "RTS_IDX_RIZ5": {
+    "stock_ticker": "RTS_IDX",
+    "futures_ticker": "RIZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция RTS_IDX: Тикер не найден в TQBR. Фьючерс RIZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:33.016183"
+  },
+  "MOEX_MINI_MMZ5": {
+    "stock_ticker": "MOEX_MINI",
+    "futures_ticker": "MMZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция MOEX_MINI: Тикер не найден в TQBR. Фьючерс MMZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:33.395364"
+  },
+  "RTS_MINI_RMZ5": {
+    "stock_ticker": "RTS_MINI",
+    "futures_ticker": "RMZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция RTS_MINI: Тикер не найден в TQBR. Фьючерс RMZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:33.779534"
+  },
+  "AFKS_AKZ5": {
+    "stock_ticker": "AFKS",
+    "futures_ticker": "AKZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция AFKS: Нет данных о ценах. Фьючерс AKZ5: Нет данных о ценах.",
+    "checked_at": "2025-08-14T11:08:34.213469"
+  },
+  "AQUA_AQZ5": {
+    "stock_ticker": "AQUA",
+    "futures_ticker": "AQZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция AQUA: Нет данных о ценах. Фьючерс AQZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:34.611904"
+  },
+  "VSMO_VSZ5": {
+    "stock_ticker": "VSMO",
+    "futures_ticker": "VSZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция VSMO: Нет данных о ценах. Фьючерс VSZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:34.993790"
+  },
+  "KOGK_KOZ5": {
+    "stock_ticker": "KOGK",
+    "futures_ticker": "KOZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция KOGK: Нет данных о ценах. Фьючерс KOZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:35.381861"
+  },
+  "UPRO_UPZ5": {
+    "stock_ticker": "UPRO",
+    "futures_ticker": "UPZ5",
+    "is_valid": false,
+    "stock_price": null,
+    "futures_price": null,
+    "error_message": "Акция UPRO: Нет данных о ценах. Фьючерс UPZ5: Тикер не найден в RFUD.",
+    "checked_at": "2025-08-14T11:08:35.766066"
+  }
+}
