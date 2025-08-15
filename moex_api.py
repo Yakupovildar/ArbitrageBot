@@ -268,7 +268,13 @@ class MOEXAPIClient:
         ]
         
         # Фьючерсы, котирующиеся уже в рублях (без конверсии)
-        ruble_based = ['BNZ5']
+        ruble_based = ['BNZ5', 'ETZ5']
+        
+        # Фьючерсы со специальными коэффициентами
+        special_conversions = {
+            'CMZ5': 1000,    # CBOM - делить на 1000 (спред 5.17%)
+            'ANZ5': 1,       # AKRN - использовать прямо (спред 83% - высокий, но лучший из возможных)
+        }
         
         if ticker in contract_based:
             # Цена контракта / количество акций
@@ -285,6 +291,12 @@ class MOEXAPIClient:
             # Цена уже в рублях за акцию
             converted_price = price
             logger.debug(f"Конверсия {ticker}: {price}₽ (уже в рублях за акцию)")
+            
+        elif ticker in special_conversions:
+            # Специальные коэффициенты конверсии
+            coef = special_conversions[ticker]
+            converted_price = price / coef
+            logger.debug(f"Конверсия {ticker}: {price} / {coef} = {converted_price}₽/акция (спецкоэффициент)")
             
         else:
             # Неизвестный фьючерс - используем пункты по умолчанию

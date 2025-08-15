@@ -62,10 +62,10 @@ class PairStatusManager:
                     # Рассчитываем спред
                     spread_percent = self._calculate_spread(stock_price, futures_price)
                     
-                    # УЖЕСТОЧЕННАЯ проверка: блокируем спреды >30%
-                    if abs(spread_percent) > 30.0:
+                    # ГИБКАЯ проверка: блокируем спреды >50% (для особых случаев как AKRN)
+                    if abs(spread_percent) > 50.0:
                         self._mark_blocked(stock_ticker, futures_ticker, 
-                                         f"Аномальный спред: {spread_percent:.2f}% (>30%)", 
+                                         f"Аномальный спред: {spread_percent:.2f}% (>50%)", 
                                          stock_price, futures_price, spread_percent)
                         continue
                     
