@@ -4,8 +4,8 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 from datetime import datetime, time, timezone, timedelta
 
-# Версия бота
-BOT_VERSION = "0.0.8"
+# Версия бота  
+BOT_VERSION = "0.0.9"
 
 @dataclass
 class Config:

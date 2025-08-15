@@ -25,6 +25,7 @@ from source_reconnector import SourceReconnector
 from database import db
 from sources_library import sources_library
 from daily_validator import DailyValidator
+from bot_ui_restrictions import ui_restrictions
 from subscription_manager import subscription_manager
 
 # Класс для хранения истории спредов  
@@ -1729,39 +1730,30 @@ class SimpleTelegramBot:
                 pass
             
     async def daily_validation_task(self):
-        """Фоновая задача для ежедневной валидации торговых пар"""
+        """ФОНОВАЯ задача валидации - НЕ блокирует запуск бота"""
+        # ЗАДЕРЖКА 30 секунд для инициализации бота
+        await asyncio.sleep(30)
+        
         while True:
             try:
-                # Проверяем нужна ли валидация (раз в 24 часа)
-                if self.daily_validator.should_run_validation():
-                    logger.info("🔍 Запуск ежедневной валидации торговых пар")
-                    
-                    # Запускаем валидацию только проверенных голубых фишек
-                    results = await self.daily_validator.run_validation()
-                    
-                    # Подсчитываем статистику
-                    valid_count = sum(1 for r in results.values() if r.is_valid)
-                    invalid_count = len(results) - valid_count
-                    
-                    # Если есть проблемные пары - уведомляем админа
-                    if invalid_count > 0:
-                        admin_id = self.monitoring_controller.get_admin_user_id()
-                        if admin_id:
-                            error_message = f"""🚨 НАЙДЕНЫ ПРОБЛЕМНЫЕ ТОРГОВЫЕ ПАРЫ
-                            
-⚠️ Неработающих пар: {invalid_count} из {len(results)}
-
-🔍 Требуется проверка конфигурации MONITORED_INSTRUMENTS
-
-⏰ Время: {datetime.now().strftime('%H:%M %d.%m.%Y')}"""
-                            await self.send_message(admin_id, error_message)
+                logger.info("🔍 Фоновая валидация торговых пар...")
                 
-                # Проверяем каждый час
-                await asyncio.sleep(3600)
+                # Быстрая проверка статусов пар (не блокирует основную работу)
+                results = await ui_restrictions.status_manager.check_all_pairs()
+                
+                # Подсчет статистики 
+                active_count = len(ui_restrictions.status_manager.active_pairs)
+                blocked_count = len(ui_restrictions.status_manager.blocked_pairs) 
+                unavailable_count = len(ui_restrictions.status_manager.unavailable_pairs)
+                
+                logger.info(f"📊 Статус пар: активных {active_count}, заблокированных {blocked_count}, недоступных {unavailable_count}")
+                
+                # Проверяем каждые 6 часов (вместо ежечасно)
+                await asyncio.sleep(21600)
                 
             except Exception as e:
-                logger.error(f"❌ Ошибка в задаче валидации пар: {e}")
-                await asyncio.sleep(3600)  # Пауза при ошибке
+                logger.error(f"❌ Ошибка валидации (не критично): {e}")
+                await asyncio.sleep(3600)
 
     def get_tradingview_link(self, ticker: str) -> str:
         """Получение ссылки на TradingView для инструмента"""

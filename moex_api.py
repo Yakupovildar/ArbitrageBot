@@ -240,20 +240,19 @@ class MOEXAPIClient:
             return None
     
     def _convert_futures_price_to_rubles(self, ticker: str, price: float) -> float:
-        """ИСПРАВЛЕННАЯ конвертация: цены фьючерсов в MOEX API даются в пунктах (1 пункт = 1 копейка)"""
+        """ОКОНЧАТЕЛЬНАЯ конвертация: разные фьючерсы имеют разную структуру цен"""
         
-        # КЛЮЧЕВОЕ ОТКРЫТИЕ: Все фьючерсы торгуются в пунктах, где 1 пункт = 1 копейка = 0.01 рубля
-        # Поэтому универсальный коэффициент конверсии = 0.01 для всех инструментов
-        
-        # Исключения для некоторых голубых фишек, которые уже в рублях
-        if ticker in ['SBERF', 'GAZPF']:
-            # Сбер и Газпром уже торгуются в рублях
+        # Голубые фишки торгуются в рублях (без конверсии)
+        if ticker in ['SBERF', 'GAZPF', 'LKZ5', 'GKZ5', 'RNZ5', 'VBZ5', 'TNZ5']:
             converted_price = price
-        else:
-            # Все остальные фьючерсы: конвертируем пункты в рубли
+        # Большинство Z5 фьючерсов торгуются в пунктах (1 пункт = 0.01 рубля)  
+        elif ticker.endswith('Z5'):
             converted_price = price * 0.01
+        # Остальные фьючерсы без конверсии
+        else:
+            converted_price = price
         
-        logger.debug(f"Конверсия {ticker}: {price} пунктов → {converted_price}₽")
+        logger.debug(f"Конверсия {ticker}: {price} → {converted_price}₽")
         
         return converted_price
     

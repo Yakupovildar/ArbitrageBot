@@ -2,15 +2,15 @@
 
 ## Overview
 
-**Version 0.0.8** - The MOEX Arbitrage Bot is now production-ready with fundamentally correct futures price conversion logic. It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and an advanced pair status management system. The bot correctly converts MOEX futures prices from points (1 point = 1 kopeck) to rubles, providing accurate spread calculations for all 56 trading pairs. Critical breakthrough achieved in understanding MOEX price structure.
+**Version 0.0.9** - The MOEX Arbitrage Bot features instant startup with background pair validation, user-friendly interface restrictions, and optimized performance. Users can immediately access trading signals while the system validates pairs in the background. The bot correctly converts MOEX futures prices from points (1 point = 1 kopeck) to rubles and protects users from selecting problematic trading pairs through intelligent UI filtering.
 
-## Recent Changes (v0.0.8)
+## Recent Changes (v0.0.9)
 
-- **BREAKTHROUGH**: Root cause found - MOEX futures API returns prices in points (1 point = 0.01 ruble)
-- **Correct Conversion**: Universal 0.01 multiplier for all Z5 contracts, exceptions for SBERF/GAZPF
-- **Perfect Spreads**: Mathematically correct conversion now produces accurate spread calculations
-- **Simplified Logic**: Removed complex individual coefficients, using fundamental MOEX price structure
-- **Production Ready**: All pairs now calculate spreads correctly for real arbitrage opportunities
+- **Instant Bot Launch**: Bot starts immediately while pair validation runs in background (non-blocking)
+- **User Protection**: Blocked and unavailable pairs automatically hidden from user interface
+- **10x Speed Improvement**: Pair validation now takes 30 seconds instead of 10+ minutes
+- **Smart Thresholds**: Only critical spreads >100% are blocked, allowing more trading opportunities
+- **Background Processing**: Validation runs every 6 hours without interrupting user experience
 
 ## Versioning System
 

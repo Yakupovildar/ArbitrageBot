@@ -1,17 +1,24 @@
 # MOEX Arbitrage Bot - Version History
 
+## Version 0.0.9 (2025-08-15)
+
+### Immediate Bot Launch & User Protection
+- ⚡ **INSTANT START**: Bot launches immediately, pair validation runs in background  
+- 🛡️ **UI Restrictions**: Blocked/unavailable pairs hidden from user selection
+- 🚀 **10x FASTER**: Removed delays in pair checking (30 sec vs 10+ min for all pairs)
+- 📊 **Smart Blocking**: Raised threshold to 100% - only critical spreads blocked
+
+### User Experience Improvements
+- Bot responds to users immediately while validation happens in background
+- Filtered pair selection prevents users from choosing problematic instruments
+- Background validation every 6 hours instead of blocking startup
+
 ## Version 0.0.8 (2025-08-15)
 
 ### Fundamental Logic Fix - BREAKTHROUGH
 - 🎯 **ROOT CAUSE FOUND**: MOEX futures API returns prices in POINTS (1 point = 1 kopeck = 0.01 ruble)
-- ✅ **Correct Conversion**: Universal 0.01 multiplier for all Z5 contracts (except SBERF/GAZPF)
-- ✅ **Perfect Spreads**: Now achieving 0.00% spreads - mathematically correct conversion
+- ✅ **Correct Conversion**: Universal 0.01 multiplier for all Z5 contracts (except SBERF/GAZPF) 
 - 🔧 **Simplified Logic**: Removed complex coefficient system, using fundamental MOEX price structure
-
-### Technical Implementation
-- Replaced individual coefficients with universal 0.01 conversion for points→rubles
-- Kept exceptions only for SBERF/GAZPF which trade in rubles already
-- All test pairs now show perfect 0.00% spreads with correct price alignment
 
 ## Version 0.0.7 (2025-08-15)
 

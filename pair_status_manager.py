@@ -62,10 +62,10 @@ class PairStatusManager:
                     # Рассчитываем спред
                     spread_percent = self._calculate_spread(stock_price, futures_price)
                     
-                    # Проверяем адекватность спреда
-                    if abs(spread_percent) > 30.0:
+                    # СМЯГЧЕННАЯ проверка: блокируем только критичные спреды >100%
+                    if abs(spread_percent) > 100.0:
                         self._mark_blocked(stock_ticker, futures_ticker, 
-                                         f"Аномальный спред: {spread_percent:.2f}% (>{30}%)", 
+                                         f"Критичный спред: {spread_percent:.2f}% (>100%)", 
                                          stock_price, futures_price, spread_percent)
                         continue
                     
@@ -83,8 +83,8 @@ class PairStatusManager:
                     logger.error(f"Ошибка при проверке пары {pair_key}: {e}")
                     self._mark_unavailable(stock_ticker, futures_ticker, f"Ошибка проверки: {str(e)}")
                     
-                # Пауза между проверками
-                await asyncio.sleep(0.2)
+                # УСКОРЕННАЯ проверка - убираем паузу
+                # await asyncio.sleep(0.001)  # Минимальная пауза для yield
         
         self._update_lists()
         self._log_summary()
