@@ -401,7 +401,7 @@ class MOEXAPIClient:
                 logger.error(f"Ошибка при получении котировок: {result}")
                 continue
             
-            if result is not None:
+            if result is not None and isinstance(result, tuple) and len(result) == 2:
                 stock_ticker, prices = result
                 results[stock_ticker] = prices
         
