@@ -841,6 +841,28 @@ class SimpleTelegramBot:
                 message += "\n💡 Эти пары автоматически скрыты от выбора для вашей безопасности"
                 keyboard = {"inline_keyboard": [[{"text": "🔙 К секторам", "callback_data": "sectors_menu"}]]}
                 
+            elif callback_data == "sector_🎯 Рекомендованные":
+                # Показываем рекомендованные пары
+                message = "🎯 **РЕКОМЕНДОВАННЫЕ ТОРГОВЫЕ ПАРЫ**\n\n"
+                
+                # Получаем рекомендованные пары из user_settings
+                sectors = self.user_settings._group_instruments_by_sectors(self.config.MONITORED_INSTRUMENTS)
+                recommended_pairs = sectors.get("🎯 Рекомендованные", {})
+                
+                if recommended_pairs:
+                    message += f"Всего пар: {len(recommended_pairs)}\n\n"
+                    for i, (stock, futures) in enumerate(list(recommended_pairs.items())[:20], 1):
+                        # Показываем только первые 20 пар
+                        pair_key = f"{stock}/{futures}"
+                        message += f"{i}. {pair_key}\n"
+                    
+                    if len(recommended_pairs) > 20:
+                        message += f"... и еще {len(recommended_pairs) - 20} пар"
+                else:
+                    message += "Нет доступных рекомендованных пар"
+                
+                keyboard = {"inline_keyboard": [[{"text": "🔙 К секторам", "callback_data": "sectors_menu"}]]}
+                
             else:
                 # Показываем пары конкретного сектора
                 sector_name = callback_data.replace("sector_", "")
