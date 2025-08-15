@@ -83,7 +83,55 @@ class PairStatusManager:
                     logger.error(f"Ошибка при проверке пары {pair_key}: {e}")
                     self._mark_unavailable(stock_ticker, futures_ticker, f"Ошибка проверки: {str(e)}")
                     
-                # Убираем задержки - мгновенная проверка
+                # Быстрая проверка без задержек
+                await asyncio.sleep(0.1)  # Минимальная задержка только для стабильности
+        
+        self._update_lists()
+        self._log_summary()
+        return self.pair_statuses
+    
+    async def validate_all_pairs_fast(self) -> Dict[str, PairInfo]:
+        """БЫСТРАЯ валидация всех торговых пар без задержек"""
+        logger.info("🚀 БЫСТРАЯ валидация торговых пар (без задержек)")
+        
+        async with MOEXAPIClient() as api:
+            for pair_key, (stock_ticker, futures_ticker) in self.config.MONITORED_INSTRUMENTS.items():
+                try:
+                    logger.info(f"Проверяю пару {stock_ticker}/{futures_ticker}...")
+                    
+                    # Быстрое получение цен БЕЗ задержек
+                    stock_price = await api.get_stock_price(stock_ticker)
+                    futures_price = await api.get_futures_price(futures_ticker)
+                    
+                    if not stock_price:
+                        self._mark_unavailable(stock_ticker, futures_ticker, f"Акция {stock_ticker}: нет данных о ценах")
+                        continue
+                        
+                    if not futures_price:
+                        self._mark_unavailable(stock_ticker, futures_ticker, f"Фьючерс {futures_ticker}: нет данных о ценах")
+                        continue
+                    
+                    # Быстрый расчет спреда
+                    spread_percent = self._calculate_spread(stock_price, futures_price)
+                    
+                    if abs(spread_percent) > 30:
+                        self._mark_blocked(stock_ticker, futures_ticker, 
+                                         f"Аномальный спред: {spread_percent:.2f}% (>30%)",
+                                         stock_price, futures_price, spread_percent)
+                        continue
+                    
+                    if self._is_personally_problematic(stock_ticker, futures_ticker, stock_price, futures_price):
+                        self._mark_blocked(stock_ticker, futures_ticker, 
+                                         "Персональная проверка: некорректные коэффициенты",
+                                         stock_price, futures_price, spread_percent)
+                        continue
+                    
+                    # Пара активна
+                    self._mark_active(stock_ticker, futures_ticker, stock_price, futures_price, spread_percent)
+                    
+                except Exception as e:
+                    logger.error(f"Ошибка при проверке пары {pair_key}: {e}")
+                    self._mark_unavailable(stock_ticker, futures_ticker, f"Ошибка проверки: {str(e)}")
         
         self._update_lists()
         self._log_summary()

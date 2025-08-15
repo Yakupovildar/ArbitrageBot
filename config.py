@@ -5,7 +5,7 @@ from typing import List, Dict, Optional
 from datetime import datetime, time, timezone, timedelta
 
 # Версия бота  
-BOT_VERSION = "0.1.9"
+BOT_VERSION = "0.2.0"
 
 @dataclass
 class Config:
