@@ -240,16 +240,46 @@ class MOEXAPIClient:
             return None
     
     def _convert_futures_price_to_rubles(self, ticker: str, price: float) -> float:
-        """ИСПРАВЛЕННАЯ конвертация: ТОЛЬКО 2 фьючерса в рублях, остальные ВСЕ в пунктах"""
+        """ПРАВИЛЬНАЯ конвертация с учетом размеров контрактов MOEX"""
         
-        # ТОЛЬКО Сбер и Газпром в рублях, ВСЕ ОСТАЛЬНЫЕ в пунктах!
+        # Сбер и Газпром котируются в рублях (размер контракта 100 акций)
         if ticker in ['SBERF', 'GAZPF']:
             converted_price = price
-            logger.debug(f"Конверсия {ticker}: {price}₽ (уже в рублях)")
+            logger.debug(f"Конверсия {ticker}: {price}₽ (котируется в рублях)")
+            return converted_price
+        
+        # СМЕШАННАЯ СИСТЕМА: некоторые фьючерсы котируются как цена контракта, другие уже за акцию
+        
+        # Фьючерсы, котирующиеся как цена контракта (нужно делить на размер)
+        contract_based = {
+            'LKZ5': 10,      # LUKOIL - контракт на 10 акций
+            'GKZ5': 10,      # GMK Norilsk - контракт на 10 акций  
+            'TNZ5': 2,       # Tatneft - контракт на ~2 акции (экспериментально)
+        }
+        
+        # Фьючерсы, котирующиеся в пунктах за акцию (нужно делить на 100)
+        point_based = [
+            'VBZ5', 'RNZ5', 'ALZ5', 'CHZ5', 'AFZ5', 'MEZ5', 'MTZ5', 
+            'FLZ5', 'MAZ5', 'HYZ5', 'IRZ5', 'FSZ5'
+        ]
+        
+        if ticker in contract_based:
+            # Цена контракта / количество акций
+            contract_size = contract_based[ticker]
+            converted_price = price / contract_size
+            logger.debug(f"Конверсия {ticker}: {price}₽ контракт / {contract_size} акций = {converted_price}₽/акция")
+            
+        elif ticker in point_based:
+            # Цена в пунктах за акцию (1 пункт = 0.01 рубля)
+            converted_price = price / 100
+            logger.debug(f"Конверсия {ticker}: {price} пунктов / 100 = {converted_price}₽/акция")
+            
         else:
-            # ВСЕ остальные фьючерсы в пунктах: 1 пункт = 0.01 рубля
-            converted_price = price * 0.01
-            logger.debug(f"Конверсия {ticker}: {price} пунктов → {converted_price}₽")
+            # Неизвестный фьючерс - используем пункты
+            converted_price = price / 100
+            logger.debug(f"Конверсия {ticker}: {price} пунктов / 100 = {converted_price}₽/акция (по умолчанию)")
+        
+        logger.debug(f"Конверсия {ticker}: {price}₽ контракт / {contract_size} акций = {converted_price}₽/акция")
         
         return converted_price
     
