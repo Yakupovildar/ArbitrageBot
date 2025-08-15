@@ -324,6 +324,7 @@ class UserSettingsManager:
     def _group_instruments_by_sectors(self, all_instruments: Dict[str, str]) -> Dict[str, Dict[str, str]]:
         """Группировка инструментов по секторам"""
         sectors = {
+            "🎯 Рекомендованные": {},
             "🔵 Голубые фишки": {},
             "🏦 Банки": {},
             "⛽ Нефть и газ": {},
@@ -345,6 +346,8 @@ class UserSettingsManager:
         }
         
         # Распределяем инструменты по секторам
+        # Рекомендованные - проверенные и рабочие пары
+        recommended = ["GAZP", "SBER", "LKOH", "GMKN", "VTBR", "ROSN", "MGNT", "SNGS", "ALRS", "TATN", "MTSS", "FEES"]
         blue_chips = ["SBER", "GAZP", "GMKN", "FEES", "VTBR", "LKOH", "ROSN", "TATN", "ALRS"]
         banks = ["SBERP", "CBOM", "BSPB", "SVCB", "VTBR"]
         oil_gas = ["GAZP", "LKOH", "ROSN", "TATN", "TATP", "SNGS", "SNGSP", "NVTK", "SIBN", "BANE", "RNFT"]
@@ -365,7 +368,9 @@ class UserSettingsManager:
         new_assets = ["AFKS", "AQUA", "VSMO", "KOGK", "UPRO", "ISKJ", "POSI", "ASTR", "SOFL", "WUSH", "DIAS"]
         
         for stock, futures in all_instruments.items():
-            if stock in blue_chips:
+            if stock in recommended:
+                sectors["🎯 Рекомендованные"][stock] = futures
+            elif stock in blue_chips:
                 sectors["🔵 Голубые фишки"][stock] = futures
             elif stock in banks:
                 sectors["🏦 Банки"][stock] = futures

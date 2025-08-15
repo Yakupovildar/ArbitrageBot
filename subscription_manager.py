@@ -18,7 +18,7 @@ class SubscriptionManager:
     # Настройки подписки
     SUBSCRIPTION_PRICE_USDT = 10
     SUBSCRIPTION_DURATION_DAYS = 30
-    CRYPTO_ADDRESS = "TRBpnm6z8UNGXaMfLa6ZPWZ7RXUAkHCxWQ"  # USDT TRC-20 адрес
+    CRYPTO_ADDRESS = ""  # Адрес будет указан позже
     
     def __init__(self):
         self.subscription_cache = {}  # Кеш состояния подписок
@@ -163,7 +163,7 @@ class SubscriptionManager:
         return f"""💳 **Инструкции по оплате:**
 
 🏦 **Адрес кошелька:** 
-`{self.CRYPTO_ADDRESS}`
+`[Будет предоставлен при оформлении]`
 🌐 **Сеть:** TRC-20 (TRON)
 💰 **Сумма:** {self.SUBSCRIPTION_PRICE_USDT} USDT
 

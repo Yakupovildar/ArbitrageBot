@@ -23,7 +23,7 @@ class UserSettings:
     subscription_active: bool = False  # активна ли подписка
     subscription_start: Optional[datetime] = None  # начало подписки
     subscription_end: Optional[datetime] = None  # конец подписки
-    subscription_crypto_address: str = "TRBpnm6z8UNGXaMfLa6ZPWZ7RXUAkHCxWQ"
+    subscription_crypto_address: str = ""
 
 class Database:
     """Класс для работы с базой данных"""
@@ -74,7 +74,7 @@ class Database:
                     subscription_active BOOLEAN DEFAULT FALSE,
                     subscription_start TIMESTAMP NULL,
                     subscription_end TIMESTAMP NULL,
-                    subscription_crypto_address TEXT DEFAULT 'TRBpnm6z8UNGXaMfLa6ZPWZ7RXUAkHCxWQ'
+                    subscription_crypto_address TEXT DEFAULT ''
                 )
             """)
             
@@ -85,7 +85,7 @@ class Database:
                 ("subscription_active", "BOOLEAN DEFAULT FALSE"),
                 ("subscription_start", "TIMESTAMP NULL"),
                 ("subscription_end", "TIMESTAMP NULL"),
-                ("subscription_crypto_address", "TEXT DEFAULT 'TRBpnm6z8UNGXaMfLa6ZPWZ7RXUAkHCxWQ'")
+                ("subscription_crypto_address", "TEXT DEFAULT ''")
             ]
             
             for column_name, column_definition in columns_to_add:
