@@ -83,8 +83,7 @@ class PairStatusManager:
                     logger.error(f"Ошибка при проверке пары {pair_key}: {e}")
                     self._mark_unavailable(stock_ticker, futures_ticker, f"Ошибка проверки: {str(e)}")
                     
-                # УСКОРЕННАЯ проверка - убираем паузу
-                # await asyncio.sleep(0.001)  # Минимальная пауза для yield
+                # Убираем задержки - мгновенная проверка
         
         self._update_lists()
         self._log_summary()

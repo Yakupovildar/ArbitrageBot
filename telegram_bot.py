@@ -365,7 +365,7 @@ class SimpleTelegramBot:
 ⏰ Интервал: 5-7 мин (рандомизированный)
 
 💡 Используйте /start_monitoring для запуска"""
-            await self.send_message(chat_id, status_text, {})
+            await self.send_message(chat_id, status_text)
             
         elif command.startswith("/history"):
             history_text = self.spread_history.format_history()
@@ -1919,7 +1919,7 @@ class SimpleTelegramBot:
 
 💬 При возникновении вопросов обращайтесь: @Ildaryakupovv"""
             
-            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], confirmation_message)
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], confirmation_message, {})
 
 async def main():
     """Точка входа"""

@@ -269,17 +269,18 @@ class MOEXAPIClient:
         ]
         
         # Фьючерсы, котирующиеся уже в рублях (без конверсии)
-        ruble_based = ['BNZ5']
+        ruble_based = ['BNZ5', 'PHZ5']
         
         # Фьючерсы со специальными коэффициентами
         special_conversions = {
             'CMZ5': 1000,    # CBOM - делить на 1000 (спред 5.17%)
             'ANZ5': 0.2,     # AKRN - делить на 0.2 (спред 17.41%)
             'MEZ5': 100,     # MOEX - делить на 100 (спред 5.93%)
+            'SNZ5': 1000,    # SNGS - делить на 1000 (спред 4.80%)
         }
         
         # Фьючерсы с проблемными данными - блокируем
-        blocked_tickers = ['ETZ5', 'HYZ5', 'IRZ5', 'MAZ5', 'NKZ5', 'FSZ5']
+        blocked_tickers = ['ETZ5', 'HYZ5', 'IRZ5', 'MAZ5', 'NKZ5', 'FSZ5', 'NVZ5', 'NLZ5', 'PKZ5', 'SGZ5', 'UPZ5', 'AGZ5', 'REZ5', 'PRZ5']
         
         if ticker in contract_based:
             # Цена контракта / количество акций

@@ -222,6 +222,10 @@ class Config:
 📊 Фьючерсы: {self.TRADING_START_TIME.strftime('%H:%M')} - {self.TRADING_END_TIME.strftime('%H:%M')} МСК
 🤖 Арбитражный мониторинг: {self.TRADING_START_TIME.strftime('%H:%M')} - {self.TRADING_END_TIME.strftime('%H:%M')} МСК
 📅 Рабочие дни: Понедельник - Пятница"""
+    
+    def get_market_status_message(self) -> str:
+        """Получить подробное сообщение о статусе рынка"""
+        return self.get_trading_status_message()
 
     def get_futures_specs(self) -> Dict[str, Dict]:
         """Спецификации фьючерсных контрактов"""
