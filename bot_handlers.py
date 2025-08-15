@@ -215,8 +215,8 @@ class BotHandlers:
         user_id = update.effective_user.id
         
         # Проверяем статус рынка при подписке
-        if not self.config.is_market_open():
-            market_status = self.config.get_market_status_message()
+        if not self.config.is_trading_hours():
+            market_status = self.config.get_trading_status_message()
             await update.message.reply_text(
                 f"{market_status}\n\n⚠️ Мониторинг будет активен только в торговые часы.",
                 parse_mode=ParseMode.MARKDOWN

@@ -82,7 +82,7 @@ class ArbitrageMonitor:
         while self.is_running:
             try:
                 # Проверяем, открыта ли биржа
-                if not self.config.is_market_open():
+                if not self.config.is_trading_hours():
                     logger.info("Биржа закрыта. Ожидание открытия...")
                     await asyncio.sleep(300)  # Проверяем каждые 5 минут
                     continue
@@ -350,7 +350,7 @@ class ArbitrageMonitor:
         """Получение статистики мониторинга"""
         return {
             "is_running": self.is_running,
-            "market_open": self.config.is_market_open(),
+            "market_open": self.config.is_trading_hours(),
             "open_positions": len(self.calculator.open_positions),
             "monitored_instruments": len(self.config.MONITORED_INSTRUMENTS),
             "subscribers_count": len(self.subscribers),

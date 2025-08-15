@@ -22,8 +22,10 @@
 - **Validation**: Daily automated pair checking
 
 ### Trading Pairs Status
-- **Working (20)**: SBER/SBERF, GAZP/GAZPF, LKOH/LKZ5, GMKN/GKZ5, VTBR/VBZ5, ROSN/RNZ5, TATN/TNZ5, ALRS/ALZ5, FEES/FSZ5, HYDR/HYZ5, IRAO/IRZ5, MTSS/MTZ5, PHOR/PHZ5, SNGS/SNZ5, CHMF/CHZ5, MAGN/MAZ5, ABIO/ISZ5, AFKS/AKZ5, AFLT/AFZ5, BANE/BNZ5
-- **Disabled (2)**: NLMK/NLZ5, NVTK/NVZ5 (futures tickers not found)
+- **Total Configured**: 56 pairs from user's file
+- **Daily Validation**: All 56 pairs checked automatically
+- **Critical Fixes**: CBOM ticker corrected (CBZ5 → CMZ5), all is_market_open() calls fixed
+- **Validation Scope**: Expanded from 22 to 56 pairs for comprehensive testing
 
 ### Ready for Production
 ✅ Ready for deployment on hosting platforms for 24/7 operation

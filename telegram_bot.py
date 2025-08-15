@@ -386,8 +386,8 @@ class SimpleTelegramBot:
                 self.subscribers.add(user_id)
                 
             # Проверяем статус рынка
-            if not self.config.is_market_open():
-                market_status = self.config.get_market_status_message()
+            if not self.config.is_trading_hours():
+                market_status = self.config.get_trading_status_message()
                 
                 # Создаем inline-клавиатуру для выбора
                 keyboard = {
@@ -1647,7 +1647,7 @@ class SimpleTelegramBot:
                     continue
                 
                 # Проверяем, открыта ли биржа
-                if not self.config.is_market_open():
+                if not self.config.is_trading_hours():
                     # Проверяем пользователей, ожидающих открытия
                     pending_users = self.monitoring_controller.get_pending_market_open_users()
                     if pending_users:

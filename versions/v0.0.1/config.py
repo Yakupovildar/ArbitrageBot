@@ -85,7 +85,7 @@ class Config:
                 "BANE": "BNZ5",   # Башнефть
                 "BANEP": "BEZ5",  # Башнефть-П
                 "BSPB": "BSZ5",   # Банк СПБ
-                "CBOM": "CBZ5",   # МКБ
+                "CBOM": "CMZ5",   # МКБ
                 "CHMF": "CHZ5",   # Северсталь
                 "DIXY": "DXZ5",   # Дикси
                 "DSKY": "DSZ5",   # Детский мир
