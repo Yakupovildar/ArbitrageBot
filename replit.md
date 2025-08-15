@@ -2,15 +2,15 @@
 
 ## Overview
 
-**Version 0.0.1** - The MOEX Arbitrage Bot is a production-ready Telegram-based system for identifying arbitrage opportunities between stocks and futures on the Moscow Exchange (MOEX). It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and a comprehensive database of 63+ trading pairs organized into sectors including "🎯 Рекомендованные". The bot automatically manages data sources, validates trading pairs daily, and provides accurate spread calculations with proper futures price conversions. All major technical issues have been resolved, making it ready for deployment on hosting platforms for 24/7 operation.
+**Version 0.0.2** - The MOEX Arbitrage Bot is a production-ready Telegram-based system for identifying arbitrage opportunities between stocks and futures on the Moscow Exchange (MOEX). It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and a curated database of 33 validated trading pairs with accurate spread calculations. The bot automatically manages data sources, validates trading pairs daily, and provides precise spread calculations with properly calibrated futures price conversion coefficients. All critical issues have been resolved, making it ready for deployment on hosting platforms for 24/7 operation.
 
-## Recent Changes (v0.0.1)
+## Recent Changes (v0.0.2)
 
-- **Extended Validation**: Expanded from 8 to 22 trading pairs with 20 working correctly
-- **Complete Pair Integration**: Added all pairs from user's attached file (63+ instruments)
-- **Version Control**: Implemented versioning system starting with v0.0.1
-- **Production Ready**: All critical bugs fixed, ready for hosting deployment
-- **NLMK/NVTK Pairs**: Temporarily disabled (futures tickers not found on MOEX)
+- **Critical Fixes**: Corrected futures price conversion coefficients for accurate spread calculations
+- **Cleaned Configuration**: Removed 23 non-existent tickers, keeping only 33 working pairs
+- **Accurate Spreads**: Fixed multipliers for Z5 contracts (AFKS: 0.1, AKRN: 600, PHOR: 100, etc.)
+- **Production Ready**: All spreads now calculate correctly with proper price ratios
+- **Version Control**: Automatic versioning system with complete change tracking
 
 ## Versioning System
 
