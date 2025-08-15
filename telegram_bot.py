@@ -1613,12 +1613,16 @@ class SimpleTelegramBot:
                     if pair_count >= 15:  # Увеличим лимит до 15 пар
                         break
                     
-                    # Проверяем структуру данных
-                    if not isinstance(quote_data, (list, tuple)) or len(quote_data) != 2:
-                        logger.warning(f"Неправильная структура данных для {stock_ticker}: {quote_data}")
+                    try:
+                        # Проверяем структуру данных
+                        if not isinstance(quote_data, (list, tuple)) or len(quote_data) != 2:
+                            logger.warning(f"Неправильная структура данных для {stock_ticker}: {quote_data}")
+                            continue
+                            
+                        stock_price, futures_price = quote_data
+                    except Exception as unpack_error:
+                        logger.error(f"Ошибка распаковки данных для {stock_ticker}: {unpack_error}")
                         continue
-                        
-                    stock_price, futures_price = quote_data
                     
                     if stock_price is None or futures_price is None or stock_price <= 0 or futures_price <= 0:
                         logger.debug(f"Нет данных для {stock_ticker}: спот={stock_price}, фьючерс={futures_price}")
@@ -1680,8 +1684,11 @@ class SimpleTelegramBot:
                     test_message += f"⚠️ Нет доступных данных по спредам\n"
                     test_message += f"🔍 Обработано пар: {processed_pairs}\n"
                     # Показываем сырые данные для отладки
-                    sample_data = dict(list(quotes.items())[:3])
-                    test_message += f"📋 Образец данных: {sample_data}\n"
+                    try:
+                        sample_data = dict(list(quotes.items())[:3])
+                        test_message += f"📋 Образец данных: {sample_data}\n"
+                    except Exception as e:
+                        test_message += f"📋 Ошибка получения образца данных: {e}\n"
                 
                 test_message += "💬 Для остановки: /test"
                 
