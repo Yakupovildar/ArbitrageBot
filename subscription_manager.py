@@ -86,6 +86,78 @@ class SubscriptionManager:
             logger.error(f"Ошибка проверки подписки для {user_id}: {e}")
             return False
     
+    def _format_time_remaining(self, total_seconds: int) -> str:
+        """Форматировать оставшееся время в виде 'X дней Y часов Z минут'"""
+        if total_seconds <= 0:
+            return "истекло"
+        
+        days = total_seconds // 86400  # 24 * 60 * 60
+        hours = (total_seconds % 86400) // 3600  # 60 * 60
+        minutes = (total_seconds % 3600) // 60
+        
+        parts = []
+        if days > 0:
+            if days == 1:
+                parts.append(f"{days} день")
+            elif days in [2, 3, 4]:
+                parts.append(f"{days} дня")
+            else:
+                parts.append(f"{days} дней")
+        
+        if hours > 0:
+            if hours == 1:
+                parts.append(f"{hours} час")
+            elif hours in [2, 3, 4]:
+                parts.append(f"{hours} часа")
+            else:
+                parts.append(f"{hours} часов")
+        
+        if minutes > 0:
+            if minutes == 1:
+                parts.append(f"{minutes} минута")
+            elif minutes in [2, 3, 4]:
+                parts.append(f"{minutes} минуты")
+            else:
+                parts.append(f"{minutes} минут")
+        
+        return " ".join(parts)
+    
+    async def get_remaining_trial_time_formatted(self, user_id: int) -> str:
+        """Получить оставшееся время пробного периода в читаемом формате"""
+        try:
+            user_settings = await db.load_user_settings(user_id)
+            if not user_settings or not user_settings.trial_end:
+                return "не активен"
+            
+            now = datetime.utcnow()
+            if now >= user_settings.trial_end:
+                return "истек"
+            
+            remaining_seconds = int((user_settings.trial_end - now).total_seconds())
+            return self._format_time_remaining(remaining_seconds)
+            
+        except Exception as e:
+            logger.error(f"Ошибка получения времени пробного периода для {user_id}: {e}")
+            return "ошибка"
+    
+    async def get_remaining_subscription_time_formatted(self, user_id: int) -> str:
+        """Получить оставшееся время подписки в читаемом формате"""
+        try:
+            user_settings = await db.load_user_settings(user_id)
+            if not user_settings or not user_settings.subscription_end:
+                return "не активна"
+            
+            now = datetime.utcnow()
+            if now >= user_settings.subscription_end:
+                return "истекла"
+            
+            remaining_seconds = int((user_settings.subscription_end - now).total_seconds())
+            return self._format_time_remaining(remaining_seconds)
+            
+        except Exception as e:
+            logger.error(f"Ошибка получения времени подписки для {user_id}: {e}")
+            return "ошибка"
+    
     async def get_remaining_trial_days(self, user_id: int) -> Optional[int]:
         """Получить количество оставшихся дней пробного периода"""
         try:

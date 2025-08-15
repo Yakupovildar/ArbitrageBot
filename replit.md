@@ -10,8 +10,10 @@
 - **ADMIN COMMANDS ENHANCED**: New username-based subscription management with /activate_sub and /deactivate_sub
 - **SUBSCRIPTION HISTORY TRACKING**: Full history of all subscription operations with comments and admin tracking
 - **USER-FRIENDLY ADMIN PANEL**: Commands now use @username instead of user_id, support duration and comments
+- **PRECISE TIME COUNTDOWN**: Added exact countdown timers showing days, hours, and minutes remaining
+- **AUTOMATIC TRIAL ACTIVATION**: 7-day trial period auto-activates on first /start command
 - **DATABASE IMPROVEMENTS**: Added subscription history table and username tracking for all users
-- **BUG FIXES**: Removed "open positions" line from status, fixed subscription button errors
+- **UI REFINEMENTS**: Proper capitalization, removed "open positions" line, fixed subscription button errors
 
 ## Versioning System
 

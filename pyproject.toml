@@ -8,5 +8,4 @@ dependencies = [
     "asyncpg>=0.30.0",
     "python-telegram-bot==21.6",
     "pytz>=2025.2",
-    "telegram>=0.0.1",
 ]

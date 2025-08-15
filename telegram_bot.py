@@ -289,7 +289,7 @@ class SimpleTelegramBot:
             
             welcome_text = """🤖 *Добро пожаловать в бота арбитража MOEX!*
 
-🆓 **АКТИВИРОВАН 7-ДНЕВНЫЙ ПРОБНЫЙ ПЕРИОД**
+🆓 **Активирован 7-дневный пробный период**
 
 Я помогаю отслеживать арбитражные возможности между акциями и фьючерсами на Московской бирже.
 
@@ -728,10 +728,11 @@ class SimpleTelegramBot:
                 is_trial = await subscription_manager.is_trial_active(user_id)
                 
                 if is_active:
-                    status_message = "💎 **Премиум подписка активна**\n\n✅ Безлимитные сигналы арбитража"
+                    remaining_time = await subscription_manager.get_remaining_subscription_time_formatted(user_id)
+                    status_message = f"💎 **Подписка активна** - осталось {remaining_time}\n\n✅ Безлимитные сигналы арбитража"
                 elif is_trial:
-                    remaining_days = await subscription_manager.get_remaining_trial_days(user_id)
-                    status_message = f"🆓 **Пробный период**\n\n📅 Осталось дней: {remaining_days}/7\n💡 Затем потребуется подписка"
+                    remaining_time = await subscription_manager.get_remaining_trial_time_formatted(user_id)
+                    status_message = f"🆓 **Пробный период активен** - осталось {remaining_time}\n\n💡 Затем потребуется подписка за 10 USDT/месяц"
                 else:
                     status_message = "⏰ **Пробный период истек**\n\n💎 Оформите подписку для получения сигналов"
                 
