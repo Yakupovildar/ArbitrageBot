@@ -130,6 +130,83 @@ class SubscriptionManager:
         except Exception as e:
             logger.error(f"Ошибка активации подписки для {user_id}: {e}")
             return False
+
+    async def activate_subscription_by_username(self, username: str, duration_months: int, admin_id: int, admin_username: str, comment: str = "") -> tuple[bool, str]:
+        """Активировать подписку по username"""
+        try:
+            # Ищем пользователя по username
+            user_id = await db.find_user_by_username(username)
+            if not user_id:
+                return False, f"Пользователь @{username} не найден в базе данных"
+            
+            duration_days = duration_months * 30  # Приблизительно
+            
+            user_settings = await db.load_user_settings(user_id)
+            if not user_settings:
+                user_settings = UserSettings(user_id=user_id)
+            
+            # Устанавливаем даты подписки
+            start_date = datetime.now()
+            end_date = start_date + timedelta(days=duration_days)
+            
+            user_settings.subscription_active = True
+            user_settings.subscription_start = start_date
+            user_settings.subscription_end = end_date
+            
+            await db.save_user_settings(user_settings)
+            
+            # Записываем в историю
+            await db.add_subscription_history(
+                user_id=user_id,
+                username=username,
+                action="activate",
+                duration_months=duration_months,
+                admin_id=admin_id,
+                admin_username=admin_username,
+                comment=comment
+            )
+            
+            logger.info(f"Подписка активирована для @{username} (ID: {user_id}) на {duration_months} мес. до {end_date}")
+            return True, f"✅ Подписка активирована для @{username} на {duration_months} мес."
+            
+        except Exception as e:
+            logger.error(f"Ошибка активации подписки для @{username}: {e}")
+            return False, f"Ошибка: {str(e)}"
+
+    async def deactivate_subscription_by_username(self, username: str, admin_id: int, admin_username: str, comment: str = "") -> tuple[bool, str]:
+        """Деактивировать подписку по username"""
+        try:
+            # Ищем пользователя по username
+            user_id = await db.find_user_by_username(username)
+            if not user_id:
+                return False, f"Пользователь @{username} не найден в базе данных"
+            
+            user_settings = await db.load_user_settings(user_id)
+            if not user_settings:
+                return False, f"Настройки пользователя @{username} не найдены"
+            
+            user_settings.subscription_active = False
+            user_settings.subscription_end = datetime.now()  # Завершаем подписку сейчас
+            
+            await db.save_user_settings(user_settings)
+            
+            # Записываем в историю
+            await db.add_subscription_history(
+                user_id=user_id,
+                username=username,
+                action="deactivate",
+                duration_months=None,
+                admin_id=admin_id,
+                admin_username=admin_username,
+                comment=comment
+            )
+            
+            logger.info(f"Подписка деактивирована для @{username} (ID: {user_id})")
+            return True, f"✅ Подписка деактивирована для @{username}"
+            
+        except Exception as e:
+            logger.error(f"Ошибка деактивации подписки для @{username}: {e}")
+            return False, f"Ошибка: {str(e)}"
     
     async def activate_trial_period(self, user_id: int) -> bool:
         """Активировать пробный период для нового пользователя"""

@@ -612,31 +612,109 @@ class SimpleTelegramBot:
             else:
                 await self.send_message(chat_id, "❌ Вы не были подписаны на уведомления")
                 
-        elif command.startswith("/activate_subscription"):
-            # Команда для администратора
+        elif command.startswith("/activate_sub"):
+            # Активация подписки по username (только для админов)
+            if user_id != self.monitoring_controller.get_admin_user_id():
+                await self.send_message(chat_id, "🤖 Неизвестная команда. Используйте /help для справки.")
+                return
+            
+            # Парсим команду: /activate_sub USERNAME МЕСЯЦЫ [КОММЕНТАРИЙ]
+            parts = command.split()
+            if len(parts) < 3:
+                await self.send_message(chat_id, """❌ Неправильный формат команды
+
+**Правильный формат:**
+/activate_sub USERNAME МЕСЯЦЫ [КОММЕНТАРИЙ]
+
+**Примеры:**
+• /activate_sub ildaryakupovv 1
+• /activate_sub john_doe 12 VIP клиент
+• /activate_sub user123 3 Промо акция""")
+                return
+            
+            username = parts[1]
+            try:
+                duration_months = int(parts[2])
+                comment = " ".join(parts[3:]) if len(parts) > 3 else ""
+                
+                # Получаем информацию об админе  
+                admin_username = "admin"  # Заглушка, можно доработать
+                
+                success, message = await subscription_manager.activate_subscription_by_username(
+                    username, duration_months, user_id, admin_username, comment
+                )
+                
+                await self.send_message(chat_id, message)
+                
+            except ValueError:
+                await self.send_message(chat_id, "❌ Количество месяцев должно быть числом")
+            except Exception as e:
+                await self.send_message(chat_id, f"❌ Ошибка: {e}")
+                
+        elif command.startswith("/deactivate_sub"):
+            # Деактивация подписки по username (только для админов)  
+            if user_id != self.monitoring_controller.get_admin_user_id():
+                await self.send_message(chat_id, "🤖 Неизвестная команда. Используйте /help для справки.")
+                return
+            
+            # Парсим команду: /deactivate_sub USERNAME [КОММЕНТАРИЙ]
+            parts = command.split()
+            if len(parts) < 2:
+                await self.send_message(chat_id, """❌ Неправильный формат команды
+
+**Правильный формат:**
+/deactivate_sub USERNAME [КОММЕНТАРИЙ]
+
+**Примеры:**
+• /deactivate_sub spammer
+• /deactivate_sub violator за нарушение правил
+• /deactivate_sub inactive неактивность""")
+                return
+            
+            username = parts[1]
+            comment = " ".join(parts[2:]) if len(parts) > 2 else ""
+            
+            try:
+                # Получаем информацию об админе
+                admin_username = "admin"  # Заглушка, можно доработать
+                
+                success, message = await subscription_manager.deactivate_subscription_by_username(
+                    username, user_id, admin_username, comment
+                )
+                
+                await self.send_message(chat_id, message)
+                
+            except Exception as e:
+                await self.send_message(chat_id, f"❌ Ошибка: {e}")
+
+        elif command.startswith("/sub_history"):
+            # История операций с подписками (только для админов)
             if user_id != self.monitoring_controller.get_admin_user_id():
                 await self.send_message(chat_id, "🤖 Неизвестная команда. Используйте /help для справки.")
                 return
             
             try:
-                parts = command.split()
-                if len(parts) != 2:
-                    await self.send_message(chat_id, "❌ Использование: /activate_subscription USER_ID")
+                history = await db.get_subscription_history(15)
+                
+                if not history:
+                    await self.send_message(chat_id, "📄 История операций пуста")
                     return
                 
-                target_user_id = int(parts[1])
-                success = await subscription_manager.activate_subscription(target_user_id)
+                history_text = "📋 **ИСТОРИЯ ОПЕРАЦИЙ С ПОДПИСКАМИ**\n\n"
                 
-                if success:
-                    await self.send_message(chat_id, f"✅ Подписка активирована для пользователя {target_user_id}")
-                    await self.send_message(target_user_id, "🎉 Ваша премиум подписка активирована! Теперь вы получаете безлимитные сигналы арбитража.")
-                else:
-                    await self.send_message(chat_id, f"❌ Ошибка активации подписки для пользователя {target_user_id}")
+                for record in history:
+                    action_emoji = "✅" if record['action'] == 'activate' else "❌"
+                    duration_text = f" на {record['duration_months']} мес." if record['duration_months'] else ""
+                    comment_text = f" ({record['comment']})" if record['comment'] else ""
                     
-            except ValueError:
-                await self.send_message(chat_id, "❌ Неверный формат USER_ID")
+                    history_text += f"{action_emoji} **@{record['username']}**{duration_text}\n"
+                    history_text += f"👤 Админ: @{record['admin_username']}\n"
+                    history_text += f"📅 {record['created_at'].strftime('%d.%m.%Y %H:%M')}{comment_text}\n\n"
+                
+                await self.send_message(chat_id, history_text)
+                
             except Exception as e:
-                await self.send_message(chat_id, f"❌ Ошибка: {e}")
+                await self.send_message(chat_id, f"❌ Ошибка получения истории: {e}")
                 
         elif command.startswith("/subscription_status"):
             # Проверить статус подписки

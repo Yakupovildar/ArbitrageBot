@@ -26,6 +26,7 @@ class UserSettings:
     subscription_crypto_address: str = ""
     trial_start: Optional[datetime] = None  # начало пробного периода
     trial_end: Optional[datetime] = None  # конец пробного периода
+    username: str = ""  # username телеграм
 
 class Database:
     """Класс для работы с базой данных"""
@@ -78,7 +79,8 @@ class Database:
                     subscription_end TIMESTAMP NULL,
                     subscription_crypto_address TEXT DEFAULT '',
                     trial_start TIMESTAMP NULL,
-                    trial_end TIMESTAMP NULL
+                    trial_end TIMESTAMP NULL,
+                    username VARCHAR(100) DEFAULT ''
                 )
             """)
             
@@ -91,7 +93,8 @@ class Database:
                 ("subscription_end", "TIMESTAMP NULL"),
                 ("subscription_crypto_address", "TEXT DEFAULT ''"),
                 ("trial_start", "TIMESTAMP NULL"),
-                ("trial_end", "TIMESTAMP NULL")
+                ("trial_end", "TIMESTAMP NULL"),
+                ("username", "VARCHAR(100) DEFAULT ''")
             ]
             
             for column_name, column_definition in columns_to_add:
@@ -104,6 +107,21 @@ class Database:
                 except Exception:
                     # Колонка уже существует
                     pass
+            
+            # Таблица истории подписок
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS subscription_history (
+                    id SERIAL PRIMARY KEY,
+                    user_id BIGINT NOT NULL,
+                    username VARCHAR(100),
+                    action VARCHAR(50) NOT NULL, -- 'activate' или 'deactivate'
+                    duration_months INTEGER,
+                    admin_id BIGINT NOT NULL,
+                    admin_username VARCHAR(100),
+                    comment TEXT DEFAULT '',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
             
             # Таблица состояния источников данных
             await conn.execute("""
@@ -138,8 +156,8 @@ class Database:
                     INSERT INTO user_settings 
                     (user_id, monitoring_interval, spread_threshold, max_signals, is_monitoring, selected_instruments, 
                      signals_sent, subscription_active, subscription_start, subscription_end, 
-                     subscription_crypto_address, trial_start, trial_end, updated_at)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, CURRENT_TIMESTAMP)
+                     subscription_crypto_address, trial_start, trial_end, username, updated_at)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, CURRENT_TIMESTAMP)
                     ON CONFLICT (user_id) 
                     DO UPDATE SET 
                         monitoring_interval = EXCLUDED.monitoring_interval,
@@ -154,11 +172,12 @@ class Database:
                         subscription_crypto_address = EXCLUDED.subscription_crypto_address,
                         trial_start = EXCLUDED.trial_start,
                         trial_end = EXCLUDED.trial_end,
+                        username = EXCLUDED.username,
                         updated_at = CURRENT_TIMESTAMP
                 """, settings.user_id, settings.monitoring_interval, 
                     settings.spread_threshold, settings.max_signals, settings.is_monitoring, settings.selected_instruments,
                     settings.signals_sent, settings.subscription_active, settings.subscription_start, 
-                    settings.subscription_end, settings.subscription_crypto_address, settings.trial_start, settings.trial_end)
+                    settings.subscription_end, settings.subscription_crypto_address, settings.trial_start, settings.trial_end, settings.username)
                 
                 logger.info(f"💾 Настройки пользователя {settings.user_id} сохранены")
                 return True
@@ -191,7 +210,8 @@ class Database:
                         subscription_end=row.get('subscription_end'),
                         subscription_crypto_address=row.get('subscription_crypto_address', ''),
                         trial_start=row.get('trial_start'),
-                        trial_end=row.get('trial_end')
+                        trial_end=row.get('trial_end'),
+                        username=row.get('username', '')
                     )
                 else:
                     # Создаем настройки по умолчанию
@@ -291,6 +311,71 @@ class Database:
         except Exception as e:
             logger.error(f"❌ Ошибка получения неисправных источников: {e}")
             return []
+
+    async def find_user_by_username(self, username: str) -> Optional[int]:
+        """Найти пользователя по username"""
+        try:
+            async with self.pool.acquire() as conn:
+                row = await conn.fetchrow(
+                    "SELECT user_id FROM user_settings WHERE username = $1", 
+                    username.replace('@', '')
+                )
+                return row['user_id'] if row else None
+        except Exception as e:
+            logger.error(f"❌ Ошибка поиска пользователя по username {username}: {e}")
+            return None
+    
+    async def add_subscription_history(self, user_id: int, username: str, action: str, 
+                                     duration_months: Optional[int], admin_id: int, 
+                                     admin_username: str, comment: str = "") -> bool:
+        """Добавить запись в историю подписок"""
+        try:
+            async with self.pool.acquire() as conn:
+                await conn.execute("""
+                    INSERT INTO subscription_history 
+                    (user_id, username, action, duration_months, admin_id, admin_username, comment)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                """, user_id, username, action, duration_months, admin_id, admin_username, comment)
+                
+                logger.info(f"История подписки добавлена: {action} для @{username} от @{admin_username}")
+                return True
+                
+        except Exception as e:
+            logger.error(f"❌ Ошибка добавления истории подписки: {e}")
+            return False
+    
+    async def get_subscription_history(self, limit: int = 10) -> List[Dict]:
+        """Получить историю подписок"""
+        try:
+            async with self.pool.acquire() as conn:
+                rows = await conn.fetch("""
+                    SELECT * FROM subscription_history 
+                    ORDER BY created_at DESC 
+                    LIMIT $1
+                """, limit)
+                
+                return [dict(row) for row in rows]
+                
+        except Exception as e:
+            logger.error(f"❌ Ошибка получения истории подписок: {e}")
+            return []
+
+    async def update_user_username(self, user_id: int, username: str) -> bool:
+        """Обновить username пользователя"""
+        try:
+            async with self.pool.acquire() as conn:
+                await conn.execute("""
+                    UPDATE user_settings 
+                    SET username = $2, updated_at = CURRENT_TIMESTAMP 
+                    WHERE user_id = $1
+                """, user_id, username.replace('@', ''))
+                
+                logger.info(f"Username обновлен для пользователя {user_id}: @{username}")
+                return True
+                
+        except Exception as e:
+            logger.error(f"❌ Ошибка обновления username: {e}")
+            return False
 
 # Глобальный экземпляр базы данных
 db = Database()

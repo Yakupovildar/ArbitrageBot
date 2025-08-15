@@ -4,13 +4,14 @@
 
 **Version 0.1.7** - The MOEX Arbitrage Bot with COMPLETE individual conversion system for each futures contract. 19 active trading pairs with verified coefficients ensuring spreads ≤30%. Contract-based (÷10, ÷2), point-based (÷100), ruble-based, and special conversion methods. Problematic pairs systematically identified and blocked. Features sector-based interface with 15 economic sectors and professional company classification.
 
-## Recent Changes (v0.1.8)
+## Recent Changes (v0.1.9)
 
-- **PRODUCTION DEPLOYMENT FIXED**: Bot successfully deployed to Reserved VM hosting, resolved 409 API conflicts
-- **SUBSCRIPTION SYSTEM OVERHAUL**: Fixed misleading status display, added proper subscription interface with payment flow
-- **ADMIN SECURITY ENHANCED**: Admin commands now properly protected, accessible only via /admin command for authorized users
-- **UI/UX IMPROVEMENTS**: Updated demo signals with current format, removed technical commands from public support
-- **SUBSCRIPTION INTERFACE**: Added subscription button to main menu, proper status checking, payment instructions
+- **SUBSCRIPTION SYSTEM COMPLETELY REDESIGNED**: Changed from 50-signal limit to 7-day free trial model
+- **ADMIN COMMANDS ENHANCED**: New username-based subscription management with /activate_sub and /deactivate_sub
+- **SUBSCRIPTION HISTORY TRACKING**: Full history of all subscription operations with comments and admin tracking
+- **USER-FRIENDLY ADMIN PANEL**: Commands now use @username instead of user_id, support duration and comments
+- **DATABASE IMPROVEMENTS**: Added subscription history table and username tracking for all users
+- **BUG FIXES**: Removed "open positions" line from status, fixed subscription button errors
 
 ## Versioning System
 
