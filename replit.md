@@ -2,15 +2,15 @@
 
 ## Overview
 
-**Version 0.1.0** - The MOEX Arbitrage Bot features a beautiful sector-based interface with all 56+ trading pairs organized into 15 economic sectors (Banks, Oil&Gas, Metals, Tech, etc.). Users can browse and select trading pairs by industry sector with real-time filtering of available instruments. The system automatically hides blocked pairs and provides detailed company information and sector statistics.
+**Version 0.1.1** - The MOEX Arbitrage Bot with CRITICALLY FIXED futures price conversion and complete signal blocking for problematic pairs. Only SBERF/GAZPF trade in rubles, ALL other futures converted from points (0.01 multiplier). System now prevents sending 900%+ spread signals to users through pre-filtering and automatic pair blocking. Features sector-based interface with 15 economic sectors and professional company classification.
 
-## Recent Changes (v0.1.0)
+## Recent Changes (v0.1.1)
 
-- **Sector-Based Interface**: All trading pairs organized into 15 economic sectors for easy navigation
-- **Visual Organization**: Banks, Oil&Gas, Metals, Technology, Retail, Telecom and other sector groupings
-- **Smart Filtering**: Only available trading pairs displayed in each sector, blocked pairs automatically hidden
-- **Enhanced UX**: Company descriptions, sector statistics, and mass selection operations
-- **Professional Classification**: Comprehensive mapping of Russian companies to appropriate economic sectors
+- **CRITICAL FIX**: Corrected futures conversion - only SBERF/GAZPF in rubles, rest in points with 0.01 conversion
+- **Signal Protection**: Complete blocking of signals for pairs with anomalous spreads >100%
+- **Accurate Calculations**: LKZ5 64128 points → 641.28₽ producing normal -90% spread instead of 904%
+- **Emergency Restart**: Immediately stopped incorrect signal delivery to users
+- **User Safety**: Pre-filtering system prevents selection and monitoring of blocked pairs
 
 ## Versioning System
 

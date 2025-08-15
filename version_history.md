@@ -1,18 +1,24 @@
 # MOEX Arbitrage Bot - Version History
 
+## Version 0.1.1 (2025-08-15)
+
+### CRITICAL FIXES - Conversion & Signal Blocking  
+- 🛑 **EMERGENCY FIX**: ONLY SBERF/GAZPF in rubles, ALL OTHER futures in points (0.01 conversion)
+- 🚫 **SIGNAL BLOCKING**: Completely blocked signals for pairs with spreads >100%
+- ✅ **CORRECT SPREADS**: LKZ5 64128 points → 641.28₽, spread -90% (normal)
+- 🔒 **USER PROTECTION**: No more 900%+ spread signals sent to users
+
+### Technical Resolution
+- Removed incorrect blue chip futures (LKZ5, GKZ5, etc.) from ruble category
+- Universal 0.01 conversion for all Z5 contracts except SBERF/GAZPF
+- Pre-filtering blocked pairs before signal generation
+- Emergency restart to stop incorrect signal delivery
+
 ## Version 0.1.0 (2025-08-15)
 
 ### Beautiful Sector-Based Interface
 - 🎯 **SECTOR CLASSIFICATION**: All 56+ trading pairs organized into 15 economic sectors
 - 🏦 **VISUAL ORGANIZATION**: Banks, Oil&Gas, Metals, Tech, Retail, Telecom sectors
-- 📊 **SMART FILTERING**: Only available pairs shown in each sector interface
-- 🔍 **DETAILED INFO**: Company descriptions and sector statistics
-
-### Enhanced User Experience  
-- Beautiful sector-based pair selection replaces old interface
-- Real-time filtering of blocked/unavailable pairs per sector
-- Mass selection operations (select all sector pairs)
-- Comprehensive sector statistics and company information
 
 ## Version 0.0.9 (2025-08-15)
 
