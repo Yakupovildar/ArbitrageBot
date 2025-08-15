@@ -1,17 +1,24 @@
 # MOEX Arbitrage Bot - Version History
 
+## Version 0.0.7 (2025-08-15)
+
+### Quality Control System
+- ✅ **Automatic Blocking**: Pairs with spreads >30% automatically blocked from user selection
+- ✅ **Personal Checks**: Individual validation for known problematic pairs (SGZH, NKNC, FEES)
+- ✅ **Status Management**: Three-tier system - active/blocked/unavailable pairs
+- ✅ **User Protection**: Prevents users from selecting problematic trading pairs
+
+### Issue Discovery
+- 🚫 **Conversion Still Wrong**: All pairs showing ~9900% spreads - coefficients still incorrect
+- 🔍 **Root Cause Persistent**: Need to completely rethink futures price conversion logic
+- 📊 **System Works**: Quality control correctly identifies all pairs as problematic
+
 ## Version 0.0.6 (2025-08-15)
 
-### Critical Logic Fix
-- ✅ **Fixed Conversion Logic**: Corrected futures price conversion from division to multiplication
-- ✅ **Root Cause Found**: The issue was in `_convert_futures_price_to_rubles` method using wrong operation
-- ✅ **All Pairs Restored**: Re-enabled all 56 pairs with correct price conversion logic
-- ✅ **Proper Spreads**: Now calculating accurate spreads instead of massive percentage errors
-
-### Technical Fix
-- Changed `price / coefficient` to `price * coefficient` in futures price conversion
-- All 56 pairs now have correct spread calculations
-- Removed artificial limitations from previous versions
+### Critical Logic Fix (Incomplete)
+- ❌ **Conversion Still Wrong**: Changed division to multiplication but logic still incorrect
+- ❌ **Massive Spreads**: All pairs still show thousands of percent differences
+- ✅ **All Pairs Restored**: Re-enabled all 56 pairs but with wrong calculations
 
 ## Version 0.0.5 (2025-08-15)
 

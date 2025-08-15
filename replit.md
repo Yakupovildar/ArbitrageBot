@@ -2,15 +2,15 @@
 
 ## Overview
 
-**Version 0.0.6** - The MOEX Arbitrage Bot is a production-ready Telegram-based system for identifying arbitrage opportunities between stocks and futures on the Moscow Exchange (MOEX). It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and a complete database of all 56 trading pairs with accurate spread calculations. The bot automatically manages data sources, validates trading pairs daily, and provides correct spread calculations with properly implemented futures price conversion logic. All critical issues have been resolved, making it ready for deployment on hosting platforms for 24/7 operation.
+**Version 0.0.7** - The MOEX Arbitrage Bot includes a comprehensive quality control system that automatically identifies and blocks problematic trading pairs. It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and an advanced pair status management system. The bot automatically detects pairs with anomalous spreads (>30%) and API availability issues, protecting users from selecting problematic instruments. Critical spread calculation issues are still being addressed.
 
-## Recent Changes (v0.0.6)
+## Recent Changes (v0.0.7)
 
-- **Critical Logic Fix**: Corrected futures price conversion from division to multiplication in _convert_futures_price_to_rubles method
-- **Root Cause Resolved**: Fixed the core issue causing massive percentage errors in spread calculations
-- **All Pairs Restored**: Re-enabled all 56 pairs with correct price conversion logic
-- **Accurate Spreads**: Now calculating proper spreads instead of thousands of percent errors
-- **Production Ready**: System ready for hosting with mathematically correct arbitrage detection
+- **Quality Control System**: Automatic blocking of pairs with spreads >30% to protect users from problematic trades
+- **Status Management**: Three-tier classification - active, blocked, unavailable pairs with detailed reasons
+- **Personal Validation**: Individual checks for known problematic pairs (SGZH/SZZ5, NKNC/NKZ5, FEES/FSZ5)
+- **User Protection**: Prevents selection of blocked or unavailable pairs in bot interface
+- **Issue Discovery**: Identified that futures price conversion logic still needs fundamental revision (all pairs showing ~9900% spreads)
 
 ## Versioning System
 
