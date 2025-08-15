@@ -25,34 +25,8 @@ class DailyValidator:
         
         try:
             async with PairValidator() as validator:
-                # Валидируем все рекомендованные пары
-                recommended_pairs = {
-                    # Голубые фишки (старые контракты)
-                    'SBER': 'SBERF',  
-                    'GAZP': 'GAZPF',  
-                    'LKOH': 'LKZ5',   
-                    'GMKN': 'GKZ5',   
-                    'VTBR': 'VBZ5',   
-                    'ROSN': 'RNZ5',   
-                    'TATN': 'TNZ5',   
-                    'ALRS': 'ALZ5',
-                    
-                    # Новые рекомендованные пары (все рабочие)
-                    'FEES': 'FSZ5',
-                    'HYDR': 'HYZ5',
-                    'IRAO': 'IRZ5',
-                    'MTSS': 'MTZ5',
-                    'PHOR': 'PHZ5',
-                    'SNGS': 'SNZ5',
-                    'CHMF': 'CHZ5',
-                    'MAGN': 'MAZ5',
-                    'ABIO': 'ISZ5',
-                    'AFKS': 'AKZ5',
-                    'AFLT': 'AFZ5',
-                    'BANE': 'BNZ5',
-                    'BSPB': 'BSZ5',
-                    'CBOM': 'CBZ5'
-                }
+                # Валидируем ВСЕ пары из конфигурации (56 пар)
+                recommended_pairs = self.config.MONITORED_INSTRUMENTS
                 
                 results = await validator.validate_all_pairs(recommended_pairs)
                 

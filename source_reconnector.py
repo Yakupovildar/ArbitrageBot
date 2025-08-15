@@ -48,8 +48,8 @@ class SourceReconnector:
         """Основной цикл переподключения"""
         while self.is_running:
             try:
-                # Проверяем, открыта ли биржа
-                if self.config.is_market_open():
+                # Проверяем, работает ли биржа
+                if self.config.is_trading_hours():
                     await self._attempt_reconnect()
                 else:
                     logger.debug("Биржа закрыта - пропускаем переподключение")
