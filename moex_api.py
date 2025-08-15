@@ -254,7 +254,11 @@ class MOEXAPIClient:
         contract_based = {
             'LKZ5': 10,      # LUKOIL - контракт на 10 акций
             'GKZ5': 10,      # GMK Norilsk - контракт на 10 акций  
-            'TNZ5': 2,       # Tatneft - контракт на ~2 акции (экспериментально)
+            'TNZ5': 2,       # Tatneft - контракт на ~2 акции
+            'BSZ5': 10,      # BSPB - контракт на 10 акций (спред 0.83%)
+            'ISZ5': 10,      # ABIO - контракт на 10 акций (спред 6.81%)
+            'KMZ5': 10,      # KMAZ - контракт на 10 акций (спред 5.24%)
+            'MGZ5': 10,      # MGNT - контракт на 10 акций (спред 2.11%)
         }
         
         # Фьючерсы, котирующиеся в пунктах за акцию (нужно делить на 100)
@@ -262,6 +266,9 @@ class MOEXAPIClient:
             'VBZ5', 'RNZ5', 'ALZ5', 'CHZ5', 'AFZ5', 'MEZ5', 'MTZ5', 
             'FLZ5', 'MAZ5', 'HYZ5', 'IRZ5', 'FSZ5'
         ]
+        
+        # Фьючерсы, котирующиеся уже в рублях (без конверсии)
+        ruble_based = ['BNZ5']
         
         if ticker in contract_based:
             # Цена контракта / количество акций
@@ -274,8 +281,13 @@ class MOEXAPIClient:
             converted_price = price / 100
             logger.debug(f"Конверсия {ticker}: {price} пунктов / 100 = {converted_price}₽/акция")
             
+        elif ticker in ruble_based:
+            # Цена уже в рублях за акцию
+            converted_price = price
+            logger.debug(f"Конверсия {ticker}: {price}₽ (уже в рублях за акцию)")
+            
         else:
-            # Неизвестный фьючерс - используем пункты
+            # Неизвестный фьючерс - используем пункты по умолчанию
             converted_price = price / 100
             logger.debug(f"Конверсия {ticker}: {price} пунктов / 100 = {converted_price}₽/акция (по умолчанию)")
         
