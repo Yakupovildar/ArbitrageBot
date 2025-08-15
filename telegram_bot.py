@@ -859,9 +859,56 @@ class SimpleTelegramBot:
                 
             else:
                 # Показываем пары конкретного сектора
-                sector_name = callback_data.replace("sector_", "")
-                message = sector_ui.get_sector_description(sector_name)
-                keyboard = sector_ui.get_sector_pairs_keyboard(sector_name)
+                sector_code = callback_data.replace("sector_", "")
+                
+                # Маппинг кодов обратно к названиям секторов
+                sector_mapping = {
+                    "blue_Голубые_фишки": "🔵 Голубые фишки",
+                    "banks_Банки": "🏦 Банки", 
+                    "oil_Нефть_и_газ": "⛽ Нефть и газ",
+                    "metals_Металлургия": "🏭 Металлургия",
+                    "energy_Энергетика": "⚡ Энергетика",
+                    "telecom_Телеком": "📡 Телеком",
+                    "tech_Технологии": "💻 Технологии",
+                    "retail_Ритейл": "🛒 Ритейл",
+                    "realty_Недвижимость": "🏘️ Недвижимость",
+                    "transport_Транспорт": "🚛 Транспорт",
+                    "chem_Химия": "🧪 Химия",
+                    "industry_Промышленность": "🔧 Промышленность",
+                    "finance_Финуслуги": "💰 Финуслуги",
+                    "new_Новые_активы": "🆕 Новые активы"
+                }
+                
+                sector_name = sector_mapping.get(sector_code, "🔧 Промышленность")
+                
+                # Получаем инструменты сектора из user_settings
+                sectors = self.user_settings._group_instruments_by_sectors(self.config.MONITORED_INSTRUMENTS)
+                sector_pairs = sectors.get(sector_name, {})
+                
+                if sector_pairs:
+                    message = f"📊 **{sector_name.upper()}**\n\n"
+                    message += f"Доступно пар: {len(sector_pairs)}\n\n"
+                    
+                    for i, (stock, futures) in enumerate(list(sector_pairs.items())[:15], 1):
+                        # Проверяем статус пары
+                        pair_key = f"{stock}/{futures}"
+                        if pair_key in ui_restrictions.status_manager.active_pairs:
+                            status_emoji = "✅"
+                        elif pair_key in ui_restrictions.status_manager.blocked_pairs:
+                            status_emoji = "🚫"
+                        else:
+                            status_emoji = "❓"
+                        
+                        message += f"{i}. {status_emoji} {stock} → {futures}\n"
+                    
+                    if len(sector_pairs) > 15:
+                        message += f"\n... и еще {len(sector_pairs) - 15} пар"
+                else:
+                    message = f"📊 **{sector_name.upper()}**\n\n❌ Нет доступных пар в этом секторе"
+                
+                keyboard = {"inline_keyboard": [
+                    [{"text": "🔙 К выбору секторов", "callback_data": "settings_pairs"}]
+                ]}
             
             await self.edit_message_text(chat_id, callback_query["message"]["message_id"], message, keyboard)
             await self.answer_callback_query(callback_query_id, "Сектор")

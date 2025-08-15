@@ -280,7 +280,7 @@ class UserSettingsManager:
                 
                 keyboard_rows.append([{
                     "text": f"📊 {sector_name} ({selected_count}/{total_count})", 
-                    "callback_data": f"sector_{hash(sector_name) % 1000}"
+                    "callback_data": f"sector_{sector_name.replace(' ', '_').replace('🔵', 'blue').replace('🏦', 'banks').replace('⛽', 'oil').replace('🏭', 'metals').replace('⚡', 'energy').replace('📡', 'telecom').replace('💻', 'tech').replace('🛒', 'retail').replace('🏘️', 'realty').replace('🚛', 'transport').replace('🧪', 'chem').replace('🔧', 'industry').replace('💰', 'finance').replace('🆕', 'new')}"
                 }])
             
             # Кнопки управления
