@@ -346,8 +346,16 @@ class UserSettingsManager:
         }
         
         # Распределяем инструменты по секторам
-        # Рекомендованные - проверенные и рабочие пары
-        recommended = ["GAZP", "SBER", "LKOH", "GMKN", "VTBR", "ROSN", "MGNT", "SNGS", "ALRS", "TATN", "MTSS", "FEES"]
+        # Рекомендованные - все пары из прикрепленного файла
+        recommended = [
+            "ABIO", "ACKO", "AFKS", "AFLT", "AGRO", "AKRN", "ALRS", "APTK", "ASSB", "BANE",
+            "BANEP", "BLNG", "BSPB", "CBOM", "CHMF", "DIXY", "DSKY", "ELFV", "ETLN", "FEES",
+            "FIVE", "FIXP", "FLOT", "GAZP", "GEMC", "GMKN", "HHRU", "HYDR", "IRAO", "KMAZ",
+            "LKOH", "LSRG", "MAGN", "MAIL", "MGNT", "MOEX", "MSNG", "MTSS", "NKNC", "NLMK",
+            "NVTK", "OZON", "PHOR", "PIKK", "PLZL", "PMSB", "POLY", "PRTK", "QIWI", "RASP",
+            "RENI", "ROSN", "RTKM", "RUAL", "SBER", "SGZH", "SMLT", "SNGS", "TATN", "TCSG",
+            "TRNFP", "VTBR", "YAKG"
+        ]
         blue_chips = ["SBER", "GAZP", "GMKN", "FEES", "VTBR", "LKOH", "ROSN", "TATN", "ALRS"]
         banks = ["SBERP", "CBOM", "BSPB", "SVCB", "VTBR"]
         oil_gas = ["GAZP", "LKOH", "ROSN", "TATN", "TATP", "SNGS", "SNGSP", "NVTK", "SIBN", "BANE", "RNFT"]

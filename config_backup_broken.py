@@ -133,9 +133,9 @@ class Config:
                 "YAKG": "YAZ5"    # Якутскэнерго
             }
     
-    @classmethod
-    def get_admin_users(cls) -> List[int]:
-        """Получение списка администраторов из переменных окружения"""
+    def get_admin_users(cls) -> List[int]:  
+                "ROSN": "RNZ5",   # Роснефть - декабрь 2025 ✅
+                "TATN": "TNZ5",   # Татнефть - декабрь 2025 ✅
                 "ALRS": "ALZ5",   # АЛРОСА - декабрь 2025 ✅
                 
                 # ===== БАНКОВСКИЙ СЕКТОР =====

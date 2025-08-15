@@ -25,8 +25,9 @@ class DailyValidator:
         
         try:
             async with PairValidator() as validator:
-                # Валидируем только проверенные голубые фишки
-                core_pairs = {
+                # Валидируем все рекомендованные пары
+                recommended_pairs = {
+                    # Голубые фишки (старые контракты)
                     'SBER': 'SBERF',  
                     'GAZP': 'GAZPF',  
                     'LKOH': 'LKZ5',   
@@ -34,10 +35,22 @@ class DailyValidator:
                     'VTBR': 'VBZ5',   
                     'ROSN': 'RNZ5',   
                     'TATN': 'TNZ5',   
-                    'ALRS': 'ALZ5',   
+                    'ALRS': 'ALZ5',
+                    
+                    # Новые рекомендованные пары (первые 10 для тестирования)
+                    'FEES': 'FSZ5',
+                    'HYDR': 'HYZ5',
+                    'IRAO': 'IRZ5',
+                    'MTSS': 'MTZ5',
+                    'NLMK': 'NLZ5',
+                    'NVTK': 'NVZ5',
+                    'PHOR': 'PHZ5',
+                    'SNGS': 'SNZ5',
+                    'CHMF': 'CHZ5',
+                    'MAGN': 'MAZ5'
                 }
                 
-                results = await validator.validate_all_pairs(core_pairs)
+                results = await validator.validate_all_pairs(recommended_pairs)
                 
                 # Подсчет статистики
                 valid_count = sum(1 for r in results.values() if r.is_valid)
