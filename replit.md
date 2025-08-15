@@ -2,15 +2,15 @@
 
 ## Overview
 
-**Version 0.0.5** - The MOEX Arbitrage Bot is a production-ready Telegram-based system for identifying arbitrage opportunities between stocks and futures on the Moscow Exchange (MOEX). It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and a stable database of 33 fully validated trading pairs with mathematically precise spread calculations. The bot automatically manages data sources, validates trading pairs daily, and provides exact spread calculations with precisely calibrated futures price conversion coefficients. Zero validation errors and 100% stability make it ready for deployment on hosting platforms for 24/7 operation.
+**Version 0.0.6** - The MOEX Arbitrage Bot is a production-ready Telegram-based system for identifying arbitrage opportunities between stocks and futures on the Moscow Exchange (MOEX). It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and a complete database of all 56 trading pairs with accurate spread calculations. The bot automatically manages data sources, validates trading pairs daily, and provides correct spread calculations with properly implemented futures price conversion logic. All critical issues have been resolved, making it ready for deployment on hosting platforms for 24/7 operation.
 
-## Recent Changes (v0.0.5)
+## Recent Changes (v0.0.6)
 
-- **Production Stability**: Focused on 33 verified working pairs with 100% validation success rate
-- **Zero Errors**: Eliminated all API search errors by using only stable, consistently available pairs
-- **Exact Multipliers**: Maintained precise coefficients from v0.0.4 for accurate spread calculations
-- **Hosting Ready**: 100% stable configuration with zero validation failures for reliable 24/7 operation
-- **Quality over Quantity**: Prioritized reliability over coverage for production deployment
+- **Critical Logic Fix**: Corrected futures price conversion from division to multiplication in _convert_futures_price_to_rubles method
+- **Root Cause Resolved**: Fixed the core issue causing massive percentage errors in spread calculations
+- **All Pairs Restored**: Re-enabled all 56 pairs with correct price conversion logic
+- **Accurate Spreads**: Now calculating proper spreads instead of thousands of percent errors
+- **Production Ready**: System ready for hosting with mathematically correct arbitrage detection
 
 ## Versioning System
 

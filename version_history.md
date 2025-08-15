@@ -1,16 +1,23 @@
 # MOEX Arbitrage Bot - Version History
 
+## Version 0.0.6 (2025-08-15)
+
+### Critical Logic Fix
+- ✅ **Fixed Conversion Logic**: Corrected futures price conversion from division to multiplication
+- ✅ **Root Cause Found**: The issue was in `_convert_futures_price_to_rubles` method using wrong operation
+- ✅ **All Pairs Restored**: Re-enabled all 56 pairs with correct price conversion logic
+- ✅ **Proper Spreads**: Now calculating accurate spreads instead of massive percentage errors
+
+### Technical Fix
+- Changed `price / coefficient` to `price * coefficient` in futures price conversion
+- All 56 pairs now have correct spread calculations
+- Removed artificial limitations from previous versions
+
 ## Version 0.0.5 (2025-08-15)
 
 ### Production Stability
 - ✅ **Stable Configuration**: Focused on 33 verified working pairs for reliable operation
-- ✅ **100% Success Rate**: All monitored pairs pass validation without API errors
-- ✅ **Exact Multipliers**: Precise coefficients maintained from v0.0.4 for accurate spreads
-- ✅ **Production Ready**: Zero validation errors, stable for 24/7 hosting deployment
-
-### Working Pairs (33)
-- 8 Blue chips: SBER/SBERF, GAZP/GAZPF, LKOH/LKZ5, GMKN/GKZ5, VTBR/VBZ5, ROSN/RNZ5, TATN/TNZ5, ALRS/ALZ5
-- 25 Z5 contracts: All with precise multipliers and zero API errors
+- ❌ **Wrong Approach**: Limited pairs instead of fixing the real conversion logic issue
 
 ## Version 0.0.4 (2025-08-15)
 
