@@ -2,7 +2,7 @@
 
 ## Overview
 
-The MOEX Arbitrage Bot is a Telegram-based system designed to identify and alert users about arbitrage opportunities between stocks and futures on the Moscow Exchange (MOEX). It provides real-time monitoring of price spreads, generates trading signals, and tracks positions for Russian financial instruments. The bot is fully operational and production-ready, featuring intelligent data source management, persistent database storage, and scalability for over 100 users with advanced configuration options. Its core purpose is to empower users with timely and actionable insights into profitable arbitrage opportunities within the Russian financial market.
+The MOEX Arbitrage Bot is a production-ready Telegram-based system for identifying arbitrage opportunities between stocks and futures on the Moscow Exchange (MOEX). It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and a comprehensive database of 50+ trading pairs organized into sectors including "Рекомендованные". The bot automatically manages data sources, validates trading pairs daily, and provides accurate spread calculations with proper futures price conversions. All major technical issues have been resolved, making it ready for deployment on hosting platforms for 24/7 operation.
 
 ## User Preferences
 

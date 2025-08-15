@@ -25,6 +25,7 @@ from source_reconnector import SourceReconnector
 from database import db
 from sources_library import sources_library
 from daily_validator import DailyValidator
+from subscription_manager import subscription_manager
 
 # Класс для хранения истории спредов  
 class SpreadHistory:
@@ -313,6 +314,7 @@ class SimpleTelegramBot:
                         {"text": "🆘 Поддержка", "callback_data": "cmd_support"}
                     ],
                     [
+                        {"text": "💎 Подписка", "callback_data": "cmd_subscription"},
                         {"text": "📋 Главное меню", "callback_data": "show_main_menu"}
                     ]
                 ]
@@ -613,6 +615,48 @@ class SimpleTelegramBot:
                 await self.send_message(chat_id, "🔕 Вы отписались от уведомлений")
             else:
                 await self.send_message(chat_id, "❌ Вы не были подписаны на уведомления")
+                
+        elif command.startswith("/activate_subscription"):
+            # Команда для администратора
+            if user_id != self.monitoring_controller.get_admin_user_id():
+                await self.send_message(chat_id, "🤖 Неизвестная команда. Используйте /help для справки.")
+                return
+            
+            try:
+                parts = command.split()
+                if len(parts) != 2:
+                    await self.send_message(chat_id, "❌ Использование: /activate_subscription USER_ID")
+                    return
+                
+                target_user_id = int(parts[1])
+                success = await subscription_manager.activate_subscription(target_user_id)
+                
+                if success:
+                    await self.send_message(chat_id, f"✅ Подписка активирована для пользователя {target_user_id}")
+                    await self.send_message(target_user_id, "🎉 Ваша премиум подписка активирована! Теперь вы получаете безлимитные сигналы арбитража.")
+                else:
+                    await self.send_message(chat_id, f"❌ Ошибка активации подписки для пользователя {target_user_id}")
+                    
+            except ValueError:
+                await self.send_message(chat_id, "❌ Неверный формат USER_ID")
+            except Exception as e:
+                await self.send_message(chat_id, f"❌ Ошибка: {e}")
+                
+        elif command.startswith("/subscription_status"):
+            # Проверить статус подписки
+            try:
+                is_active = await subscription_manager.is_subscription_active(user_id)
+                remaining_signals = await subscription_manager.get_remaining_signals(user_id)
+                
+                if is_active:
+                    status_message = "💎 **Премиум подписка активна**\n\n✅ Безлимитные сигналы арбитража"
+                else:
+                    status_message = f"📊 **Бесплатный тариф**\n\n🔢 Осталось сигналов: {remaining_signals}/50"
+                
+                await self.send_message(chat_id, status_message)
+                
+            except Exception as e:
+                await self.send_message(chat_id, f"❌ Ошибка проверки статуса: {e}")
         # Обработка сообщений поддержки
         elif not command.startswith("/") and user_id not in self.subscribers:
             # Если это сообщение поддержки (не команда и пользователь не подписан)
@@ -658,6 +702,10 @@ class SimpleTelegramBot:
             source_name = self.data_sources.sources[source_key]["name"]
             await self.answer_callback_query(callback_query_id, f"Отмена для {source_name}")
             await self.send_message(chat_id, f"❌ Перезапуск {source_name} отменен")
+            
+        # Обработка подписки
+        elif callback_data in ["subscription_interested", "subscription_not_interested", "subscription_payment_sent"]:
+            await self._handle_subscription_callback(callback_query, callback_data)
             
         # Обработка настроек пользователя
         elif callback_data == "settings_back":
@@ -827,6 +875,54 @@ class SimpleTelegramBot:
         elif callback_data == "cmd_support":
             await self.handle_command(chat_id, "/support", user_id)
             await self.answer_callback_query(callback_query_id, "Поддержка")
+            
+        elif callback_data == "cmd_subscription":
+            try:
+                is_active = await subscription_manager.is_subscription_active(user_id)
+                remaining_signals = await subscription_manager.get_remaining_signals(user_id)
+                
+                if is_active:
+                    subscription_text = """💎 **Премиум подписка**
+
+✅ **Статус:** Активна
+🚀 **Сигналы:** Безлимитно
+⭐ **Приоритет:** Высокий
+🎯 **Поддержка:** Персональная
+
+Вы получаете максимум возможностей бота!"""
+                else:
+                    subscription_text = f"""📊 **Текущий тариф: Бесплатный**
+
+🔢 **Осталось сигналов:** {remaining_signals}/50
+⚠️ **Ограничения:** До 50 сигналов
+🎯 **Поддержка:** Базовая
+
+💎 **Премиум подписка:**
+• Безлимитные сигналы
+• Приоритетный доступ
+• Расширенная аналитика
+• Персональная поддержка
+
+💰 **Стоимость:** 10 USDT/месяц"""
+
+                keyboard = {
+                    "inline_keyboard": []
+                }
+                
+                if not is_active:
+                    keyboard["inline_keyboard"].append([
+                        {"text": "💎 Оформить подписку", "callback_data": "subscription_interested"}
+                    ])
+                
+                keyboard["inline_keyboard"].append([
+                    {"text": "🔙 Назад", "callback_data": "settings_back"}
+                ])
+                
+                await self.edit_message_text(chat_id, callback_query["message"]["message_id"], subscription_text, keyboard)
+                await self.answer_callback_query(callback_query_id, "Информация о подписке")
+                
+            except Exception as e:
+                await self.answer_callback_query(callback_query_id, "Ошибка загрузки информации о подписке")
             
         # Обработчики для настройки инструментов
         elif callback_data == "settings_instruments":
@@ -1221,11 +1317,22 @@ class SimpleTelegramBot:
                 if signal.spread_percent >= user_settings.spread_threshold:
                     target_users.append(subscriber_id)
         
-        # Отправляем указанным пользователям
+        # Отправляем указанным пользователям с проверкой лимитов
         failed_subscribers = []
         for subscriber_id in target_users:
+            # Проверяем лимит сигналов перед отправкой
+            can_send = await subscription_manager.check_signal_limit(subscriber_id)
+            
+            if not can_send:
+                # Лимит исчерпан - отправляем предложение подписки
+                await self._send_subscription_offer(subscriber_id)
+                continue
+            
             success = await self.send_message(subscriber_id, message)
-            if not success:
+            if success:
+                # Увеличиваем счетчик отправленных сигналов
+                await subscription_manager.increment_signal_count(subscriber_id)
+            else:
                 failed_subscribers.append(subscriber_id)
         
         # Удаляем неактивных подписчиков
@@ -1678,6 +1785,93 @@ class SimpleTelegramBot:
         
         tv_symbol = tv_mapping.get(ticker, f"MOEX:{ticker}")
         return f"https://www.tradingview.com/chart/?symbol={tv_symbol}"
+
+    async def _send_subscription_offer(self, user_id: int):
+        """Отправить предложение подписки пользователю"""
+        try:
+            remaining = await subscription_manager.get_remaining_signals(user_id)
+            
+            offer_message = subscription_manager.get_subscription_offer_message()
+            
+            keyboard = {
+                "inline_keyboard": [
+                    [
+                        {"text": "✅ Да, интересно", "callback_data": "subscription_interested"},
+                        {"text": "❌ Нет, не интересно", "callback_data": "subscription_not_interested"}
+                    ]
+                ]
+            }
+            
+            await self.send_message_with_keyboard(user_id, offer_message, keyboard)
+            
+        except Exception as e:
+            logger.error(f"Ошибка отправки предложения подписки пользователю {user_id}: {e}")
+
+    async def _handle_subscription_callback(self, callback_query: Dict, callback_data: str):
+        """Обработка коллбеков связанных с подпиской"""
+        user_id = callback_query["from"]["id"]
+        callback_query_id = callback_query["id"]
+        chat_id = callback_query["message"]["chat"]["id"]
+        
+        if callback_data == "subscription_interested":
+            # Показываем инструкции по оплате
+            payment_message = subscription_manager.get_payment_instructions()
+            
+            keyboard = {
+                "inline_keyboard": [
+                    [{"text": "📷 Отправил скриншот", "callback_data": "subscription_payment_sent"}],
+                    [{"text": "🔙 Назад", "callback_data": "show_main_menu"}]
+                ]
+            }
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], payment_message, keyboard)
+            await self.answer_callback_query(callback_query_id, "💳 Инструкции по оплате отправлены")
+            
+            # Уведомляем админа о потенциальном платеже
+            admin_id = self.monitoring_controller.get_admin_user_id()
+            if admin_id:
+                admin_message = f"""🔔 **Новый интерес к подписке**
+
+👤 Пользователь: {user_id}
+💰 Запросил инструкции по оплате
+📋 Ожидает активацию подписки
+
+Следите за поступлением USDT на кошелек."""
+                await self.send_message(admin_id, admin_message)
+                
+        elif callback_data == "subscription_not_interested":
+            await self.answer_callback_query(callback_query_id, "Понятно. Вы можете изменить решение в любое время")
+            
+        elif callback_data == "subscription_payment_sent":
+            # Пользователь отправил скриншот
+            admin_id = self.monitoring_controller.get_admin_user_id()
+            if admin_id:
+                admin_message = f"""💰 **Требуется проверка платежа**
+
+👤 Пользователь: {user_id}
+📷 Утверждает что отправил скриншот оплаты
+💎 Сумма: 10 USDT (TRC-20)
+
+🔍 **Действия:**
+• Проверьте поступление средств на кошелек
+• Если оплата подтверждена - активируйте подписку командой:
+  `/activate_subscription {user_id}`
+
+⚠️ Если платеж не найден - свяжитесь с пользователем"""
+                await self.send_message(admin_id, admin_message)
+            
+            await self.answer_callback_query(callback_query_id, "✅ Запрос отправлен администратору")
+            
+            # Уведомляем пользователя
+            confirmation_message = """📋 **Заявка принята**
+
+✅ Ваш запрос отправлен администратору
+🔍 Платеж будет проверен в течение 1 часа
+🎯 После подтверждения подписка активируется автоматически
+
+💬 При возникновении вопросов обращайтесь: @Ildaryakupovv"""
+            
+            await self.edit_message_text(chat_id, callback_query["message"]["message_id"], confirmation_message)
 
 async def main():
     """Точка входа"""

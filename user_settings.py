@@ -48,7 +48,7 @@ class UserSettings:
     
     def get_spread_display(self) -> str:
         """Получить текстовое представление порога спреда"""
-        return self.AVAILABLE_SPREADS.get(self.spread_threshold, f"{self.spread_threshold}%")
+        return self.AVAILABLE_SPREADS.get(self.spread_threshold, f"{self.spread_threshold:.2f}%")
     
     def is_fast_monitoring(self) -> bool:
         """Проверить, используется ли быстрый мониторинг (требует ротации источников)"""

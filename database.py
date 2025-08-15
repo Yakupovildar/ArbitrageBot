@@ -19,6 +19,11 @@ class UserSettings:
     selected_instruments: str = "[]"  # JSON строка с выбранными инструментами
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    signals_sent: int = 0  # количество отправленных сигналов
+    subscription_active: bool = False  # активна ли подписка
+    subscription_start: Optional[datetime] = None  # начало подписки
+    subscription_end: Optional[datetime] = None  # конец подписки
+    subscription_crypto_address: str = "TRBpnm6z8UNGXaMfLa6ZPWZ7RXUAkHCxWQ"
 
 class Database:
     """Класс для работы с базой данных"""
@@ -64,20 +69,35 @@ class Database:
                     is_monitoring BOOLEAN DEFAULT FALSE,
                     selected_instruments TEXT DEFAULT '[]',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    signals_sent INTEGER DEFAULT 0,
+                    subscription_active BOOLEAN DEFAULT FALSE,
+                    subscription_start TIMESTAMP NULL,
+                    subscription_end TIMESTAMP NULL,
+                    subscription_crypto_address TEXT DEFAULT 'TRBpnm6z8UNGXaMfLa6ZPWZ7RXUAkHCxWQ'
                 )
             """)
             
-            # Добавляем колонку selected_instruments к существующей таблице если её нет
-            try:
-                await conn.execute("""
-                    ALTER TABLE user_settings 
-                    ADD COLUMN selected_instruments TEXT DEFAULT '[]'
-                """)
-                logger.info("✅ Добавлена колонка selected_instruments")
-            except Exception:
-                # Колонка уже существует
-                pass
+            # Добавляем новые колонки к существующей таблице если их нет
+            columns_to_add = [
+                ("selected_instruments", "TEXT DEFAULT '[]'"),
+                ("signals_sent", "INTEGER DEFAULT 0"),
+                ("subscription_active", "BOOLEAN DEFAULT FALSE"),
+                ("subscription_start", "TIMESTAMP NULL"),
+                ("subscription_end", "TIMESTAMP NULL"),
+                ("subscription_crypto_address", "TEXT DEFAULT 'TRBpnm6z8UNGXaMfLa6ZPWZ7RXUAkHCxWQ'")
+            ]
+            
+            for column_name, column_definition in columns_to_add:
+                try:
+                    await conn.execute(f"""
+                        ALTER TABLE user_settings 
+                        ADD COLUMN {column_name} {column_definition}
+                    """)
+                    logger.info(f"✅ Добавлена колонка {column_name}")
+                except Exception:
+                    # Колонка уже существует
+                    pass
             
             # Таблица состояния источников данных
             await conn.execute("""
