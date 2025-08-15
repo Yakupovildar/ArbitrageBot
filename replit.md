@@ -4,19 +4,19 @@
 
 **Version 0.1.7** - The MOEX Arbitrage Bot with COMPLETE individual conversion system for each futures contract. 19 active trading pairs with verified coefficients ensuring spreads ≤30%. Contract-based (÷10, ÷2), point-based (÷100), ruble-based, and special conversion methods. Problematic pairs systematically identified and blocked. Features sector-based interface with 15 economic sectors and professional company classification.
 
-## Recent Changes (v0.1.7)
+## Recent Changes (v0.1.8)
 
-- **COMPLETE CONVERSION SYSTEM**: Individual coefficients for each futures contract verified through systematic testing
-- **19 ACTIVE PAIRS**: Contract-based (÷10, ÷2), point-based (÷100), ruble-based, and special coefficients
-- **STRICT VALIDATION**: All active pairs maintain spreads ≤30% - no exceptions allowed
-- **PROBLEM PAIRS BLOCKED**: Pairs with data issues or impossible conversions properly excluded
-- **SYSTEMATIC APPROACH**: Each pair tested with multiple conversion methods to find optimal coefficient
+- **PRODUCTION DEPLOYMENT FIXED**: Bot successfully deployed to Reserved VM hosting, resolved 409 API conflicts
+- **SUBSCRIPTION SYSTEM OVERHAUL**: Fixed misleading status display, added proper subscription interface with payment flow
+- **ADMIN SECURITY ENHANCED**: Admin commands now properly protected, accessible only via /admin command for authorized users
+- **UI/UX IMPROVEMENTS**: Updated demo signals with current format, removed technical commands from public support
+- **SUBSCRIPTION INTERFACE**: Added subscription button to main menu, proper status checking, payment instructions
 
 ## Versioning System
 
-- **Current Version**: 0.0.1 (Ready for hosting deployment)
-- **Version Storage**: All versions saved in `versions/` directory
-- **Next Version**: 0.0.2 (will be created on next deployment)
+- **Current Version**: 0.1.8 (Production deployment active on Reserved VM)
+- **Production Status**: Bot running 24/7 on Replit hosting with automatic scaling
+- **Deployment**: Reserved VM at ~$7-15/month covered by user's $25 Core credits
 - **Version History**: Tracked in `version_history.md`
 
 ## User Preferences

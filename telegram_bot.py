@@ -360,7 +360,7 @@ class SimpleTelegramBot:
 🔌 MOEX API: ✅ Доступен
 📈 Ваш мониторинг: {"✅ Активен" if user_monitoring else "❌ Остановлен"}
 👥 Всего активных пользователей: {self.monitoring_controller.get_active_users_count()}
-🔔 Ваша подписка: {"✅ Активна" if user_id in self.subscribers else "❌ Отключена"}
+🔔 Уведомления: {"✅ Включены" if user_id in self.subscribers else "❌ Отключены"}
 📋 Открытых позиций: {len(self.calculator.open_positions)}
 ⏰ Интервал: 5-7 мин (рандомизированный)
 
@@ -577,7 +577,7 @@ class SimpleTelegramBot:
             await self.send_message_with_keyboard(chat_id, welcome_text, main_menu_keyboard)
             
         elif command.startswith("/check_sources"):
-            # Проверяем, является ли пользователь администратором
+            # АДМИН команда - проверяем, является ли пользователь администратором
             if user_id != self.monitoring_controller.get_admin_user_id():
                 await self.send_message(chat_id, "🤖 Неизвестная команда. Используйте /help для справки.")
                 return
@@ -653,6 +653,43 @@ class SimpleTelegramBot:
                 
             except Exception as e:
                 await self.send_message(chat_id, f"❌ Ошибка проверки статуса: {e}")
+                
+        elif command.startswith("/admin"):
+            # АДМИН КОМАНДЫ - только для администратора
+            if user_id != self.monitoring_controller.get_admin_user_id():
+                await self.send_message(chat_id, "🤖 Неизвестная команда. Используйте /help для справки.")
+                return
+                
+            admin_help = """🛠 **ПАНЕЛЬ АДМИНИСТРАТОРА**
+
+📋 **Управление подписками:**
+• /activate_subscription USER_ID - активировать подписку
+• /subscription_status - проверить статус подписки
+
+📊 **Мониторинг системы:**
+• /check_sources - проверить источники данных
+• /reconnect_stats - статистика переподключений
+
+👥 **Пользователи:**
+• Всего активных: {active_users}
+• Всего подписчиков: {subscribers}
+
+💡 **Как использовать:**
+1. Получите USER_ID из уведомления о платеже
+2. Выполните /activate_subscription USER_ID
+3. Пользователь получит безлимитные сигналы
+
+🔒 **Безопасность:** Только вы можете использовать эти команды."""
+            
+            active_users = self.monitoring_controller.get_active_users_count()
+            subscribers_count = len(self.subscribers)
+            
+            formatted_help = admin_help.format(
+                active_users=active_users,
+                subscribers=subscribers_count
+            )
+            
+            await self.send_message(chat_id, formatted_help)
         # Обработка сообщений поддержки
         elif not command.startswith("/") and user_id not in self.subscribers:
             # Если это сообщение поддержки (не команда и пользователь не подписан)
@@ -1003,6 +1040,9 @@ class SimpleTelegramBot:
                     [
                         {"text": "🎯 Демо", "callback_data": "cmd_demo"},
                         {"text": "🆘 Поддержка", "callback_data": "cmd_support"}
+                    ],
+                    [
+                        {"text": "💎 Подписка", "callback_data": "cmd_subscription"}
                     ]
                 ]
             }
