@@ -91,23 +91,17 @@ class PairStatusManager:
         return self.pair_statuses
     
     async def validate_all_pairs_fast(self) -> Dict[str, PairInfo]:
-        """СУПЕР БЫСТРАЯ пакетная валидация всех торговых пар"""
-        logger.info("🚀 СУПЕР БЫСТРАЯ пакетная валидация (один запрос для всех пар)")
+        """БЫСТРАЯ валидация всех торговых пар (индивидуальные запросы)"""
+        logger.info("🚀 БЫСТРАЯ валидация торговых пар (индивидуальные запросы)")
         
         async with MOEXAPIClient() as api:
-            # СУПЕР БЫСТРАЯ валидация: получаем все котировки одним пакетным запросом
-            logger.info("📦 Пакетный запрос всех котировок...")
-            all_quotes = await api.get_multiple_quotes(self.config.MONITORED_INSTRUMENTS)
-            
             for stock_ticker, futures_ticker in self.config.MONITORED_INSTRUMENTS.items():
                 try:
-                    logger.info(f"⚡ Проверяю пару {stock_ticker}/{futures_ticker}...")
+                    logger.info(f"Проверяю пару {stock_ticker}/{futures_ticker}...")
                     
-                    # Получаем цены из пакетного результата (мгновенно)
-                    if stock_ticker in all_quotes:
-                        stock_price, futures_price = all_quotes[stock_ticker]
-                    else:
-                        stock_price, futures_price = None, None
+                    # Получаем цены по отдельности для каждой пары
+                    stock_price = await api.get_stock_price(stock_ticker)
+                    futures_price = await api.get_futures_price(futures_ticker)
                     
                     if not stock_price:
                         self._mark_unavailable(stock_ticker, futures_ticker, f"Акция {stock_ticker}: нет данных о ценах")
