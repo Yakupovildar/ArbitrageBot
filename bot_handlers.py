@@ -134,8 +134,9 @@ class BotHandlers:
             status_message += f"🔔 Ваша подписка: {subscription_status}\n"
             
             # Открытые позиции
-            open_positions_count = len(self.calculator.open_positions)
-            status_message += f"📋 Открытых позиций: {open_positions_count}\n"
+            # Убираем отображение позиций как запрошено
+            # open_positions_count = len(self.calculator.open_positions)
+            # status_message += f"📋 Открытых позиций: {open_positions_count}\n"
             
             # Количество подписчиков (для админов)
             if self.config.is_admin(user_id):

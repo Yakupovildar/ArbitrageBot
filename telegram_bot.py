@@ -1090,8 +1090,6 @@ class SimpleTelegramBot:
         elif callback_data == "cmd_subscription":
             try:
                 is_active = await subscription_manager.is_subscription_active(user_id)
-                remaining_signals = await subscription_manager.get_remaining_signals(user_id)
-                
                 is_trial = await subscription_manager.is_trial_active(user_id)
                 
                 if is_active:
@@ -2023,8 +2021,6 @@ class SimpleTelegramBot:
     async def _send_subscription_offer(self, user_id: int):
         """Отправить предложение подписки пользователю"""
         try:
-            remaining = await subscription_manager.get_remaining_signals(user_id)
-            
             offer_message = subscription_manager.get_subscription_offer_message()
             
             keyboard = {
