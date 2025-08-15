@@ -316,8 +316,6 @@ class MOEXAPIClient:
             converted_price = price / 100
             logger.debug(f"Конверсия {ticker}: {price} пунктов / 100 = {converted_price}₽/акция (по умолчанию)")
         
-        logger.debug(f"Конверсия {ticker}: {price}₽ контракт / {contract_size} акций = {converted_price}₽/акция")
-        
         return converted_price
     
     async def get_instrument_info(self, ticker: str, instrument_type: str) -> Optional[Dict]:
