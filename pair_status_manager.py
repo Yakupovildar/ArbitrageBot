@@ -95,7 +95,7 @@ class PairStatusManager:
         logger.info("🚀 БЫСТРАЯ валидация торговых пар (без задержек)")
         
         async with MOEXAPIClient() as api:
-            for pair_key, (stock_ticker, futures_ticker) in self.config.MONITORED_INSTRUMENTS.items():
+            for stock_ticker, futures_ticker in self.config.MONITORED_INSTRUMENTS.items():
                 try:
                     logger.info(f"Проверяю пару {stock_ticker}/{futures_ticker}...")
                     
