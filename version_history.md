@@ -1,5 +1,19 @@
 # MOEX Arbitrage Bot - Version History
 
+## Version 0.1.0 (2025-08-15)
+
+### Beautiful Sector-Based Interface
+- 🎯 **SECTOR CLASSIFICATION**: All 56+ trading pairs organized into 15 economic sectors
+- 🏦 **VISUAL ORGANIZATION**: Banks, Oil&Gas, Metals, Tech, Retail, Telecom sectors
+- 📊 **SMART FILTERING**: Only available pairs shown in each sector interface
+- 🔍 **DETAILED INFO**: Company descriptions and sector statistics
+
+### Enhanced User Experience  
+- Beautiful sector-based pair selection replaces old interface
+- Real-time filtering of blocked/unavailable pairs per sector
+- Mass selection operations (select all sector pairs)
+- Comprehensive sector statistics and company information
+
 ## Version 0.0.9 (2025-08-15)
 
 ### Immediate Bot Launch & User Protection
@@ -7,11 +21,6 @@
 - 🛡️ **UI Restrictions**: Blocked/unavailable pairs hidden from user selection
 - 🚀 **10x FASTER**: Removed delays in pair checking (30 sec vs 10+ min for all pairs)
 - 📊 **Smart Blocking**: Raised threshold to 100% - only critical spreads blocked
-
-### User Experience Improvements
-- Bot responds to users immediately while validation happens in background
-- Filtered pair selection prevents users from choosing problematic instruments
-- Background validation every 6 hours instead of blocking startup
 
 ## Version 0.0.8 (2025-08-15)
 

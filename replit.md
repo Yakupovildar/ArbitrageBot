@@ -2,15 +2,15 @@
 
 ## Overview
 
-**Version 0.0.9** - The MOEX Arbitrage Bot features instant startup with background pair validation, user-friendly interface restrictions, and optimized performance. Users can immediately access trading signals while the system validates pairs in the background. The bot correctly converts MOEX futures prices from points (1 point = 1 kopeck) to rubles and protects users from selecting problematic trading pairs through intelligent UI filtering.
+**Version 0.1.0** - The MOEX Arbitrage Bot features a beautiful sector-based interface with all 56+ trading pairs organized into 15 economic sectors (Banks, Oil&Gas, Metals, Tech, etc.). Users can browse and select trading pairs by industry sector with real-time filtering of available instruments. The system automatically hides blocked pairs and provides detailed company information and sector statistics.
 
-## Recent Changes (v0.0.9)
+## Recent Changes (v0.1.0)
 
-- **Instant Bot Launch**: Bot starts immediately while pair validation runs in background (non-blocking)
-- **User Protection**: Blocked and unavailable pairs automatically hidden from user interface
-- **10x Speed Improvement**: Pair validation now takes 30 seconds instead of 10+ minutes
-- **Smart Thresholds**: Only critical spreads >100% are blocked, allowing more trading opportunities
-- **Background Processing**: Validation runs every 6 hours without interrupting user experience
+- **Sector-Based Interface**: All trading pairs organized into 15 economic sectors for easy navigation
+- **Visual Organization**: Banks, Oil&Gas, Metals, Technology, Retail, Telecom and other sector groupings
+- **Smart Filtering**: Only available trading pairs displayed in each sector, blocked pairs automatically hidden
+- **Enhanced UX**: Company descriptions, sector statistics, and mass selection operations
+- **Professional Classification**: Comprehensive mapping of Russian companies to appropriate economic sectors
 
 ## Versioning System
 
