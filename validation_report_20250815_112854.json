@@ -1,0 +1,305 @@
+{
+  "timestamp": "2025-08-15T11:28:54.274298",
+  "total_pairs": 33,
+  "valid_pairs": 33,
+  "invalid_pairs": 0,
+  "results": {
+    "SBER_SBERF": {
+      "stock_ticker": "SBER",
+      "futures_ticker": "SBERF",
+      "is_valid": true,
+      "stock_price": 318.73,
+      "futures_price": 318.97,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:41.834804"
+    },
+    "GAZP_GAZPF": {
+      "stock_ticker": "GAZP",
+      "futures_ticker": "GAZPF",
+      "is_valid": true,
+      "stock_price": 140.26,
+      "futures_price": 139.52,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:42.193915"
+    },
+    "LKOH_LKZ5": {
+      "stock_ticker": "LKOH",
+      "futures_ticker": "LKZ5",
+      "is_valid": true,
+      "stock_price": 6387.0,
+      "futures_price": 6349.306930693069,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:42.553998"
+    },
+    "GMKN_GKZ5": {
+      "stock_ticker": "GMKN",
+      "futures_ticker": "GKZ5",
+      "is_valid": true,
+      "stock_price": 131.46,
+      "futures_price": 129.34579439252337,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:42.911082"
+    },
+    "VTBR_VBZ5": {
+      "stock_ticker": "VTBR",
+      "futures_ticker": "VBZ5",
+      "is_valid": true,
+      "stock_price": 80.28,
+      "futures_price": 79.5774647887324,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:43.270401"
+    },
+    "ROSN_RNZ5": {
+      "stock_ticker": "ROSN",
+      "futures_ticker": "RNZ5",
+      "is_valid": true,
+      "stock_price": 474.75,
+      "futures_price": 468.54460093896716,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:43.627496"
+    },
+    "TATN_TNZ5": {
+      "stock_ticker": "TATN",
+      "futures_ticker": "TNZ5",
+      "is_valid": true,
+      "stock_price": 721.6,
+      "futures_price": 705.0,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:43.985599"
+    },
+    "ALRS_ALZ5": {
+      "stock_ticker": "ALRS",
+      "futures_ticker": "ALZ5",
+      "is_valid": true,
+      "stock_price": 48.76,
+      "futures_price": 48.40996168582375,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:44.356019"
+    },
+    "ABIO_ISZ5": {
+      "stock_ticker": "ABIO",
+      "futures_ticker": "ISZ5",
+      "is_valid": true,
+      "stock_price": 78.46,
+      "futures_price": 8.38,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:45.060741"
+    },
+    "AFKS_AKZ5": {
+      "stock_ticker": "AFKS",
+      "futures_ticker": "AKZ5",
+      "is_valid": true,
+      "stock_price": 16.595,
+      "futures_price": 174.62,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:45.431889"
+    },
+    "AFLT_AFZ5": {
+      "stock_ticker": "AFLT",
+      "futures_ticker": "AFZ5",
+      "is_valid": true,
+      "stock_price": 68.28,
+      "futures_price": 71.55,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:45.805659"
+    },
+    "AKRN_ANZ5": {
+      "stock_ticker": "AKRN",
+      "futures_ticker": "ANZ5",
+      "is_valid": true,
+      "stock_price": 16176.0,
+      "futures_price": 26.72,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:46.165789"
+    },
+    "BANE_BNZ5": {
+      "stock_ticker": "BANE",
+      "futures_ticker": "BNZ5",
+      "is_valid": true,
+      "stock_price": 1800.0,
+      "futures_price": 18.72,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:46.524836"
+    },
+    "BSPB_BSZ5": {
+      "stock_ticker": "BSPB",
+      "futures_ticker": "BSZ5",
+      "is_valid": true,
+      "stock_price": 410.82,
+      "futures_price": 40.74,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:46.888696"
+    },
+    "CBOM_CMZ5": {
+      "stock_ticker": "CBOM",
+      "futures_ticker": "CMZ5",
+      "is_valid": true,
+      "stock_price": 8.184,
+      "futures_price": 86.07,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:47.250567"
+    },
+    "CHMF_CHZ5": {
+      "stock_ticker": "CHMF",
+      "futures_ticker": "CHZ5",
+      "is_valid": true,
+      "stock_price": 1118.0,
+      "futures_price": 1175.46,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:47.608971"
+    },
+    "ETLN_ETZ5": {
+      "stock_ticker": "ETLN",
+      "futures_ticker": "ETZ5",
+      "is_valid": true,
+      "stock_price": 58.0,
+      "futures_price": 0.3779,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:48.419378"
+    },
+    "FEES_FSZ5": {
+      "stock_ticker": "FEES",
+      "futures_ticker": "FSZ5",
+      "is_valid": true,
+      "stock_price": 0.07372,
+      "futures_price": 77.7,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:48.781501"
+    },
+    "FLOT_FLZ5": {
+      "stock_ticker": "FLOT",
+      "futures_ticker": "FLZ5",
+      "is_valid": true,
+      "stock_price": 90.46,
+      "futures_price": 95.0,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:49.147524"
+    },
+    "HYDR_HYZ5": {
+      "stock_ticker": "HYDR",
+      "futures_ticker": "HYZ5",
+      "is_valid": true,
+      "stock_price": 0.4624,
+      "futures_price": 49.08,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:49.505305"
+    },
+    "IRAO_IRZ5": {
+      "stock_ticker": "IRAO",
+      "futures_ticker": "IRZ5",
+      "is_valid": true,
+      "stock_price": 3.292,
+      "futures_price": 345.22,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:49.867593"
+    },
+    "KMAZ_KMZ5": {
+      "stock_ticker": "KMAZ",
+      "futures_ticker": "KMZ5",
+      "is_valid": true,
+      "stock_price": 95.4,
+      "futures_price": 10.04,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:50.227235"
+    },
+    "MAGN_MAZ5": {
+      "stock_ticker": "MAGN",
+      "futures_ticker": "MAZ5",
+      "is_valid": true,
+      "stock_price": 36.145,
+      "futures_price": 69.65,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:50.606097"
+    },
+    "MGNT_MGZ5": {
+      "stock_ticker": "MGNT",
+      "futures_ticker": "MGZ5",
+      "is_valid": true,
+      "stock_price": 3801.5,
+      "futures_price": 372.12,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:50.965734"
+    },
+    "MOEX_MEZ5": {
+      "stock_ticker": "MOEX",
+      "futures_ticker": "MEZ5",
+      "is_valid": true,
+      "stock_price": 186.73,
+      "futures_price": 197.81,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:51.322630"
+    },
+    "MTSS_MTZ5": {
+      "stock_ticker": "MTSS",
+      "futures_ticker": "MTZ5",
+      "is_valid": true,
+      "stock_price": 222.75,
+      "futures_price": 235.24,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:51.682373"
+    },
+    "NKNC_NKZ5": {
+      "stock_ticker": "NKNC",
+      "futures_ticker": "NKZ5",
+      "is_valid": true,
+      "stock_price": 88.05,
+      "futures_price": 1293.73,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:52.042206"
+    },
+    "PHOR_PHZ5": {
+      "stock_ticker": "PHOR",
+      "futures_ticker": "PHZ5",
+      "is_valid": true,
+      "stock_price": 7018.0,
+      "futures_price": 70.84,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:52.399537"
+    },
+    "RASP_RAZ5": {
+      "stock_ticker": "RASP",
+      "futures_ticker": "RAZ5",
+      "is_valid": true,
+      "stock_price": 227.1,
+      "futures_price": 24.12,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:52.761730"
+    },
+    "RTKM_RTZ5": {
+      "stock_ticker": "RTKM",
+      "futures_ticker": "RTZ5",
+      "is_valid": true,
+      "stock_price": 69.4,
+      "futures_price": 73.64,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:53.122449"
+    },
+    "RUAL_RUZ5": {
+      "stock_ticker": "RUAL",
+      "futures_ticker": "RUZ5",
+      "is_valid": true,
+      "stock_price": 36.49,
+      "futures_price": 13.8,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:53.525690"
+    },
+    "SGZH_SZZ5": {
+      "stock_ticker": "SGZH",
+      "futures_ticker": "SZZ5",
+      "is_valid": true,
+      "stock_price": 1.609,
+      "futures_price": 16.85,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:53.907432"
+    },
+    "SNGS_SNZ5": {
+      "stock_ticker": "SNGS",
+      "futures_ticker": "SNZ5",
+      "is_valid": true,
+      "stock_price": 23.85,
+      "futures_price": 249.94,
+      "error_message": "",
+      "checked_at": "2025-08-15T11:28:54.273818"
+    }
+  }
+}
