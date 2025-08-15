@@ -758,6 +758,31 @@ class SimpleTelegramBot:
             await self.edit_message_text(chat_id, callback_query["message"]["message_id"], message, keyboard)
             await self.answer_callback_query(callback_query_id, "Количество сигналов")
             
+        elif callback_data.startswith("instrument_") and not callback_data.startswith("instrument_add_") and not callback_data.startswith("instrument_remove_"):
+            # Простая обработка выбора/отмены выбора инструмента
+            parts = callback_data.split("_", 2)
+            if len(parts) == 3:
+                _, action, instrument = parts
+                
+                if action == "add":
+                    if self.user_settings.add_user_instrument(user_id, instrument):
+                        await self.answer_callback_query(callback_query_id, f"✅ Добавлен {instrument}")
+                        # Сохраняем в базу данных
+                        await self._save_user_settings_to_db(user_id)
+                    else:
+                        await self.answer_callback_query(callback_query_id, f"❌ Лимит 10 пар")
+                elif action == "remove":
+                    if self.user_settings.remove_user_instrument(user_id, instrument):
+                        await self.answer_callback_query(callback_query_id, f"❌ Удален {instrument}")
+                        # Сохраняем в базу данных
+                        await self._save_user_settings_to_db(user_id)
+                    else:
+                        await self.answer_callback_query(callback_query_id, f"❌ Ошибка")
+                        
+                # НЕ обновляем сообщение автоматически - пользователь может продолжить выбор
+            else:
+                await self.answer_callback_query(callback_query_id, "Ошибка формата")
+                
         elif callback_data.startswith("interval_"):
             interval = int(callback_data.replace("interval_", ""))
             if self.user_settings.update_monitoring_interval(user_id, interval):
@@ -886,29 +911,57 @@ class SimpleTelegramBot:
                 sector_pairs = sectors.get(sector_name, {})
                 
                 if sector_pairs:
-                    message = f"📊 **{sector_name.upper()}**\n\n"
-                    message += f"Доступно пар: {len(sector_pairs)}\n\n"
+                    # Получаем выбранные пользователем инструменты
+                    user_settings = self.user_settings.get_user_settings(user_id)
                     
-                    for i, (stock, futures) in enumerate(list(sector_pairs.items())[:15], 1):
+                    message = f"📊 **{sector_name.upper()}**\n\n"
+                    message += f"Доступно пар: {len(sector_pairs)}\n"
+                    message += f"Выбрано: {len([s for s in user_settings.selected_instruments if s in sector_pairs])}/{len(sector_pairs)}\n\n"
+                    
+                    # Создаем клавиатуру с кнопками выбора для каждой пары
+                    keyboard_rows = []
+                    
+                    for stock, futures in list(sector_pairs.items())[:10]:  # Показываем до 10 пар
                         # Проверяем статус пары
                         pair_key = f"{stock}/{futures}"
                         if pair_key in ui_restrictions.status_manager.active_pairs:
                             status_emoji = "✅"
                         elif pair_key in ui_restrictions.status_manager.blocked_pairs:
                             status_emoji = "🚫"
+                            continue  # Пропускаем заблокированные пары
                         else:
                             status_emoji = "❓"
                         
-                        message += f"{i}. {status_emoji} {stock} → {futures}\n"
+                        # Проверяем выбрана ли пара пользователем
+                        is_selected = stock in user_settings.selected_instruments
+                        select_emoji = "✅" if is_selected else "⭕"
+                        action = "remove" if is_selected else "add"
+                        
+                        keyboard_rows.append([{
+                            "text": f"{select_emoji} {stock} → {futures} {status_emoji}", 
+                            "callback_data": f"instrument_{action}_{stock}"
+                        }])
                     
-                    if len(sector_pairs) > 15:
-                        message += f"\n... и еще {len(sector_pairs) - 15} пар"
+                    # Кнопки управления
+                    keyboard_rows.append([
+                        {"text": "✅ Выбрать все активные", "callback_data": f"sector_select_active_{sector_code}"},
+                        {"text": "❌ Снять все", "callback_data": f"sector_clear_all_{sector_code}"}
+                    ])
+                    keyboard_rows.append([{"text": "🔙 К выбору секторов", "callback_data": "settings_pairs"}])
+                    
+                    keyboard = {"inline_keyboard": keyboard_rows}
+                    
+                    message += "💡 **Как выбрать пары:**\n"
+                    message += "• ⭕ - нажмите чтобы выбрать пару\n"
+                    message += "• ✅ - нажмите чтобы убрать из выбранных\n"
+                    message += "• ✅ - пара работает нормально\n"
+                    message += "• 🚫 - пара заблокирована (не показана)\n"
+                    
                 else:
                     message = f"📊 **{sector_name.upper()}**\n\n❌ Нет доступных пар в этом секторе"
-                
-                keyboard = {"inline_keyboard": [
-                    [{"text": "🔙 К выбору секторов", "callback_data": "settings_pairs"}]
-                ]}
+                    keyboard = {"inline_keyboard": [
+                        [{"text": "🔙 К выбору секторов", "callback_data": "settings_pairs"}]
+                    ]}
             
             await self.edit_message_text(chat_id, callback_query["message"]["message_id"], message, keyboard)
             await self.answer_callback_query(callback_query_id, "Сектор")
