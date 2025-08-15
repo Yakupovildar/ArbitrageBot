@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 class SubscriptionManager:
     """Менеджер подписок пользователей"""
     
-    # Ограничения бесплатного тарифа
-    FREE_TIER_SIGNAL_LIMIT = 50
+    # Настройки пробного периода
+    FREE_TRIAL_DAYS = 7
     
     # Настройки подписки
     SUBSCRIPTION_PRICE_USDT = 10
@@ -29,14 +29,20 @@ class SubscriptionManager:
             # Получаем данные из базы
             user_settings = await db.load_user_settings(user_id)
             if not user_settings:
-                return True  # Новый пользователь
+                # Новый пользователь - активируем 7-дневный пробный период
+                await self.activate_trial_period(user_id)
+                return True
             
             # Если подписка активна - лимита нет
             if await self.is_subscription_active(user_id):
                 return True
             
-            # Проверяем лимит бесплатного тарифа
-            return user_settings.signals_sent < self.FREE_TIER_SIGNAL_LIMIT
+            # Проверяем пробный период
+            if await self.is_trial_active(user_id):
+                return True
+            
+            # Пробный период истек, подписки нет
+            return False
             
         except Exception as e:
             logger.error(f"Ошибка проверки лимита сигналов для {user_id}: {e}")
@@ -80,22 +86,23 @@ class SubscriptionManager:
             logger.error(f"Ошибка проверки подписки для {user_id}: {e}")
             return False
     
-    async def get_remaining_signals(self, user_id: int) -> Optional[int]:
-        """Получить количество оставшихся бесплатных сигналов"""
+    async def get_remaining_trial_days(self, user_id: int) -> Optional[int]:
+        """Получить количество оставшихся дней пробного периода"""
         try:
             if await self.is_subscription_active(user_id):
-                return None  # Без ограничений
+                return None  # Безлимитно
             
             user_settings = await db.load_user_settings(user_id)
-            if not user_settings:
-                return self.FREE_TIER_SIGNAL_LIMIT
+            if not user_settings or not user_settings.trial_end:
+                return self.FREE_TRIAL_DAYS  # Новый пользователь
             
-            remaining = self.FREE_TIER_SIGNAL_LIMIT - user_settings.signals_sent
+            # Вычисляем оставшиеся дни
+            remaining = (user_settings.trial_end - datetime.now()).days
             return max(0, remaining)
             
         except Exception as e:
-            logger.error(f"Ошибка получения оставшихся сигналов для {user_id}: {e}")
-            return self.FREE_TIER_SIGNAL_LIMIT
+            logger.error(f"Ошибка получения оставшихся дней пробного периода для {user_id}: {e}")
+            return self.FREE_TRIAL_DAYS
     
     async def activate_subscription(self, user_id: int, duration_days: int = None) -> bool:
         """Активировать подписку для пользователя"""
@@ -123,6 +130,83 @@ class SubscriptionManager:
         except Exception as e:
             logger.error(f"Ошибка активации подписки для {user_id}: {e}")
             return False
+    
+    async def activate_trial_period(self, user_id: int) -> bool:
+        """Активировать пробный период для нового пользователя"""
+        try:
+            user_settings = await db.load_user_settings(user_id)
+            if not user_settings:
+                user_settings = UserSettings(user_id=user_id)
+            
+            # Проверяем, не был ли пробный период уже активирован
+            if user_settings.trial_end:
+                return False  # Пробный период уже был
+            
+            # Устанавливаем даты пробного периода
+            start_date = datetime.now()
+            end_date = start_date + timedelta(days=self.FREE_TRIAL_DAYS)
+            
+            user_settings.trial_start = start_date
+            user_settings.trial_end = end_date
+            
+            await db.save_user_settings(user_settings)
+            
+            logger.info(f"Пробный период активирован для пользователя {user_id} до {end_date}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Ошибка активации пробного периода для {user_id}: {e}")
+            return False
+    
+    async def is_trial_active(self, user_id: int) -> bool:
+        """Проверить активность пробного периода"""
+        try:
+            user_settings = await db.load_user_settings(user_id)
+            if not user_settings or not user_settings.trial_end:
+                return False
+            
+            # Проверяем срок действия пробного периода
+            return datetime.now() < user_settings.trial_end
+            
+        except Exception as e:
+            logger.error(f"Ошибка проверки пробного периода для {user_id}: {e}")
+            return False
+    
+    def get_subscription_offer_message(self) -> str:
+        """Сообщение с предложением подписки"""
+        return f"""💎 **ПРЕМИУМ ПОДПИСКА**
+
+⏰ **Ваш пробный период истек**
+
+🚀 **Преимущества Premium:**
+• Безлимитные сигналы арбитража
+• Приоритетная поддержка
+• Эксклюзивная аналитика
+• Персональные настройки
+
+💰 **Стоимость:** {self.SUBSCRIPTION_PRICE_USDT} USDT/месяц
+
+🎯 **Интересно?** Мы расскажем как оплатить"""
+    
+    def get_payment_instructions(self) -> str:
+        """Инструкции по оплате подписки"""
+        return f"""💳 **ИНСТРУКЦИИ ПО ОПЛАТЕ**
+
+💰 **Сумма:** {self.SUBSCRIPTION_PRICE_USDT} USDT
+📋 **Сеть:** TRC-20 (Tron)
+🏦 **Адрес:** `{self.CRYPTO_ADDRESS or 'Будет предоставлен'}`
+
+📱 **Как оплатить:**
+1. Откройте кошелек (Trust Wallet, Binance и др.)
+2. Выберите USDT (TRC-20)
+3. Отправьте {self.SUBSCRIPTION_PRICE_USDT} USDT на указанный адрес
+4. Сделайте скриншот транзакции
+5. Нажмите кнопку ниже
+
+⚡ **Активация:** До 2 часов после подтверждения
+🔔 **Поддержка:** Администратор ответит в Telegram
+
+💡 Подписка активируется автоматически после проверки платежа"""
     
     async def deactivate_subscription(self, user_id: int) -> bool:
         """Деактивировать подписку"""

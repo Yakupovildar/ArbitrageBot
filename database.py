@@ -24,6 +24,8 @@ class UserSettings:
     subscription_start: Optional[datetime] = None  # начало подписки
     subscription_end: Optional[datetime] = None  # конец подписки
     subscription_crypto_address: str = ""
+    trial_start: Optional[datetime] = None  # начало пробного периода
+    trial_end: Optional[datetime] = None  # конец пробного периода
 
 class Database:
     """Класс для работы с базой данных"""
@@ -74,7 +76,9 @@ class Database:
                     subscription_active BOOLEAN DEFAULT FALSE,
                     subscription_start TIMESTAMP NULL,
                     subscription_end TIMESTAMP NULL,
-                    subscription_crypto_address TEXT DEFAULT ''
+                    subscription_crypto_address TEXT DEFAULT '',
+                    trial_start TIMESTAMP NULL,
+                    trial_end TIMESTAMP NULL
                 )
             """)
             
@@ -85,7 +89,9 @@ class Database:
                 ("subscription_active", "BOOLEAN DEFAULT FALSE"),
                 ("subscription_start", "TIMESTAMP NULL"),
                 ("subscription_end", "TIMESTAMP NULL"),
-                ("subscription_crypto_address", "TEXT DEFAULT ''")
+                ("subscription_crypto_address", "TEXT DEFAULT ''"),
+                ("trial_start", "TIMESTAMP NULL"),
+                ("trial_end", "TIMESTAMP NULL")
             ]
             
             for column_name, column_definition in columns_to_add:
@@ -130,8 +136,10 @@ class Database:
             async with self.pool.acquire() as conn:
                 await conn.execute("""
                     INSERT INTO user_settings 
-                    (user_id, monitoring_interval, spread_threshold, max_signals, is_monitoring, selected_instruments, updated_at)
-                    VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+                    (user_id, monitoring_interval, spread_threshold, max_signals, is_monitoring, selected_instruments, 
+                     signals_sent, subscription_active, subscription_start, subscription_end, 
+                     subscription_crypto_address, trial_start, trial_end, updated_at)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, CURRENT_TIMESTAMP)
                     ON CONFLICT (user_id) 
                     DO UPDATE SET 
                         monitoring_interval = EXCLUDED.monitoring_interval,
@@ -139,9 +147,18 @@ class Database:
                         max_signals = EXCLUDED.max_signals,
                         is_monitoring = EXCLUDED.is_monitoring,
                         selected_instruments = EXCLUDED.selected_instruments,
+                        signals_sent = EXCLUDED.signals_sent,
+                        subscription_active = EXCLUDED.subscription_active,
+                        subscription_start = EXCLUDED.subscription_start,
+                        subscription_end = EXCLUDED.subscription_end,
+                        subscription_crypto_address = EXCLUDED.subscription_crypto_address,
+                        trial_start = EXCLUDED.trial_start,
+                        trial_end = EXCLUDED.trial_end,
                         updated_at = CURRENT_TIMESTAMP
                 """, settings.user_id, settings.monitoring_interval, 
-                    settings.spread_threshold, settings.max_signals, settings.is_monitoring, settings.selected_instruments)
+                    settings.spread_threshold, settings.max_signals, settings.is_monitoring, settings.selected_instruments,
+                    settings.signals_sent, settings.subscription_active, settings.subscription_start, 
+                    settings.subscription_end, settings.subscription_crypto_address, settings.trial_start, settings.trial_end)
                 
                 logger.info(f"💾 Настройки пользователя {settings.user_id} сохранены")
                 return True
@@ -167,7 +184,14 @@ class Database:
                         is_monitoring=row['is_monitoring'],
                         selected_instruments=row.get('selected_instruments', '[]'),
                         created_at=row['created_at'],
-                        updated_at=row['updated_at']
+                        updated_at=row['updated_at'],
+                        signals_sent=row.get('signals_sent', 0),
+                        subscription_active=row.get('subscription_active', False),
+                        subscription_start=row.get('subscription_start'),
+                        subscription_end=row.get('subscription_end'),
+                        subscription_crypto_address=row.get('subscription_crypto_address', ''),
+                        trial_start=row.get('trial_start'),
+                        trial_end=row.get('trial_end')
                     )
                 else:
                     # Создаем настройки по умолчанию
