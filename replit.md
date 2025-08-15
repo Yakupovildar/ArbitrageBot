@@ -2,15 +2,15 @@
 
 ## Overview
 
-**Version 0.1.1** - The MOEX Arbitrage Bot with CRITICALLY FIXED futures price conversion and complete signal blocking for problematic pairs. Only SBERF/GAZPF trade in rubles, ALL other futures converted from points (0.01 multiplier). System now prevents sending 900%+ spread signals to users through pre-filtering and automatic pair blocking. Features sector-based interface with 15 economic sectors and professional company classification.
+**Version 0.1.7** - The MOEX Arbitrage Bot with COMPLETE individual conversion system for each futures contract. 19 active trading pairs with verified coefficients ensuring spreads ≤30%. Contract-based (÷10, ÷2), point-based (÷100), ruble-based, and special conversion methods. Problematic pairs systematically identified and blocked. Features sector-based interface with 15 economic sectors and professional company classification.
 
-## Recent Changes (v0.1.1)
+## Recent Changes (v0.1.7)
 
-- **CRITICAL FIX**: Corrected futures conversion - only SBERF/GAZPF in rubles, rest in points with 0.01 conversion
-- **Signal Protection**: Complete blocking of signals for pairs with anomalous spreads >100%
-- **Accurate Calculations**: LKZ5 64128 points → 641.28₽ producing normal -90% spread instead of 904%
-- **Emergency Restart**: Immediately stopped incorrect signal delivery to users
-- **User Safety**: Pre-filtering system prevents selection and monitoring of blocked pairs
+- **COMPLETE CONVERSION SYSTEM**: Individual coefficients for each futures contract verified through systematic testing
+- **19 ACTIVE PAIRS**: Contract-based (÷10, ÷2), point-based (÷100), ruble-based, and special coefficients
+- **STRICT VALIDATION**: All active pairs maintain spreads ≤30% - no exceptions allowed
+- **PROBLEM PAIRS BLOCKED**: Pairs with data issues or impossible conversions properly excluded
+- **SYSTEMATIC APPROACH**: Each pair tested with multiple conversion methods to find optimal coefficient
 
 ## Versioning System
 

@@ -259,22 +259,27 @@ class MOEXAPIClient:
             'ISZ5': 10,      # ABIO - контракт на 10 акций (спред 6.81%)
             'KMZ5': 10,      # KMAZ - контракт на 10 акций (спред 5.24%)
             'MGZ5': 10,      # MGNT - контракт на 10 акций (спред 2.11%)
+            'RAZ5': 10,      # RASP - контракт на 10 акций (спред 6.21%)
         }
         
         # Фьючерсы, котирующиеся в пунктах за акцию (нужно делить на 100)
         point_based = [
-            'VBZ5', 'RNZ5', 'ALZ5', 'CHZ5', 'AFZ5', 'MEZ5', 'MTZ5', 
-            'FLZ5', 'MAZ5', 'HYZ5', 'IRZ5', 'FSZ5'
+            'VBZ5', 'RNZ5', 'ALZ5', 'AFZ5', 'MTZ5', 
+            'FLZ5', 'CHZ5'
         ]
         
         # Фьючерсы, котирующиеся уже в рублях (без конверсии)
-        ruble_based = ['BNZ5', 'ETZ5']
+        ruble_based = ['BNZ5']
         
         # Фьючерсы со специальными коэффициентами
         special_conversions = {
             'CMZ5': 1000,    # CBOM - делить на 1000 (спред 5.17%)
-            'ANZ5': 1,       # AKRN - использовать прямо (спред 83% - высокий, но лучший из возможных)
+            'ANZ5': 0.2,     # AKRN - делить на 0.2 (спред 17.41%)
+            'MEZ5': 100,     # MOEX - делить на 100 (спред 5.93%)
         }
+        
+        # Фьючерсы с проблемными данными - блокируем
+        blocked_tickers = ['ETZ5', 'HYZ5', 'IRZ5', 'MAZ5', 'NKZ5', 'FSZ5']
         
         if ticker in contract_based:
             # Цена контракта / количество акций
@@ -297,6 +302,11 @@ class MOEXAPIClient:
             coef = special_conversions[ticker]
             converted_price = price / coef
             logger.debug(f"Конверсия {ticker}: {price} / {coef} = {converted_price}₽/акция (спецкоэффициент)")
+            
+        elif ticker in blocked_tickers:
+            # Фьючерсы с проблемными данными
+            logger.warning(f"Фьючерс {ticker} имеет проблемные данные")
+            return None
             
         else:
             # Неизвестный фьючерс - используем пункты по умолчанию
