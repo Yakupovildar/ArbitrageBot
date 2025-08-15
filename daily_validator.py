@@ -37,17 +37,21 @@ class DailyValidator:
                     'TATN': 'TNZ5',   
                     'ALRS': 'ALZ5',
                     
-                    # Новые рекомендованные пары (первые 10 для тестирования)
+                    # Новые рекомендованные пары (все рабочие)
                     'FEES': 'FSZ5',
                     'HYDR': 'HYZ5',
                     'IRAO': 'IRZ5',
                     'MTSS': 'MTZ5',
-                    'NLMK': 'NLZ5',
-                    'NVTK': 'NVZ5',
                     'PHOR': 'PHZ5',
                     'SNGS': 'SNZ5',
                     'CHMF': 'CHZ5',
-                    'MAGN': 'MAZ5'
+                    'MAGN': 'MAZ5',
+                    'ABIO': 'ISZ5',
+                    'AFKS': 'AKZ5',
+                    'AFLT': 'AFZ5',
+                    'BANE': 'BNZ5',
+                    'BSPB': 'BSZ5',
+                    'CBOM': 'CBZ5'
                 }
                 
                 results = await validator.validate_all_pairs(recommended_pairs)

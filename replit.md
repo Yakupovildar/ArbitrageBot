@@ -2,7 +2,22 @@
 
 ## Overview
 
-The MOEX Arbitrage Bot is a production-ready Telegram-based system for identifying arbitrage opportunities between stocks and futures on the Moscow Exchange (MOEX). It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and a comprehensive database of 50+ trading pairs organized into sectors including "Рекомендованные". The bot automatically manages data sources, validates trading pairs daily, and provides accurate spread calculations with proper futures price conversions. All major technical issues have been resolved, making it ready for deployment on hosting platforms for 24/7 operation.
+**Version 0.0.1** - The MOEX Arbitrage Bot is a production-ready Telegram-based system for identifying arbitrage opportunities between stocks and futures on the Moscow Exchange (MOEX). It features real-time monitoring, intelligent signal delivery with subscription-based limits (50 free signals, unlimited premium for 10 USDT/month), persistent user settings, and a comprehensive database of 63+ trading pairs organized into sectors including "🎯 Рекомендованные". The bot automatically manages data sources, validates trading pairs daily, and provides accurate spread calculations with proper futures price conversions. All major technical issues have been resolved, making it ready for deployment on hosting platforms for 24/7 operation.
+
+## Recent Changes (v0.0.1)
+
+- **Extended Validation**: Expanded from 8 to 22 trading pairs with 20 working correctly
+- **Complete Pair Integration**: Added all pairs from user's attached file (63+ instruments)
+- **Version Control**: Implemented versioning system starting with v0.0.1
+- **Production Ready**: All critical bugs fixed, ready for hosting deployment
+- **NLMK/NVTK Pairs**: Temporarily disabled (futures tickers not found on MOEX)
+
+## Versioning System
+
+- **Current Version**: 0.0.1 (Ready for hosting deployment)
+- **Version Storage**: All versions saved in `versions/` directory
+- **Next Version**: 0.0.2 (will be created on next deployment)
+- **Version History**: Tracked in `version_history.md`
 
 ## User Preferences
 
