@@ -28,7 +28,7 @@ class Config:
     BATCH_DELAY: float = 5.0           # Увеличенная задержка между батчами
     SMART_ROTATION_ENABLED: bool = True # Умная ротация без повторов
     FULL_SCAN_CYCLES: int = 6          # Больше циклов для 30 основных пар (30/5)
-    MIN_REQUEST_INTERVAL: float = 0.1  # Быстрый интервал для валидации (ускорен с 5.0)
+    MIN_REQUEST_INTERVAL: float = 0.5  # Умеренный интервал для избежания блокировок (баланс скорость/надежность)
     
     # Настройки мониторинга
     MONITORING_INTERVAL_MIN: int = 300  # 5 минут в секундах
