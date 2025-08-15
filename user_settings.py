@@ -324,7 +324,6 @@ class UserSettingsManager:
     def _group_instruments_by_sectors(self, all_instruments: Dict[str, str]) -> Dict[str, Dict[str, str]]:
         """Группировка инструментов по секторам"""
         sectors = {
-            "🎯 Рекомендованные": {},
             "🔵 Голубые фишки": {},
             "🏦 Банки": {},
             "⛽ Нефть и газ": {},
@@ -338,24 +337,11 @@ class UserSettingsManager:
             "🧪 Химия": {},
             "🔧 Промышленность": {},
             "💰 Финуслуги": {},
-            "🌍 Международные ETF": {},
-            "💱 Валютные пары": {},
-            "🥇 Товары": {},
-            "📈 Индексы": {},
             "🆕 Новые активы": {}
         }
         
         # Распределяем инструменты по секторам
-        # Рекомендованные - все пары из прикрепленного файла
-        recommended = [
-            "ABIO", "ACKO", "AFKS", "AFLT", "AGRO", "AKRN", "ALRS", "APTK", "ASSB", "BANE",
-            "BANEP", "BLNG", "BSPB", "CBOM", "CHMF", "DIXY", "DSKY", "ELFV", "ETLN", "FEES",
-            "FIVE", "FIXP", "FLOT", "GAZP", "GEMC", "GMKN", "HHRU", "HYDR", "IRAO", "KMAZ",
-            "LKOH", "LSRG", "MAGN", "MAIL", "MGNT", "MOEX", "MSNG", "MTSS", "NKNC", "NLMK",
-            "NVTK", "OZON", "PHOR", "PIKK", "PLZL", "PMSB", "POLY", "PRTK", "QIWI", "RASP",
-            "RENI", "ROSN", "RTKM", "RUAL", "SBER", "SGZH", "SMLT", "SNGS", "TATN", "TCSG",
-            "TRNFP", "VTBR", "YAKG"
-        ]
+
         blue_chips = ["SBER", "GAZP", "GMKN", "FEES", "VTBR", "LKOH", "ROSN", "TATN", "ALRS"]
         banks = ["SBERP", "CBOM", "BSPB", "SVCB", "VTBR"]
         oil_gas = ["GAZP", "LKOH", "ROSN", "TATN", "TATP", "SNGS", "SNGSP", "NVTK", "SIBN", "BANE", "RNFT"]
@@ -376,9 +362,7 @@ class UserSettingsManager:
         new_assets = ["AFKS", "AQUA", "VSMO", "KOGK", "UPRO", "ISKJ", "POSI", "ASTR", "SOFL", "WUSH", "DIAS"]
         
         for stock, futures in all_instruments.items():
-            if stock in recommended:
-                sectors["🎯 Рекомендованные"][stock] = futures
-            elif stock in blue_chips:
+            if stock in blue_chips:
                 sectors["🔵 Голубые фишки"][stock] = futures
             elif stock in banks:
                 sectors["🏦 Банки"][stock] = futures
